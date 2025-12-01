@@ -378,6 +378,11 @@ const MCP_TOOLS = {
                 labels: {
                     type: "object",
                     description: "Label filters as key-value pairs (e.g., {level: 'ERROR', object: 'TaskManager'})"
+                },
+                limit: {
+                    type: "number",
+                    description: "Maximum number of log entries to return (default: 20, max: 10000). Lower limits provide better sampling for LLM context. Usually not needed - leave unset for best results.",
+                    default: 20
                 }
             }
         }
@@ -863,13 +868,13 @@ const MCP_TOOLS = {
     // Additional Ticket Tools
     get_ticket_by_id: {
         name: "get_ticket_by_id",
-        description: "Get ONE specific ticket by exact ticket_id. REQUIRES ticket_id parameter. Returns complete ticket details: title, description, type, priority, status, assignee, created/updated timestamps, related resources. Use when: user provides specific ticket ID, or you have ticket_id from previous results. NOT for searching (use search_tickets) or listing all (use get_tickets). Perfect for 'show ticket 12345' or 'get details of ticket X'.",
+        description: "Get ONE specific ticket by ticket_id (internal numeric ID like 4114208) OR sourceRef (external ID like 'CS-335', 'NEO-270'). Automatically handles both formats. REQUIRES ticket_id parameter. Returns complete ticket details: title, description, type, priority, status, assignee, created/updated timestamps, related resources. Use when: user provides specific ticket ID/reference, or you have ticket_id from previous results. NOT for searching (use search_tickets) or listing all (use get_tickets). Perfect for 'show ticket CS-335' or 'get details of ticket 12345'.",
         inputSchema: {
             type: "object",
             properties: {
                 ticket_id: {
                     type: "string",
-                    description: "Unique ticket identifier",
+                    description: "Ticket identifier - can be internal numeric ID (4114208) or external sourceRef (CS-335, NEO-270, etc.)",
                     required: true
                 }
             },
@@ -1443,9 +1448,16 @@ class MCPToolRegistry {
 
     // VictoriaLogs tool implementations
     async queryLogs(params) {
+        console.log('🔍 queryLogs called with params:', JSON.stringify(params));
         const { query, start_time, end_time, limit = 1000 } = params;
 
         try {
+            // Validate query parameter
+            if (!query) {
+                console.error('❌ Query parameter missing! Params:', params);
+                throw new Error('Query parameter is required');
+            }
+
             // VictoriaLogs uses LogSQL syntax, not PromQL
             // Build the request parameters
             const requestParams = {
@@ -1464,7 +1476,7 @@ class MCPToolRegistry {
             }
 
             // Check if query contains a timestamp filter and extract it (legacy support)
-            if (!start_time && !end_time) {
+            if (!start_time && !end_time && typeof query === 'string') {
                 const timestampMatch = query.match(/_time:([0-9TZ\-:.]+)/i);
                 if (timestampMatch) {
                     // Extract timestamp and use it for time range filtering
@@ -1565,15 +1577,29 @@ class MCPToolRegistry {
     }
 
     async searchLogs(params) {
-        const { search_text, labels = {} } = params;
+        const { search_text, labels = {}, limit = 20 } = params;
+        console.log(`🔍 searchLogs called with: search_text="${search_text}", labels=${JSON.stringify(labels)}, limit=${limit}`);
+
+        // Validate search_text - reject undefined/null as string
+        if (search_text && (search_text === "undefined" || search_text === "null" || search_text.toLowerCase() === "undefined")) {
+            console.log(`❌ Rejected invalid search_text: "${search_text}"`);
+            return {
+                search_text: search_text,
+                labels: labels,
+                count: 0,
+                logs: [],
+                timestamp: new Date().toISOString(),
+                error: "Invalid search_text parameter. Do not pass 'undefined' or 'null' as a string."
+            };
+        }
 
         try {
             let query = '';
 
             // Build LogSQL query based on search parameters
             if (search_text) {
-                // Search for text in log content using LogSQL syntax
-                query = `_msg:${search_text}`;
+                // Search for text in log content using LogSQL syntax with wildcards
+                query = `_msg:*${search_text}*`;
             } else if (Object.keys(labels).length > 0) {
                 // Search by labels using LogSQL syntax
                 const labelSelectors = Object.entries(labels)
@@ -1587,7 +1613,8 @@ class MCPToolRegistry {
 
             const response = await axios.get(`${VICTORIA_LOGS_API_URL}/query`, {
                 params: {
-                    query: query
+                    query: query,
+                    limit: Math.min(limit, 10000) // Cap at 10000
                 },
                 timeout: 30000
             });
@@ -1610,6 +1637,8 @@ class MCPToolRegistry {
                 logs = [response.data];
             }
 
+            console.log(`✅ VictoriaLogs returned ${logs.length} logs for query "${query}"`);
+
             return {
                 search_text: search_text,
                 labels: labels,
@@ -1626,28 +1655,37 @@ class MCPToolRegistry {
         const { metric_type = 'fields' } = params;
 
         try {
-            // VictoriaLogs has different endpoints for metadata
+            // VictoriaLogs uses field_names endpoint for field metadata
             let endpoint;
+            let query = '*';
+
             switch (metric_type.toLowerCase()) {
                 case 'fields':
-                    endpoint = '/fields';
+                    endpoint = '/field_names';
                     break;
                 case 'streams':
-                    endpoint = '/streams';
+                    endpoint = '/stream_field_names';
+                    break;
+                case 'field_values':
+                    // Get field values requires a field name parameter
+                    endpoint = '/field_values';
                     break;
                 default:
-                    endpoint = '/fields';
+                    endpoint = '/field_names';
             }
 
             const response = await axios.get(`${VICTORIA_LOGS_API_URL}${endpoint}`, {
+                params: { query },
                 timeout: 30000
             });
 
-            // VictoriaLogs returns different format than Prometheus
+            // VictoriaLogs returns {values: [{value: "field_name", hits: count}, ...]}
+            const fields = response.data?.values || response.data || [];
+
             return {
                 metric_type: metric_type,
-                data: response.data,
-                count: Array.isArray(response.data) ? response.data.length : 0,
+                fields: Array.isArray(fields) ? fields : [fields],
+                count: Array.isArray(fields) ? fields.length : 0,
                 timestamp: new Date().toISOString()
             };
         } catch (error) {
@@ -2450,7 +2488,37 @@ class MCPToolRegistry {
         const { ticket_id } = params;
 
         try {
-            const response = await axios.get(`${MANIFEST_API_URL}/client/ticket/${ticket_id}`, {
+            // If ticket_id looks like a sourceRef (contains letters/hyphens), search for it first
+            let actualTicketId = ticket_id;
+            if (isNaN(ticket_id) || ticket_id.includes('-')) {
+                console.log(`🔍 Looking up sourceRef: ${ticket_id}`);
+                // Search for ticket by sourceRef - get all tickets
+                const searchResponse = await axios.get(`${MANIFEST_API_URL}/client/ticket`, {
+                    headers: {
+                        'Mit-Api-Key': config.MANIFEST_API_KEY,
+                        'Mit-Org-Key': config.MANIFEST_ORG_KEY || 'dev',
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 30000
+                });
+
+                const tickets = Array.isArray(searchResponse.data) ? searchResponse.data : [];
+                console.log(`📋 Found ${tickets.length} tickets`);
+
+                // Find ticket with matching sourceRef
+                const ticket = tickets.find(t => t.sourceRef === ticket_id);
+                if (!ticket) {
+                    console.log(`❌ No ticket found with sourceRef: ${ticket_id}`);
+                    // Log first few sourceRefs for debugging
+                    const refs = tickets.slice(0, 5).map(t => t.sourceRef);
+                    console.log(`   Sample sourceRefs: ${refs.join(', ')}`);
+                    throw new Error(`Ticket with sourceRef '${ticket_id}' not found`);
+                }
+                console.log(`✅ Found ticket ID: ${ticket.id} for sourceRef: ${ticket_id}`);
+                actualTicketId = ticket.id;
+            }
+
+            const response = await axios.get(`${MANIFEST_API_URL}/client/ticket/${actualTicketId}`, {
                 headers: {
                     'Mit-Api-Key': config.MANIFEST_API_KEY,
                     'Mit-Org-Key': config.MANIFEST_ORG_KEY || 'dev',
@@ -2737,7 +2805,7 @@ app.use((req, res, next) => {
 
 // VictoriaLogs configuration
 const VICTORIA_METRICS_URL = config.VICTORIA_METRICS_URL;
-const VICTORIA_LOGS_API_URL = config.VICTORIA_LOGS_API_URL;
+const VICTORIA_LOGS_API_URL = config.VICTORIA_LOGS_URL;
 
 // VictoriaMetrics configuration (for metrics queries)
 const VICTORIA_METRICS_SELECT_URL = config.VICTORIA_METRICS_SELECT_URL;

@@ -16,3 +16,9 @@ Testing Neo4j connection...
 Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
 ❌ Neo4j connection failed: connect ECONNREFUSED 127.0.0.1:7474
 Please ensure Neo4j is running and credentials are correct
+🔍 searchLogs called with: search_text="undefined", labels={}, limit=20
+✅ VictoriaLogs returned 20 logs for query "*"
+🔍 searchLogs called with: search_text="undefined", labels={}, limit=20
+❌ Rejected invalid search_text: "undefined"
+🔍 searchLogs called with: search_text="undefined", labels={}, limit=20
+✅ VictoriaLogs returned 20 logs for query "*"

@@ -75,12 +75,14 @@ class EnhancedLangGraphWorkflow:
         client = await self.mcp_client.get_client()
         tools_response = await client.list_available_tools()
         available_tools = [tool.get("name") for tool in tools_response.get("tools", [])]
+        tool_schemas = tools_response.get("tools", [])  # Store full schemas
         logger.info(f"📋 Loaded {len(available_tools)} available MCP tools")
         
         # Add tools to state
         state_with_tools = {
             **state,
-            "available_tools": available_tools
+            "available_tools": available_tools,
+            "tool_schemas": tool_schemas  # Add full schemas
         }
         
         updated_state = await self.orchestrator.orchestrate_workflow(state_with_tools)
@@ -104,7 +106,17 @@ class EnhancedLangGraphWorkflow:
     async def _response_enrichment_node(self, state: ChatState) -> ChatState:
         """Response enrichment"""
         logger.info("✨ Response Enrichment: Enriching response")
-        return await self.response_enricher.enrich_response(state)
+        
+        # Inject websocket reference if available (as non-serializable context)
+        if hasattr(self, '_current_websocket') and self._current_websocket:
+            state_with_ws = {**state, "_websocket_ref": self._current_websocket}
+            result = await self.response_enricher.enrich_response(state_with_ws)
+            # Remove websocket ref before returning (don't serialize it)
+            if "_websocket_ref" in result:
+                del result["_websocket_ref"]
+            return result
+        else:
+            return await self.response_enricher.enrich_response(state)
     
     async def _orchestrator_finish_node(self, state: ChatState) -> ChatState:
         """Orchestrator finalization"""
@@ -120,17 +132,28 @@ class EnhancedLangGraphWorkflow:
     
     # Main Processing Method
     
-    async def process_query(self, user_query: str, session_id: str = None) -> Dict[str, Any]:
+    async def process_query(self, user_query: str, session_id: str = None, websocket=None) -> Dict[str, Any]:
         """
         Process a user query through the enhanced workflow
+        
+        Args:
+            user_query: The user's natural language query
+            session_id: Optional session ID for conversation continuity
+            websocket: Optional WebSocket for streaming responses
+            
+        Returns:
+            Dict containing response, analysis, and execution details
         """
         try:
             logger.info(f"🚀 Processing: '{user_query}'")
             
+            # Store websocket separately (not in state - can't be serialized)
+            self._current_websocket = websocket
+            
             # Create initial state
             initial_state = create_initial_state(user_query, session_id)
             
-            # Execute the workflow
+            # Run the workflow
             result = await self.app.ainvoke(
                 initial_state,
                 config={

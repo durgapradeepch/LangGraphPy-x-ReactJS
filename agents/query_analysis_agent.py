@@ -2,6 +2,7 @@
 Query Analysis Agent - Analyzes user queries to determine intent and plan execution
 """
 
+import json
 import logging
 from typing import Dict, Any
 from state import ChatState, update_state_context
@@ -26,17 +27,21 @@ class QueryAnalysisAgent:
             
             # Use LLM to analyze query
             available_tools = state.get("available_tools", [])
+            tool_schemas = state.get("tool_schemas", [])
             analysis = await llm_client.analyze_query_intent(
                 state["user_query"],
                 available_tools
             )
             
-            # Plan tool sequence based on analysis
+            # Plan tool sequence based on analysis (pass tool schemas)
             tool_plan = await llm_client.plan_tool_sequence(
                 analysis,
-                available_tools,
+                tool_schemas,  # Pass full schemas instead of just names
                 state.get("context_data", {})
             )
+            
+            # Log tool plan for debugging
+            logger.info(f"📋 Tool plan: {json.dumps(tool_plan, indent=2)}")
             
             # Update state with analysis results
             updated_state = {

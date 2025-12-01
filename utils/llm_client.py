@@ -106,32 +106,64 @@ Respond ONLY with valid JSON in this exact format:
             logger.error(f"❌ Query analysis failed: {str(e)}")
             return self._fallback_query_analysis(user_query)
     
-    async def plan_tool_sequence(self, query_analysis: Dict[str, Any], available_tools: List[str], 
+    async def plan_tool_sequence(self, query_analysis: Dict[str, Any], tool_schemas: List[Dict[str, Any]], 
                                context: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """Plan the sequence of tools to execute based on query analysis"""
         
         if not self.llm:
-            return self._fallback_tool_planning(query_analysis, available_tools)
+            return self._fallback_tool_planning(query_analysis, [t.get("name") for t in tool_schemas])
+        
+        # Format tool schemas for the prompt
+        tools_info = []
+        for tool in tool_schemas:
+            tool_desc = f"- **{tool['name']}**: {tool.get('description', '')}"
+            if 'inputSchema' in tool and 'properties' in tool['inputSchema']:
+                params = tool['inputSchema']['properties']
+                required_params = tool['inputSchema'].get('required', [])
+                param_details = []
+                for param_name, param_info in params.items():
+                    param_type = param_info.get('type', 'any')
+                    param_desc = param_info.get('description', '')
+                    required_marker = " [REQUIRED]" if param_name in required_params else " [OPTIONAL]"
+                    param_details.append(f"    * {param_name} ({param_type}){required_marker}: {param_desc}")
+                if param_details:
+                    tool_desc += "\n  Parameters:\n" + "\n".join(param_details)
+            tools_info.append(tool_desc)
+        
+        tools_with_schemas = '\n'.join(tools_info)
         
         system_prompt = f"""You are a tool execution planner. Based on the query analysis, create a plan of tools to execute.
 
-Available tools: {', '.join(available_tools)}
+IMPORTANT: 
+1. Use the EXACT parameter names shown in the tool schemas below!
+2. Only include REQUIRED parameters - omit OPTIONAL ones unless specifically needed
+3. Match parameter types exactly (string, integer, object, array)
+
+Available tools:
+{tools_with_schemas}
 
 Query Analysis: {json.dumps(query_analysis)}
 
 CRITICAL TOOL DISAMBIGUATION:
-**CHANGELOGS vs INCIDENTS - Choose carefully:**
+**LOGS vs CHANGELOGS vs INCIDENTS - Choose the RIGHT tool:**
+- "search logs", "log entries", "log messages", "system logs", "application logs", "error logs"
+  → Use LOG tools: search_logs, query_logs (for VictoriaLogs - raw log data)
 - "changes", "deployments", "configuration changes", "IAM changes", "RBAC changes", "what changed", "modifications"
-  → Use CHANGELOG tools: search_changelogs, get_changelog_by_resource, search_changelogs_by_event_type
+  → Use CHANGELOG tools: search_changelogs, get_changelog_by_resource (for change tracking)
 - "incidents", "outages", "downtime", "service down", "alerts", "problems"
-  → Use INCIDENT tools: search_incidents, get_incidents, get_incident_by_id
+  → Use INCIDENT tools: search_incidents, get_incidents (for incident management)
 
-When query mentions "severity" + "changes" → Use search_changelogs with severity parameter
-When query mentions "severity" + "incidents" → Use search_incidents
+**Key distinction**: 
+- "logs" = raw log entries from VictoriaLogs (use search_logs)
+- "changelogs" = configuration/deployment change records (use search_changelogs)
+- "incidents" = service outage/problem records (use search_incidents)
 
 CRITICAL SEARCH STRATEGY:
 1. Use search_terms from query_analysis for flexible matching
-2. For incident searches, try multiple approaches:
+2. For LOG searches:
+   - search_logs with search_text parameter for simple text searches
+   - query_logs with query parameter for complex LogSQL queries
+3. For incident searches, try multiple approaches:
    - search_incidents with query parameter using search_terms
    - get_incidents to list all, then filter by search_terms
    - If specific incident ID mentioned, use get_incident_by_id
@@ -183,6 +215,31 @@ Consider:
         """Pre-process complex nested data structures for better LLM consumption"""
         
         logger.info(f"🔧 Preprocessing tool: {tool_name}, result keys: {list(result.keys()) if isinstance(result, dict) else 'not a dict'}")
+        
+        # Handle log data (from search_logs, query_logs) - CRITICAL: these can return 1000s of logs
+        if "log" in tool_name.lower() and "logs" in result:
+            logs_data = result.get("logs")
+            if logs_data and isinstance(logs_data, list):
+                logger.info(f"📋 Found {len(logs_data)} logs, limiting to 10 and truncating fields")
+                # Extract key fields from logs (limit to first 10 only!)
+                simplified_logs = []
+                for log in logs_data[:10]:  # ONLY show 10 logs max
+                    simplified = {
+                        "time": log.get("_time", "N/A"),
+                        "level": log.get("level", "N/A"),
+                        "msg": log.get("_msg", "No message")[:100],  # Truncate message
+                        "service": log.get("service", log.get("object", "Unknown"))
+                    }
+                    simplified_logs.append(simplified)
+                
+                logger.info(f"✅ Simplified {len(simplified_logs)} logs from {len(logs_data)} total")
+                return {
+                    "query": result.get("query", result.get("search_text", "N/A")),
+                    "total_count": result.get("total_count", result.get("count", len(logs_data))),
+                    "returned": len(simplified_logs),
+                    "logs": simplified_logs,
+                    "note": f"Showing first {len(simplified_logs)} of {result.get('total_count', result.get('count', len(logs_data)))} logs (truncated for brevity)"
+                }
         
         # Handle ticket data (from get_tickets, search_tickets_by_*, search_tickets)
         if "ticket" in tool_name.lower():
@@ -254,13 +311,16 @@ Consider:
         logger.info(f"⚠️ No preprocessing applied for tool: {tool_name}")
         return result
     
-    async def generate_enriched_response(self, state: Dict[str, Any]) -> Dict[str, Any]:
-        """Use LLM to generate contextual, actionable response"""
+    async def generate_enriched_response(self, state: Dict[str, Any], websocket=None) -> Dict[str, Any]:
+        """Use LLM to generate contextual, actionable response with optional streaming"""
         
         try:
             if not self.llm:
                 logger.warning("No LLM available, using fallback")
-                return self._fallback_response_generation(state)
+                fallback = self._fallback_response_generation(state)
+                if websocket:
+                    await websocket.send_text(json.dumps({"on_chat_model_stream": fallback.get("final_response", "")}))
+                return fallback
             
             # Extract tool results
             mcp_results = state.get("mcp_results", [])
@@ -281,7 +341,8 @@ Consider:
             
             # Log size of preprocessed data
             import sys
-            preprocessed_size = sum(sys.getsizeof(json.dumps(td)) for td in tool_data)
+            import json as json_lib
+            preprocessed_size = sum(sys.getsizeof(json_lib.dumps(td)) for td in tool_data)
             logger.info(f"📊 Preprocessed tool data size: {preprocessed_size} bytes ({preprocessed_size/1024:.1f} KB)")
             
             context = {
@@ -296,7 +357,7 @@ Consider:
             }
             
             # Log context size to diagnose token issues
-            context_json = json.dumps(context, indent=2)
+            context_json = json_lib.dumps(context, indent=2)
             context_size = len(context_json)
             logger.info(f"📊 Context JSON size: {context_size} bytes ({context_size/1024:.1f} KB)")
             logger.info(f"📊 Estimated tokens: ~{context_size/4} (rough estimate)")
@@ -329,20 +390,10 @@ For RESOURCES:
 - List each resource with: name, type, status
 - Include relevant metadata if available
 
-Generate a comprehensive response that includes:
-1. A natural language answer to the user's question with SPECIFIC details from filtered results
-2. If no exact match: explain what you searched for and present closest matches
-3. Forward links (3-5 suggested follow-up questions)
-4. Actionable recommendations (3-5 specific actions)
-5. Key insights from the data
+Generate a comprehensive, natural language response to the user's question with SPECIFIC details from filtered results.
+If no exact match: explain what you searched for and present closest matches.
 
-Return JSON in this format:
-{{
-    "final_response": "Natural language answer with specific details formatted according to data type. If search didn't find exact match, explain what was searched and present closest alternatives.",
-    "forward_links": ["Follow-up question 1", "Follow-up question 2"],
-    "recommendations": ["Action 1", "Action 2"],
-    "insights": {{"key": "value", "search_strategy": "explain how search was performed"}}
-}}"""
+Write in a conversational, helpful tone as if you're ChatGPT explaining the results."""
             
             messages = [
                 {"role": "system", "content": system_prompt},
@@ -350,31 +401,43 @@ Return JSON in this format:
             ]
             
             logger.info("Invoking LLM for response generation...")
-            response = self.llm.invoke(messages)
-            logger.info(f"LLM invocation completed, response type: {type(response)}")
             
-            content = response.content
-            logger.debug(f"LLM raw response: {content[:200]}...")
+            # If websocket provided, use streaming for direct text response
+            if websocket:
+                content = ""
+                async for chunk in self.llm.astream(messages):
+                    token = chunk.content
+                    if token:
+                        content += token
+                        await websocket.send_text(json_lib.dumps({"on_chat_model_stream": token}))
+                logger.info(f"Streaming completed, total length: {len(content)}")
+                
+                # Now generate metadata (forward links, recommendations) without streaming
+                metadata_response = await self._generate_metadata(state, content)
+                
+                return {
+                    "final_response": content,
+                    "forward_links": metadata_response.get("forward_links", []),
+                    "recommendations": metadata_response.get("recommendations", []),
+                    "insights": metadata_response.get("insights", {})
+                }
+            else:
+                response = self.llm.invoke(messages)
+                logger.info(f"LLM invocation completed, response type: {type(response)}")
+                content = response.content
+                
+                # Generate metadata for non-streaming mode too
+                metadata_response = await self._generate_metadata(state, content)
+                
+                return {
+                    "final_response": content,
+                    "forward_links": metadata_response.get("forward_links", []),
+                    "recommendations": metadata_response.get("recommendations", []),
+                    "insights": metadata_response.get("insights", {})
+                }
             
-            json_str = self._extract_json_from_response(content)
-            enriched_response = json.loads(json_str)
-            
-            # Validate response structure
-            if not isinstance(enriched_response, dict):
-                raise ValueError(f"Expected dict, got {type(enriched_response)}")
-            
-            # Ensure required fields exist
-            if "final_response" not in enriched_response:
-                enriched_response["final_response"] = "Response generated successfully."
-            if "forward_links" not in enriched_response:
-                enriched_response["forward_links"] = []
-            if "recommendations" not in enriched_response:
-                enriched_response["recommendations"] = []
-            if "insights" not in enriched_response:
-                enriched_response["insights"] = {}
             
             logger.info("✅ Enriched response generated successfully")
-            return enriched_response
             
         except Exception as e:
             logger.error(f"❌ Response generation failed: {str(e)}")
@@ -383,6 +446,51 @@ Return JSON in this format:
             fallback = self._fallback_response_generation(state)
             logger.debug(f"Using fallback response: {fallback}")
             return fallback
+    
+    async def _generate_metadata(self, state: Dict[str, Any], response_text: str) -> Dict[str, Any]:
+        """Generate forward links and recommendations based on the response"""
+        
+        try:
+            query = state.get("user_query", "")
+            
+            metadata_prompt = f"""Based on the user's question and the response provided, generate helpful metadata.
+
+User Question: {query}
+
+Response: {response_text}
+
+Generate:
+1. Forward links: 3-5 relevant follow-up questions the user might want to ask
+2. Recommendations: 3-5 actionable next steps or suggestions
+3. Insights: Key observations about the data or search strategy
+
+Return ONLY valid JSON in this exact format:
+{{
+    "forward_links": ["question 1", "question 2", "question 3"],
+    "recommendations": ["action 1", "action 2", "action 3"],
+    "insights": {{"key_observation": "value", "search_strategy": "description"}}
+}}"""
+            
+            messages = [
+                {"role": "system", "content": "You are a helpful assistant that generates metadata. Return ONLY valid JSON."},
+                {"role": "user", "content": metadata_prompt}
+            ]
+            
+            response = self.llm.invoke(messages)
+            content = response.content
+            
+            json_str = self._extract_json_from_response(content)
+            metadata = json_lib.loads(json_str)
+            
+            return metadata
+            
+        except Exception as e:
+            logger.warning(f"Metadata generation failed: {e}, using defaults")
+            return {
+                "forward_links": ["What else can you help me with?", "Show me more details"],
+                "recommendations": ["Review the data", "Check for related information"],
+                "insights": {}
+            }
         
     # Fallback methods for when LLM is unavailable
     

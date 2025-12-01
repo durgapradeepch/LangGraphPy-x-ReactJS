@@ -13,5 +13,16 @@
 📊 Available VictoriaLogs Tools: query_logs, search_logs, get_log_metrics, get_log_stats
 🔧 Available Manifest API Tools: get_changelogs, get_graph, get_incidents, get_notifications, get_resources, get_tickets
 Testing Neo4j connection...
-✅ Neo4j connection successful
-./start.sh: line 56: 74723 Killed: 9               node server.js
+Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
+❌ Neo4j connection failed: connect ECONNREFUSED 127.0.0.1:7474
+Please ensure Neo4j is running and credentials are correct
+🔍 searchLogs called with: search_text="database", labels={}, limit=20
+✅ VictoriaLogs returned 4 logs for query "_msg:*database*"
+🔍 searchLogs called with: search_text="database", labels={}, limit=20
+✅ VictoriaLogs returned 4 logs for query "_msg:*database*"
+🔍 searchLogs called with: search_text="database", labels={}, limit=20
+✅ VictoriaLogs returned 4 logs for query "_msg:*database*"
+🔍 searchLogs called with: search_text="database", labels={}, limit=20
+✅ VictoriaLogs returned 4 logs for query "_msg:*database*"
+🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
+🔑 Using API Key: Present

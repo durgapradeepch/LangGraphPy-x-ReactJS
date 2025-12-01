@@ -28,7 +28,15 @@ class ResponseEnrichmentAgent:
             # Use LLM to generate enriched response
             try:
                 logger.info("🤖 Calling LLM to generate enriched response...")
-                llm_response = await llm_client.generate_enriched_response(state)
+                
+                # Check if websocket is available for streaming (from workflow context)
+                websocket = state.get("_websocket_ref")
+                if websocket:
+                    logger.info("🌊 Using streaming mode for response generation")
+                    llm_response = await llm_client.generate_enriched_response(state, websocket=websocket)
+                else:
+                    logger.info("📝 Using non-streaming mode for response generation")
+                    llm_response = await llm_client.generate_enriched_response(state)
                 
                 logger.info(f"🔍 LLM response type: {type(llm_response)}, value: {str(llm_response)[:200] if llm_response else 'None'}")
                 

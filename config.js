@@ -23,7 +23,7 @@ module.exports = {
     VICTORIA_METRICS_URL: process.env.VICTORIA_METRICS_URL || 'http://localhost:8428',
 
     // VictoriaLogs Configuration
-    VICTORIA_LOGS_URL: process.env.VICTORIA_LOGS_URL || 'http://localhost:9428',
+    VICTORIA_LOGS_URL: process.env.VICTORIA_LOGS_API_URL || process.env.VICTORIA_LOGS_URL || 'http://localhost:9428',
 
     // Manifest API Configuration
     MANIFEST_API_URL: process.env.MANIFEST_API_URL || 'http://localhost:8080',

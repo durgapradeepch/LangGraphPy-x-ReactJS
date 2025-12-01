@@ -11,3 +11,388 @@ INFO:     server.py:53    - {"timestamp": "2025-12-01T13:07:11.415696", "uuid": 
 INFO:     server.py:64    - {"timestamp": "2025-12-01T13:07:11.416085", "uuid": "record-principle-fallen-phrase", "op": "Initializing ws with client."}
 INFO:     server.py:53    - {"timestamp": "2025-12-01T13:07:15.170095", "uuid": "record-principle-fallen-phrase", "received": {"uuid": "record-principle-fallen-phrase", "message": "hi", "init": false}}
 INFO:     graph.py:178   - {"timestamp": "2025-12-01T13:07:16.398484", "uuid": "record-principle-fallen-phrase", "llm_method": "on_chat_model_end", "sent": "Hello! How can I assist you today?"}
+INFO:     127.0.0.1:53041 - "WebSocket /ws" [accepted]
+INFO:     connection open
+INFO:     server.py:53    - {"timestamp": "2025-12-01T13:11:40.460216", "uuid": null, "received": {"uuid": "pole-told-pool-tax", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-01T13:11:40.460649", "uuid": "pole-told-pool-tax", "op": "Initializing ws with client."}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T13:11:42.659810", "uuid": "pole-told-pool-tax", "received": {"uuid": "pole-told-pool-tax", "message": "hi", "init": false}}
+INFO:     graph.py:178   - {"timestamp": "2025-12-01T13:11:43.570462", "uuid": "pole-told-pool-tax", "llm_method": "on_chat_model_end", "sent": "Hello! How can I assist you today?"}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T13:11:54.692060", "uuid": "pole-told-pool-tax", "received": {"uuid": "pole-told-pool-tax", "message": "Get details of ticket CS-335", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: Get details of ticket CS-335...
+INFO:     workflow.py:128   - 🚀 Processing: 'Get details of ticket CS-335'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:251   - ✅ Created MCP client for session default
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     mcp_client.py:56    - ✅ Fetched 47 MCP tools from server
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session pole-told-pool-tax
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'Get details of ticket CS-335...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=exploration, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_ticket_by_id (attempt 1/2)
+INFO:     mcp_client.py:251   - ✅ Created MCP client for session pole-told-pool-tax
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_ticket_by_id
+WARNING:     mcp_client.py:98    - ⚠️ Tool get_ticket_by_id attempt 1 failed: Server returned 500: {"success":false,"error":"Manifest API get ticket by ID failed: InternalServerError Server Error Bad request strconv.Atoi: parsing \"CS-335\": invalid syntax","tool_name":"get_ticket_by_id"}, retrying...
+WARNING:     mcp_client.py:98    - ⚠️ Tool get_ticket_by_id attempt 2 failed: Server returned 500: {"success":false,"error":"Manifest API get ticket by ID failed: InternalServerError Server Error Bad request strconv.Atoi: parsing \"CS-335\": invalid syntax","tool_name":"get_ticket_by_id"}, retrying...
+ERROR:     mcp_client.py:104   - ❌ Tool get_ticket_by_id execution failed: Server returned 500: {"success":false,"error":"Manifest API get ticket by ID failed: InternalServerError Server Error Bad request strconv.Atoi: parsing \"CS-335\": invalid syntax","tool_name":"get_ticket_by_id"}
+WARNING:     tool_execution_agent.py:104   - ⚠️ Tool get_ticket_by_id attempt 1 failed: Failed to execute tool get_ticket_by_id: Server returned 500: {"success":false,"error":"Manifest API get ticket by ID failed: InternalServerError Server Error Bad request strconv.Atoi: parsing \"CS-335\": invalid syntax","tool_name":"get_ticket_by_id"}, retrying...
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_ticket_by_id (attempt 2/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_ticket_by_id
+WARNING:     mcp_client.py:98    - ⚠️ Tool get_ticket_by_id attempt 1 failed: Server returned 500: {"success":false,"error":"Manifest API get ticket by ID failed: InternalServerError Server Error Bad request strconv.Atoi: parsing \"CS-335\": invalid syntax","tool_name":"get_ticket_by_id"}, retrying...
+WARNING:     mcp_client.py:98    - ⚠️ Tool get_ticket_by_id attempt 2 failed: Server returned 500: {"success":false,"error":"Manifest API get ticket by ID failed: InternalServerError Server Error Bad request strconv.Atoi: parsing \"CS-335\": invalid syntax","tool_name":"get_ticket_by_id"}, retrying...
+ERROR:     mcp_client.py:104   - ❌ Tool get_ticket_by_id execution failed: Server returned 500: {"success":false,"error":"Manifest API get ticket by ID failed: InternalServerError Server Error Bad request strconv.Atoi: parsing \"CS-335\": invalid syntax","tool_name":"get_ticket_by_id"}
+ERROR:     tool_execution_agent.py:106   - ❌ Tool get_ticket_by_id failed after 2 attempts: Failed to execute tool get_ticket_by_id: Server returned 500: {"success":false,"error":"Manifest API get ticket by ID failed: InternalServerError Server Error Bad request strconv.Atoi: parsing \"CS-335\": invalid syntax","tool_name":"get_ticket_by_id"}
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 0.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:280   - Processing 0 successful tool results with search_terms: []
+INFO:     llm_client.py:285   - 📊 Preprocessed tool data size: 0 bytes (0.0 KB)
+INFO:     llm_client.py:301   - 📊 Context JSON size: 207 bytes (0.2 KB)
+INFO:     llm_client.py:302   - 📊 Estimated tokens: ~51.75 (rough estimate)
+INFO:     llm_client.py:352   - Invoking LLM for response generation...
+INFO:     llm_client.py:354   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:376   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "I attempted to retrieve details for ticket CS-335, but unfortunately, there were no exact matches found in the available data. I searched for tickets with the ID 'CS-335' and looke
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 324 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T13:12:16.634321", "uuid": "pole-told-pool-tax", "llm_method": "enhanced_workflow", "sent": "I attempted to retrieve details for ticket CS-335, but unfortunately, there were no exact matches fo"}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T13:22:05.690738", "uuid": "pole-told-pool-tax", "received": {"uuid": "pole-told-pool-tax", "message": "Search for tickets about Jira integration", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: Search for tickets about Jira integration...
+INFO:     workflow.py:128   - 🚀 Processing: 'Search for tickets about Jira integration'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     mcp_client.py:56    - ✅ Fetched 47 MCP tools from server
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session pole-told-pool-tax
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'Search for tickets about Jira integration...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=exploration, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_tickets (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_tickets
+INFO:     mcp_client.py:93    - ✅ Tool search_tickets executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:185   - 🔧 Preprocessing tool: search_tickets, result keys: ['tickets', 'count', 'page', 'page_size', 'timestamp', 'tool', 'parameters', 'success']
+INFO:     llm_client.py:192   - 🎫 Found 20 tickets, limiting to 3 and heavily truncating
+INFO:     llm_client.py:209   - ✅ Simplified 3 tickets (removed metadata, comments, activities)
+INFO:     llm_client.py:280   - Processing 1 successful tool results with search_terms: []
+INFO:     llm_client.py:285   - 📊 Preprocessed tool data size: 927 bytes (0.9 KB)
+INFO:     llm_client.py:301   - 📊 Context JSON size: 1500 bytes (1.5 KB)
+INFO:     llm_client.py:302   - 📊 Estimated tokens: ~375.0 (rough estimate)
+INFO:     llm_client.py:352   - Invoking LLM for response generation...
+INFO:     llm_client.py:354   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:376   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "I searched for tickets related to 'Jira integration' but did not find any exact matches. However, I found some tickets that might be relevant based on their descriptions and titles
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 1052 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T13:22:18.499179", "uuid": "pole-told-pool-tax", "llm_method": "enhanced_workflow", "sent": "I searched for tickets related to 'Jira integration' but did not find any exact matches. However, I "}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T13:22:30.092793", "uuid": "pole-told-pool-tax", "received": {"uuid": "pole-told-pool-tax", "message": "Get details of ticket CS-335", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: Get details of ticket CS-335...
+INFO:     workflow.py:128   - 🚀 Processing: 'Get details of ticket CS-335'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session pole-told-pool-tax
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'Get details of ticket CS-335...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=exploration, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_ticket_by_id (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_ticket_by_id
+INFO:     mcp_client.py:93    - ✅ Tool get_ticket_by_id executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:185   - 🔧 Preprocessing tool: get_ticket_by_id, result keys: ['ticket', 'timestamp', 'tool', 'parameters', 'success']
+INFO:     llm_client.py:254   - ⚠️ No preprocessing applied for tool: get_ticket_by_id
+INFO:     llm_client.py:280   - Processing 1 successful tool results with search_terms: []
+INFO:     llm_client.py:285   - 📊 Preprocessed tool data size: 22571 bytes (22.0 KB)
+INFO:     llm_client.py:301   - 📊 Context JSON size: 35671 bytes (34.8 KB)
+INFO:     llm_client.py:302   - 📊 Estimated tokens: ~8917.75 (rough estimate)
+INFO:     llm_client.py:352   - Invoking LLM for response generation...
+INFO:     llm_client.py:354   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:376   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "The ticket CS-335 titled 'GH - SaaS-Azure - logout is not working' is currently marked as 'Done' with the highest priority. The issue involved the application not logging out clean
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 436 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T13:22:39.909152", "uuid": "pole-told-pool-tax", "llm_method": "enhanced_workflow", "sent": "The ticket CS-335 titled 'GH - SaaS-Azure - logout is not working' is currently marked as 'Done' wit"}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T13:22:53.967729", "uuid": "pole-told-pool-tax", "received": {"uuid": "pole-told-pool-tax", "message": "Show me all system notifications", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: Show me all system notifications...
+INFO:     workflow.py:128   - 🚀 Processing: 'Show me all system notifications'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session pole-told-pool-tax
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'Show me all system notifications...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=exploration, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_notifications (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_notifications
+INFO:     mcp_client.py:93    - ✅ Tool get_notifications executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:185   - 🔧 Preprocessing tool: get_notifications, result keys: ['notifications', 'count', 'count_is_exact', 'is_limited', 'timestamp', 'tool', 'parameters', 'success']
+INFO:     llm_client.py:254   - ⚠️ No preprocessing applied for tool: get_notifications
+INFO:     llm_client.py:280   - Processing 1 successful tool results with search_terms: []
+INFO:     llm_client.py:285   - 📊 Preprocessed tool data size: 629478 bytes (614.7 KB)
+INFO:     llm_client.py:301   - 📊 Context JSON size: 1044128 bytes (1019.7 KB)
+INFO:     llm_client.py:302   - 📊 Estimated tokens: ~261032.0 (rough estimate)
+INFO:     llm_client.py:352   - Invoking LLM for response generation...
+ERROR:     llm_client.py:380   - ❌ Response generation failed: Error code: 400 - {'error': {'message': "This model's maximum context length is 128000 tokens. However, your messages resulted in 210701 tokens. Please reduce the length of the messages.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+ERROR:     llm_client.py:382   - Traceback: Traceback (most recent call last):
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/utils/llm_client.py", line 353, in generate_enriched_response
+    response = self.llm.invoke(messages)
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 398, in invoke
+    self.generate_prompt(
+    ~~~~~~~~~~~~~~~~~~~~^
+        [self._convert_input(input)],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    ).generations[0][0],
+    ^
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 1117, in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 927, in generate
+    self._generate_with_cache(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        m,
+        ^^
+    ...<2 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 1221, in _generate_with_cache
+    result = self._generate(
+        messages, stop=stop, run_manager=run_manager, **kwargs
+    )
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/langchain_openai/chat_models/base.py", line 1356, in _generate
+    raise e
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/langchain_openai/chat_models/base.py", line 1351, in _generate
+    raw_response = self.client.with_raw_response.create(**payload)
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/openai/_legacy_response.py", line 364, in wrapped
+    return cast(LegacyAPIResponse[R], func(*args, **kwargs))
+                                      ~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/openai/_utils/_utils.py", line 286, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/openai/resources/chat/completions/completions.py", line 1189, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<47 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/openai/_base_client.py", line 1259, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/openai/_base_client.py", line 1047, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': "This model's maximum context length is 128000 tokens. However, your messages resulted in 210701 tokens. Please reduce the length of the messages.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'I executed 1 tools and 1 were successful. Here are the results.', 'forward_links': ['Check system status', 'View recent logs'], 'recommendations': ['Review the data', 'Monitor the 
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 63 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 2 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T13:22:59.622337", "uuid": "pole-told-pool-tax", "llm_method": "enhanced_workflow", "sent": "I executed 1 tools and 1 were successful. Here are the results."}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T13:24:15.824311", "uuid": "pole-told-pool-tax", "received": {"uuid": "pole-told-pool-tax", "message": "What are the top 5 incidents by severity and provide detailed analysis?", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: What are the top 5 incidents by severity and provi...
+INFO:     workflow.py:128   - 🚀 Processing: 'What are the top 5 incidents by severity and provide detailed analysis?'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session pole-told-pool-tax
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'What are the top 5 incidents by severity and provi...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: incident_analysis with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 2 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=incident_analysis, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 2 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:93    - ✅ Tool search_incidents executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_incidents (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_incidents
+INFO:     mcp_client.py:93    - ✅ Tool get_incidents executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:185   - 🔧 Preprocessing tool: search_incidents, result keys: ['incidents', 'count', 'page', 'page_size', 'timestamp', 'tool', 'parameters', 'success']
+INFO:     llm_client.py:254   - ⚠️ No preprocessing applied for tool: search_incidents
+INFO:     llm_client.py:185   - 🔧 Preprocessing tool: get_incidents, result keys: ['incidents', 'count', 'count_is_exact', 'is_limited', 'timestamp', 'tool', 'parameters', 'success']
+INFO:     llm_client.py:254   - ⚠️ No preprocessing applied for tool: get_incidents
+INFO:     llm_client.py:280   - Processing 2 successful tool results with search_terms: []
+INFO:     llm_client.py:285   - 📊 Preprocessed tool data size: 73371 bytes (71.7 KB)
+INFO:     llm_client.py:301   - 📊 Context JSON size: 110677 bytes (108.1 KB)
+INFO:     llm_client.py:302   - 📊 Estimated tokens: ~27669.25 (rough estimate)
+INFO:     llm_client.py:352   - Invoking LLM for response generation...
+INFO:     llm_client.py:354   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:376   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'Here are the top 5 incidents by severity, along with detailed analysis:\n\n1. **INC-1529: acme-cart-services are down (High severity, New)** - Started on 2025-11-28 06:28:24 AM, af
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 1299 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T13:24:35.002977", "uuid": "pole-told-pool-tax", "llm_method": "enhanced_workflow", "sent": "Here are the top 5 incidents by severity, along with detailed analysis:\n\n1. **INC-1529: acme-cart-se"}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T13:26:31.451450", "uuid": "pole-told-pool-tax", "received": {"uuid": "pole-told-pool-tax", "message": "write me a blog about mahatma gandhi", "init": false}}
+INFO:     graph.py:178   - {"timestamp": "2025-12-01T13:26:48.265959", "uuid": "pole-told-pool-tax", "llm_method": "on_chat_model_end", "sent": "**Title: The Enduring Legacy of Mahatma Gandhi: A Beacon of Peace and Nonviolence**\n\nMahatma Gandhi, a name synonymous with peace and nonviolence, remains one of the most influential figures in modern history. His philosophy and approach to social and political change have inspired countless movements and leaders around the world. As we delve into the life and legacy of Mohandas Karamchand Gandhi, we uncover the profound impact he had on India and the world.\n\n**Early Life and Influences**\n\nBorn on October 2, 1869, in Porbandar, a coastal town in present-day Gujarat, India, Gandhi was raised in a devout Hindu family. His upbringing was steeped in the values of truth and nonviolence, which would later become the cornerstones of his philosophy. Gandhi's early exposure to different cultures and religions, including Jainism, Christianity, and Islam, fostered a deep respect for diversity and a commitment to religious tolerance.\n\nGandhi's journey to becoming a global icon of peace began in earnest during his time in South Africa. As a young lawyer, he faced racial discrimination and witnessed the injustices suffered by the Indian community. These experiences galvanized him to fight against racial oppression and laid the foundation for his method of nonviolent resistance, or Satyagraha.\n\n**The Struggle for Indian Independence**\n\nReturning to India in 1915, Gandhi quickly became a prominent leader in the Indian National Congress, advocating for self-rule and civil rights. His approach was revolutionary: instead of armed rebellion, he championed nonviolent resistance and civil disobedience. Gandhi believed that true change could only be achieved through peaceful means, a philosophy that resonated with millions.\n\nOne of the most significant campaigns led by Gandhi was the Salt March of 1930. In defiance of the British monopoly on salt production, Gandhi and his followers embarked on a 240-mile march to the Arabian Sea, where they made their own salt. This act of civil disobedience captured the world's attention and highlighted the unjust nature of British colonial rule.\n\nGandhi's leadership and unwavering commitment to nonviolence played a crucial role in India's struggle for independence. His ability to mobilize masses and inspire unity among diverse communities was instrumental in the eventual withdrawal of British forces in 1947.\n\n**A Global Influence**\n\nGandhi's impact extended far beyond India's borders. His philosophy of nonviolence inspired civil rights movements across the globe. Leaders like Martin Luther King Jr., Nelson Mandela, and Aung San Suu Kyi drew from Gandhi's teachings in their own struggles for justice and equality. His legacy continues to influence contemporary movements advocating for peace, social justice, and environmental sustainability.\n\n**Challenges and Criticisms**\n\nWhile Gandhi is celebrated for his contributions to peace and justice, his legacy is not without controversy. Some critics argue that his methods were too passive and that his vision for India was not fully realized. Others point to his views on race and gender, which have been scrutinized in modern times. However, these criticisms do not overshadow the profound impact of his life and work.\n\n**Conclusion**\n\nMahatma Gandhi's legacy is a testament to the power of nonviolence and the enduring human spirit. His life serves as a reminder that peaceful resistance can bring about meaningful change, even in the face of seemingly insurmountable odds. As we reflect on his contributions, we are reminded of the importance of compassion, tolerance, and the relentless pursuit of truth.\n\nIn a world often marred by conflict and division, Gandhi's teachings remain a beacon of hope, guiding us toward a more just and peaceful future. His life and legacy continue to inspire generations, proving that one individual's commitment to truth and nonviolence can indeed change the world."}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T13:33:15.086922", "uuid": "pole-told-pool-tax", "received": {"uuid": "pole-told-pool-tax", "message": "Query logs with ERROR level in the last hour", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: Query logs with ERROR level in the last hour...
+INFO:     workflow.py:128   - 🚀 Processing: 'Query logs with ERROR level in the last hour'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     mcp_client.py:56    - ✅ Fetched 47 MCP tools from server
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session pole-told-pool-tax
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'Query logs with ERROR level in the last hour...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: incident_analysis with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=incident_analysis, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_logs (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_logs
+WARNING:     mcp_client.py:98    - ⚠️ Tool search_logs attempt 1 failed: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: Invalid URL","tool_name":"search_logs"}, retrying...
+WARNING:     mcp_client.py:98    - ⚠️ Tool search_logs attempt 2 failed: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: Invalid URL","tool_name":"search_logs"}, retrying...
+ERROR:     mcp_client.py:104   - ❌ Tool search_logs execution failed: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: Invalid URL","tool_name":"search_logs"}
+WARNING:     tool_execution_agent.py:104   - ⚠️ Tool search_logs attempt 1 failed: Failed to execute tool search_logs: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: Invalid URL","tool_name":"search_logs"}, retrying...
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_logs (attempt 2/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_logs
+WARNING:     mcp_client.py:98    - ⚠️ Tool search_logs attempt 1 failed: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: Invalid URL","tool_name":"search_logs"}, retrying...
+WARNING:     mcp_client.py:98    - ⚠️ Tool search_logs attempt 2 failed: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: Invalid URL","tool_name":"search_logs"}, retrying...
+ERROR:     mcp_client.py:104   - ❌ Tool search_logs execution failed: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: Invalid URL","tool_name":"search_logs"}
+ERROR:     tool_execution_agent.py:106   - ❌ Tool search_logs failed after 2 attempts: Failed to execute tool search_logs: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: Invalid URL","tool_name":"search_logs"}
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 0.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:280   - Processing 0 successful tool results with search_terms: []
+INFO:     llm_client.py:285   - 📊 Preprocessed tool data size: 0 bytes (0.0 KB)
+INFO:     llm_client.py:301   - 📊 Context JSON size: 229 bytes (0.2 KB)
+INFO:     llm_client.py:302   - 📊 Estimated tokens: ~57.25 (rough estimate)
+INFO:     llm_client.py:352   - Invoking LLM for response generation...
+INFO:     llm_client.py:354   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:376   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "I attempted to find logs with an ERROR level from the last hour, but there were no specific results returned from the tool execution. This could be due to a lack of available data 
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 380 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T13:33:31.609768", "uuid": "pole-told-pool-tax", "llm_method": "enhanced_workflow", "sent": "I attempted to find logs with an ERROR level from the last hour, but there were no specific results "}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T13:55:50.996463", "uuid": "pole-told-pool-tax", "received": {"uuid": "pole-told-pool-tax", "message": "Query logs with ERROR level in the last hour", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: Query logs with ERROR level in the last hour...
+INFO:     workflow.py:128   - 🚀 Processing: 'Query logs with ERROR level in the last hour'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     mcp_client.py:56    - ✅ Fetched 47 MCP tools from server
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session pole-told-pool-tax
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'Query logs with ERROR level in the last hour...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: incident_analysis with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 2 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=incident_analysis, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 2 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_logs (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_logs
+WARNING:     mcp_client.py:98    - ⚠️ Tool search_logs attempt 1 failed: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: connect ECONNREFUSED ::1:9428","tool_name":"search_logs"}, retrying...
+WARNING:     mcp_client.py:98    - ⚠️ Tool search_logs attempt 2 failed: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: connect ECONNREFUSED ::1:9428","tool_name":"search_logs"}, retrying...
+ERROR:     mcp_client.py:104   - ❌ Tool search_logs execution failed: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: connect ECONNREFUSED ::1:9428","tool_name":"search_logs"}
+WARNING:     tool_execution_agent.py:104   - ⚠️ Tool search_logs attempt 1 failed: Failed to execute tool search_logs: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: connect ECONNREFUSED ::1:9428","tool_name":"search_logs"}, retrying...
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_logs (attempt 2/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_logs
+WARNING:     mcp_client.py:98    - ⚠️ Tool search_logs attempt 1 failed: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: connect ECONNREFUSED ::1:9428","tool_name":"search_logs"}, retrying...
+WARNING:     mcp_client.py:98    - ⚠️ Tool search_logs attempt 2 failed: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: connect ECONNREFUSED ::1:9428","tool_name":"search_logs"}, retrying...
+ERROR:     mcp_client.py:104   - ❌ Tool search_logs execution failed: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: connect ECONNREFUSED ::1:9428","tool_name":"search_logs"}
+ERROR:     tool_execution_agent.py:106   - ❌ Tool search_logs failed after 2 attempts: Failed to execute tool search_logs: Server returned 500: {"success":false,"error":"VictoriaLogs search failed: connect ECONNREFUSED ::1:9428","tool_name":"search_logs"}
+WARNING:     tool_execution_agent.py:151   - ⚠️ query_logs missing valid query: None
+ERROR:     tool_execution_agent.py:83    - ❌ Tool query_logs has invalid or missing required parameters: {'time_range': 'last_hour', 'level': 'ERROR'}
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 0.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:280   - Processing 0 successful tool results with search_terms: []
+INFO:     llm_client.py:285   - 📊 Preprocessed tool data size: 0 bytes (0.0 KB)
+INFO:     llm_client.py:301   - 📊 Context JSON size: 229 bytes (0.2 KB)
+INFO:     llm_client.py:302   - 📊 Estimated tokens: ~57.25 (rough estimate)
+INFO:     llm_client.py:352   - Invoking LLM for response generation...
+INFO:     llm_client.py:354   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:376   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "I attempted to find logs with an ERROR level from the last hour, but unfortunately, no specific results were returned from the tools executed. The search was conducted without pred
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 494 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T13:56:08.076469", "uuid": "pole-told-pool-tax", "llm_method": "enhanced_workflow", "sent": "I attempted to find logs with an ERROR level from the last hour, but unfortunately, no specific resu"}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T14:04:00.874933", "uuid": "pole-told-pool-tax", "received": {"uuid": "pole-told-pool-tax", "message": "What log fields are available?", "init": false}}
+INFO:     graph.py:178   - {"timestamp": "2025-12-01T14:04:11.990461", "uuid": "pole-told-pool-tax", "llm_method": "on_chat_model_end", "sent": "Log fields can vary depending on the type of system or application generating the logs, as well as the specific logging framework or service being used. However, there are some common log fields that are typically available across many systems. Here are some of the most common log fields you might encounter:\n\n1. **Timestamp**: The date and time when the log entry was created. This is crucial for tracking events over time.\n\n2. **Log Level**: Indicates the severity or importance of the log entry. Common log levels include DEBUG, INFO, WARN, ERROR, and FATAL.\n\n3. **Message**: A human-readable description of the event or action that triggered the log entry.\n\n4. **Source/Logger Name**: The name of the application, service, or component that generated the log entry.\n\n5. **Thread ID**: Identifies the thread that was executing when the log entry was created, useful for debugging multithreaded applications.\n\n6. **Process ID**: The identifier of the process that generated the log entry.\n\n7. **User ID**: The identifier of the user associated with the event, if applicable.\n\n8. **Session ID**: Identifies the session in which the event occurred, useful for tracking user sessions.\n\n9. **Host/IP Address**: The hostname or IP address of the machine where the log entry was generated.\n\n10. **Event ID**: A unique identifier for the specific event, which can be useful for correlating related log entries.\n\n11. **Error Code**: A code that represents the specific error or condition, often used in conjunction with the message field.\n\n12. **Stack Trace**: Provides detailed information about the call stack at the time of an error, useful for debugging.\n\n13. **Environment/Context**: Information about the environment in which the application is running, such as development, testing, or production.\n\n14. **Custom Fields**: Many logging systems allow for custom fields to be added, which can include any additional information relevant to the application or business logic.\n\nThese fields can be formatted in various ways, such as plain text, JSON, XML, or other structured formats, depending on the logging system and the needs of the organization. Understanding and utilizing these fields effectively can greatly enhance the ability to monitor, troubleshoot, and optimize applications and systems."}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T14:04:48.072448", "uuid": "pole-told-pool-tax", "received": {"uuid": "pole-told-pool-tax", "message": "Query logs with ERROR level in the last hour", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: Query logs with ERROR level in the last hour...
+INFO:     workflow.py:128   - 🚀 Processing: 'Query logs with ERROR level in the last hour'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     mcp_client.py:56    - ✅ Fetched 47 MCP tools from server
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session pole-told-pool-tax
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'Query logs with ERROR level in the last hour...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: incident_analysis with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=incident_analysis, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_logs (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_logs

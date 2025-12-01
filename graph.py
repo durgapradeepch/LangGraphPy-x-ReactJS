@@ -113,10 +113,10 @@ async def invoke_our_graph(websocket: WebSocket, data: str, user_uuid: str, use_
         try:
             logger.info(f"🚀 Using enhanced workflow for: {data[:50]}...")
             
-            # Process through enhanced workflow
-            result = await enhanced_workflow.process_query(data, user_uuid)
+            # Process through enhanced workflow with websocket for streaming
+            result = await enhanced_workflow.process_query(data, user_uuid, websocket=websocket)
             
-            # Send the enriched response
+            # Send the enriched response metadata (streaming already happened during LLM generation)
             response_message = {
                 "on_enhanced_response": {
                     "response": result.get("response", ""),
@@ -127,15 +127,8 @@ async def invoke_our_graph(websocket: WebSocket, data: str, user_uuid: str, use_
                 }
             }
             
-            # Stream the response in chunks for better UX
-            response_text = result.get("response", "")
-            chunk_size = 20  # words per chunk
-            words = response_text.split()
-            
-            for i in range(0, len(words), chunk_size):
-                chunk = " ".join(words[i:i+chunk_size]) + " "
-                await websocket.send_text(json.dumps({"on_chat_model_stream": chunk}))
-                await asyncio.sleep(0.05)  # Small delay for streaming effect
+            # Note: Streaming already happened in real-time during LLM generation
+            # No need for post-processing word chunks anymore
             
             # Send completion with metadata
             await websocket.send_text(json.dumps(response_message))
