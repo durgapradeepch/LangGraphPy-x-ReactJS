@@ -105,7 +105,11 @@ async def invoke_our_graph(websocket: WebSocket, data: str, user_uuid: str, use_
         "query", "count", "schema", "labels", "show me", "get", "find",
         "incidents", "resources", "changelogs", "tickets", "notifications",
         "iam", "rbac", "role", "permission", "access", "changes", "recent", "occurred",
-        "what happened", "which", "when did", "how many", "list", "tell me", "describe"
+        "what happened", "which", "when did", "how many", "list", "tell me", "describe",
+        # Infrastructure keywords
+        "pods", "pod", "containers", "container", "kubernetes", "k8s", "workload",
+        "crash", "crashloop", "failed", "pending", "running", "status",
+        "namespace", "deployment", "service", "node"
     ])
     
     if use_enhanced_mode:

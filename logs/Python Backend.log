@@ -1,160 +1,22 @@
 INFO:     llm_client.py:35    - ✅ LLM client initialized with model: gpt-4o
 INFO:     cust_logger.py:68    - Set message color for graph.py to MAGENTA
 INFO:     cust_logger.py:68    - Set message color for server.py to PURPLE
-INFO:     server.py:53    - {"timestamp": "2025-12-01T15:17:38.094390", "uuid": null, "received": {"uuid": "selection-whistle-paper-adventure", "init": true}}
-INFO:     server.py:64    - {"timestamp": "2025-12-01T15:17:38.094636", "uuid": "selection-whistle-paper-adventure", "op": "Initializing ws with client."}
-INFO:     server.py:53    - {"timestamp": "2025-12-01T15:17:38.096004", "uuid": null, "received": {"uuid": "reach-industry-language-to", "init": true}}
-INFO:     server.py:64    - {"timestamp": "2025-12-01T15:17:38.096203", "uuid": "reach-industry-language-to", "op": "Initializing ws with client."}
-INFO:     server.py:53    - {"timestamp": "2025-12-01T15:17:38.102613", "uuid": null, "received": {"uuid": "be-bone-exchange-slowly", "init": true}}
-INFO:     server.py:64    - {"timestamp": "2025-12-01T15:17:38.102718", "uuid": "be-bone-exchange-slowly", "op": "Initializing ws with client."}
-INFO:     server.py:53    - {"timestamp": "2025-12-01T15:18:09.196500", "uuid": "reach-industry-language-to", "received": {"uuid": "reach-industry-language-to", "message": "search logs containing 'database' text\n", "init": false}}
-INFO:     graph.py:114   - 🚀 Using enhanced workflow for: search logs containing 'database' text
-...
-INFO:     workflow.py:148   - 🚀 Processing: 'search logs containing 'database' text
-'
-INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
-INFO:     mcp_client.py:251   - ✅ Created MCP client for session default
-INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
-INFO:     mcp_client.py:56    - ✅ Fetched 47 MCP tools from server
-INFO:     workflow.py:79    - 📋 Loaded 47 available MCP tools
-INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session reach-industry-language-to
-INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
-INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
-INFO:     workflow.py:98    - 🔍 Query Analysis: Analyzing user query
-INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'search logs containing 'database' text
-...'
-INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
-INFO:     llm_client.py:207   - 📋 Tool plan created: 1 tools planned
-INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
-  {
-    "name": "search_logs",
-    "parameters": {
-      "search_text": "database"
-    }
-  }
-]
-INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=exploration, confidence=0.9
-INFO:     workflow.py:103   - 🛠️ Tool Execution: Executing MCP tools
-INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
-INFO:     tool_execution_agent.py:92    - 🔧 Executing search_logs (attempt 1/2)
-INFO:     mcp_client.py:251   - ✅ Created MCP client for session reach-industry-language-to
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_logs
-INFO:     mcp_client.py:93    - ✅ Tool search_logs executed successfully
-INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
-INFO:     workflow.py:108   - ✨ Response Enrichment: Enriching response
-INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
-INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
-INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
-INFO:     llm_client.py:217   - 🔧 Preprocessing tool: search_logs, result keys: ['search_text', 'labels', 'count', 'logs', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:223   - 📋 Found 4 logs, limiting to 10 and truncating fields
-INFO:     llm_client.py:235   - ✅ Simplified 4 logs from 4 total
-INFO:     llm_client.py:340   - Processing 1 successful tool results with search_terms: []
-INFO:     llm_client.py:346   - 📊 Preprocessed tool data size: 753 bytes (0.7 KB)
-INFO:     llm_client.py:362   - 📊 Context JSON size: 1295 bytes (1.3 KB)
-INFO:     llm_client.py:363   - 📊 Estimated tokens: ~323.75 (rough estimate)
-INFO:     llm_client.py:403   - Invoking LLM for response generation...
-INFO:     llm_client.py:413   - Streaming completed, total length: 1153
-WARNING:     llm_client.py:488   - Metadata generation failed: name 'json_lib' is not defined, using defaults
-INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'I searched the logs for entries containing the text "database" and found a total of 4 relevant log entries. Here are the details of these logs:\n\n1. **Log Entry 1:**\n   - **Time:
-INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 1153 chars
-INFO:     response_enrichment_agent.py:86    - ✅ Response enrichment completed with 2 forward links
-INFO:     workflow.py:123   - 🎯 Orchestrator: Finalizing workflow
-INFO:     workflow.py:169   - ✅ Processing completed successfully
-INFO:     graph.py:137   - {"timestamp": "2025-12-01T15:18:24.474527", "uuid": "reach-industry-language-to", "llm_method": "enhanced_workflow", "sent": "I searched the logs for entries containing the text \"database\" and found a total of 4 relevant log e"}
-INFO:     server.py:53    - {"timestamp": "2025-12-01T15:19:01.351973", "uuid": "reach-industry-language-to", "received": {"uuid": "reach-industry-language-to", "message": "Investigate the Acme cart service incident - show me the incident details, related resources, changelogs during that time, and any tickets created", "init": false}}
-INFO:     graph.py:114   - 🚀 Using enhanced workflow for: Investigate the Acme cart service incident - show ...
-INFO:     workflow.py:148   - 🚀 Processing: 'Investigate the Acme cart service incident - show me the incident details, related resources, changelogs during that time, and any tickets created'
-INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
-INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
-INFO:     workflow.py:79    - 📋 Loaded 47 available MCP tools
-INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session reach-industry-language-to
-INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
-INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
-INFO:     workflow.py:98    - 🔍 Query Analysis: Analyzing user query
-INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'Investigate the Acme cart service incident - show ...'
-INFO:     llm_client.py:102   - 🔍 Query analyzed: incident_analysis with confidence 0.9
-INFO:     llm_client.py:207   - 📋 Tool plan created: 5 tools planned
-INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
-  {
-    "name": "search_incidents",
-    "parameters": {
-      "query": "acme cart service incident acme-cart"
-    }
-  },
-  {
-    "name": "get_incidents",
-    "parameters": {}
-  },
-  {
-    "name": "get_changelog_by_resource",
-    "parameters": {
-      "resource_id": "acme-cart"
-    }
-  },
-  {
-    "name": "search_changelogs",
-    "parameters": {
-      "description": "acme cart service"
-    }
-  },
-  {
-    "name": "search_tickets",
-    "parameters": {
-      "query": "acme cart service incident"
-    }
-  }
-]
-INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=incident_analysis, confidence=0.9
-INFO:     workflow.py:103   - 🛠️ Tool Execution: Executing MCP tools
-INFO:     tool_execution_agent.py:37    - 🛠️ Executing 5 tools
-INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_incidents
-INFO:     mcp_client.py:93    - ✅ Tool search_incidents executed successfully
-INFO:     tool_execution_agent.py:92    - 🔧 Executing get_incidents (attempt 1/2)
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_incidents
-INFO:     mcp_client.py:93    - ✅ Tool get_incidents executed successfully
-INFO:     tool_execution_agent.py:92    - 🔧 Executing get_changelog_by_resource (attempt 1/2)
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_changelog_by_resource
-WARNING:     mcp_client.py:98    - ⚠️ Tool get_changelog_by_resource attempt 1 failed: Server returned 500: {"success":false,"error":"Manifest API get changelog by resource failed: Request failed with status code 400","tool_name":"get_changelog_by_resource"}, retrying...
-WARNING:     mcp_client.py:98    - ⚠️ Tool get_changelog_by_resource attempt 2 failed: Server returned 500: {"success":false,"error":"Manifest API get changelog by resource failed: Request failed with status code 400","tool_name":"get_changelog_by_resource"}, retrying...
-ERROR:     mcp_client.py:104   - ❌ Tool get_changelog_by_resource execution failed: Server returned 500: {"success":false,"error":"Manifest API get changelog by resource failed: Request failed with status code 400","tool_name":"get_changelog_by_resource"}
-WARNING:     tool_execution_agent.py:104   - ⚠️ Tool get_changelog_by_resource attempt 1 failed: Failed to execute tool get_changelog_by_resource: Server returned 500: {"success":false,"error":"Manifest API get changelog by resource failed: Request failed with status code 400","tool_name":"get_changelog_by_resource"}, retrying...
-INFO:     tool_execution_agent.py:92    - 🔧 Executing get_changelog_by_resource (attempt 2/2)
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_changelog_by_resource
-WARNING:     mcp_client.py:98    - ⚠️ Tool get_changelog_by_resource attempt 1 failed: Server returned 500: {"success":false,"error":"Manifest API get changelog by resource failed: Request failed with status code 400","tool_name":"get_changelog_by_resource"}, retrying...
-WARNING:     mcp_client.py:98    - ⚠️ Tool get_changelog_by_resource attempt 2 failed: Server returned 500: {"success":false,"error":"Manifest API get changelog by resource failed: Request failed with status code 400","tool_name":"get_changelog_by_resource"}, retrying...
-ERROR:     mcp_client.py:104   - ❌ Tool get_changelog_by_resource execution failed: Server returned 500: {"success":false,"error":"Manifest API get changelog by resource failed: Request failed with status code 400","tool_name":"get_changelog_by_resource"}
-ERROR:     tool_execution_agent.py:106   - ❌ Tool get_changelog_by_resource failed after 2 attempts: Failed to execute tool get_changelog_by_resource: Server returned 500: {"success":false,"error":"Manifest API get changelog by resource failed: Request failed with status code 400","tool_name":"get_changelog_by_resource"}
-INFO:     tool_execution_agent.py:92    - 🔧 Executing search_changelogs (attempt 1/2)
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_changelogs
-INFO:     mcp_client.py:93    - ✅ Tool search_changelogs executed successfully
-INFO:     tool_execution_agent.py:92    - 🔧 Executing search_tickets (attempt 1/2)
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_tickets
-INFO:     mcp_client.py:93    - ✅ Tool search_tickets executed successfully
-INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 80.00% success rate
-INFO:     workflow.py:108   - ✨ Response Enrichment: Enriching response
-INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
-INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
-INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
-INFO:     llm_client.py:217   - 🔧 Preprocessing tool: search_incidents, result keys: ['incidents', 'count', 'page', 'page_size', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:311   - ⚠️ No preprocessing applied for tool: search_incidents
-INFO:     llm_client.py:217   - 🔧 Preprocessing tool: get_incidents, result keys: ['incidents', 'count', 'count_is_exact', 'is_limited', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:311   - ⚠️ No preprocessing applied for tool: get_incidents
-INFO:     llm_client.py:217   - 🔧 Preprocessing tool: search_changelogs, result keys: ['changelogs', 'count', 'count_is_exact', 'is_limited', 'page', 'page_size', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:311   - ⚠️ No preprocessing applied for tool: search_changelogs
-INFO:     llm_client.py:217   - 🔧 Preprocessing tool: search_tickets, result keys: ['tickets', 'count', 'page', 'page_size', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:249   - 🎫 Found 20 tickets, limiting to 3 and heavily truncating
-INFO:     llm_client.py:266   - ✅ Simplified 3 tickets (removed metadata, comments, activities)
-INFO:     llm_client.py:340   - Processing 4 successful tool results with search_terms: []
-INFO:     llm_client.py:346   - 📊 Preprocessed tool data size: 74636 bytes (72.9 KB)
-INFO:     llm_client.py:362   - 📊 Context JSON size: 112459 bytes (109.8 KB)
-INFO:     llm_client.py:363   - 📊 Estimated tokens: ~28114.75 (rough estimate)
-INFO:     llm_client.py:403   - Invoking LLM for response generation...
-INFO:     llm_client.py:413   - Streaming completed, total length: 2508
-WARNING:     llm_client.py:488   - Metadata generation failed: name 'json_lib' is not defined, using defaults
-INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "I investigated the Acme cart service incident and found several relevant details for you. Here's a comprehensive overview:\n\n### Incident Details\n1. **INC-1529: Acme-cart-service
-INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 2508 chars
-INFO:     response_enrichment_agent.py:86    - ✅ Response enrichment completed with 2 forward links
-INFO:     workflow.py:123   - 🎯 Orchestrator: Finalizing workflow
-INFO:     workflow.py:169   - ✅ Processing completed successfully
-INFO:     graph.py:137   - {"timestamp": "2025-12-01T15:19:39.242343", "uuid": "reach-industry-language-to", "llm_method": "enhanced_workflow", "sent": "I investigated the Acme cart service incident and found several relevant details for you. Here's a c"}
+INFO:     Started server process [44842]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:65504 - "WebSocket /ws" [accepted]
+INFO:     connection open
+INFO:     server.py:53    - {"timestamp": "2025-12-01T16:52:32.990947", "uuid": null, "received": {"uuid": "ice-even-planning-became", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-01T16:52:32.991217", "uuid": "ice-even-planning-became", "op": "Initializing ws with client."}
+ERROR:     server.py:73    - {"timestamp": "2025-12-01T16:52:35.978250", "uuid": "ice-even-planning-became", "op": "Error: (1001, '')"}
+INFO:     server.py:77    - {"timestamp": "2025-12-01T16:52:35.978567", "uuid": "ice-even-planning-became", "op": "Closing connection."}
+ERROR:     server.py:82    - {"timestamp": "2025-12-01T16:52:35.978639", "uuid": "ice-even-planning-became", "op": "WebSocket close error: Unexpected ASGI message 'websocket.close', after sending 'websocket.close' or response already completed."}
+INFO:     connection closed
+INFO:     127.0.0.1:65515 - "WebSocket /ws" [accepted]
+INFO:     connection open
+INFO:     server.py:53    - {"timestamp": "2025-12-01T16:52:36.102205", "uuid": null, "received": {"uuid": "quick-chart-trap-writer", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-01T16:52:36.102390", "uuid": "quick-chart-trap-writer", "op": "Initializing ws with client."}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T16:52:45.604519", "uuid": "quick-chart-trap-writer", "received": {"uuid": "quick-chart-trap-writer", "message": "Show pods stuck in CrashLoopBackOff", "init": false}}
+INFO:     graph.py:171   - {"timestamp": "2025-12-01T16:52:51.291326", "uuid": "quick-chart-trap-writer", "llm_method": "on_chat_model_end", "sent": "To identify pods that are stuck in the `CrashLoopBackOff` state in a Kubernetes cluster, you can use the `kubectl` command-line tool. Here\u2019s how you can do it:\n\n1. **List all pods and filter by status:**\n\n   You can use the following command to list all pods across all namespaces that are in the `CrashLoopBackOff` state:\n\n   ```bash\n   kubectl get pods --all-namespaces --field-selector=status.phase!=Running -o wide | grep CrashLoopBackOff\n   ```\n\n   This command lists all pods that are not in the `Running` phase and then filters the output to show only those in the `CrashLoopBackOff` state.\n\n2. **Using JSONPath for more precise filtering:**\n\n   Alternatively, you can use JSONPath to filter and display only the pods in `CrashLoopBackOff`:\n\n   ```bash\n   kubectl get pods --all-namespaces -o jsonpath='{range .items[*]}{.metadata.namespace}{\"\\t\"}{.metadata.name}{\"\\t\"}{.status.containerStatuses[*].state.waiting.reason}{\"\\n\"}{end}' | grep CrashLoopBackOff\n   ```\n\n   This command extracts the namespace, pod name, and the reason for the waiting state, then filters for `CrashLoopBackOff`.\n\n3. **Describe the pod for more details:**\n\n   Once you identify a pod in `CrashLoopBackOff`, you can get more details about why it is in this state by using the `describe` command:\n\n   ```bash\n   kubectl describe pod <pod-name> -n <namespace>\n   ```\n\n   Replace `<pod-name>` and `<namespace>` with the actual pod name and namespace. This command provides detailed information about the pod, including events and error messages that can help diagnose the issue.\n\n4. **Check pod logs:**\n\n   To further investigate, you can check the logs of the pod to understand why it is crashing:\n\n   ```bash\n   kubectl logs <pod-name> -n <namespace> --previous\n   ```\n\n   The `--previous` flag is useful if the pod has restarted and you want to see the logs from the previous instance.\n\nBy following these steps, you should be able to identify and troubleshoot pods that are stuck in the `CrashLoopBackOff` state."}
+start.sh: line 56: 44842 Killed: 9               uvicorn server:app --host 0.0.0.0 --port 8000

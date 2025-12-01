@@ -101,6 +101,20 @@ class EnhancedLangGraphWorkflow:
     async def _tool_execution_node(self, state: ChatState) -> ChatState:
         """Tool execution"""
         logger.info("🛠️ Tool Execution: Executing MCP tools")
+        
+        # Send tool execution notification to websocket if available
+        if hasattr(self, '_current_websocket') and self._current_websocket:
+            tool_plan = state.get("tool_plan", [])
+            if tool_plan:
+                import json
+                tool_names = [tool.get("name", "Unknown") for tool in tool_plan]
+                await self._current_websocket.send_text(json.dumps({
+                    "on_tool_call": {
+                        "tools": tool_names,
+                        "count": len(tool_names)
+                    }
+                }))
+        
         return await self.tool_executor.execute_tools(state)
     
     async def _response_enrichment_node(self, state: ChatState) -> ChatState:

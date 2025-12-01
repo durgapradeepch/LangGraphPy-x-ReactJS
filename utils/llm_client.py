@@ -59,7 +59,7 @@ class LLMDecisionMaker:
             return self._fallback_query_analysis(user_query)
         
         system_prompt = f"""You are a query analysis expert. Analyze the user's query and extract:
-1. Query type: incident_analysis, exploration, root_cause, or conversational
+1. Query type: incident_analysis, exploration, root_cause, infrastructure_query, or conversational
 2. Intent: what the user wants to accomplish
 3. Entities: specific items mentioned (resource IDs, timestamps, severity levels)
 4. Search terms: extract key terms for flexible searching (extract service names, application names, keywords)
@@ -67,9 +67,21 @@ class LLMDecisionMaker:
 6. Specificity level: low, medium, or high
 7. Whether this is a multi-part query with multiple sub-questions
 
-Available tools: {', '.join(available_tools)}
+Available tools: {{', '.join(available_tools)}}
+
+IMPORTANT QUERY TYPE DETECTION:
+- infrastructure_query: Questions about actual infrastructure state (pods, containers, VMs, databases, networks)
+  Examples: "show pods in CrashLoopBackOff", "list all running containers", "what resources are down"
+  → These require tools like get_resources, search_resources to fetch REAL data
+- exploration: General browsing ("show me incidents", "list tickets")
+- incident_analysis: Investigating specific outages or problems
+- root_cause: "Why did X fail?", "What caused the outage?"
+- conversational: Greetings, thanks, unclear questions
+
+CRITICAL: For infrastructure queries, the user wants REAL data from your system, NOT generic instructions!
 
 IMPORTANT: Extract search terms intelligently:
+- For "pods in CrashLoopBackOff", extract: ["pod", "crashloopbackoff", "crash", "failed", "error"]
 - For "Mit-runtime-api-services", extract: ["mit", "runtime", "api", "services", "mit-runtime-api-services"]
 - For "Shopping 3 website", extract: ["shopping", "shopping 3", "website"]
 - For "Acme-Cart", extract: ["acme", "cart", "acme-cart"]
@@ -77,7 +89,7 @@ IMPORTANT: Extract search terms intelligently:
 
 Respond ONLY with valid JSON in this exact format:
 {{
-    "query_type": "incident_analysis|exploration|root_cause|conversational",
+    "query_type": "incident_analysis|exploration|root_cause|infrastructure_query|conversational",
     "intent": "brief description",
     "entities": [{{"type": "resource", "value": "id"}}],
     "search_terms": ["term1", "term2", "term3"],
@@ -144,40 +156,62 @@ Available tools:
 
 Query Analysis: {json.dumps(query_analysis)}
 
+CRITICAL: INFRASTRUCTURE QUERIES require fetching REAL data!
+If query_type is "infrastructure_query" (e.g., "show pods in CrashLoopBackOff", "list containers"), 
+you MUST use tools to query actual resources:
+- get_resources: List all resources, optionally filter by resource_type
+- search_resources: Search resources by name/keyword (e.g., search for "pod" or specific pod names)
+- get_resource_by_id: Get specific resource details if resource_id is known
+
+DO NOT provide generic instructions! Users want ACTUAL data from their infrastructure.
+
 CRITICAL TOOL DISAMBIGUATION:
-**LOGS vs CHANGELOGS vs INCIDENTS - Choose the RIGHT tool:**
+**LOGS vs CHANGELOGS vs INCIDENTS vs RESOURCES - Choose the RIGHT tool:**
 - "search logs", "log entries", "log messages", "system logs", "application logs", "error logs"
   → Use LOG tools: search_logs, query_logs (for VictoriaLogs - raw log data)
 - "changes", "deployments", "configuration changes", "IAM changes", "RBAC changes", "what changed", "modifications"
   → Use CHANGELOG tools: search_changelogs, get_changelog_by_resource (for change tracking)
 - "incidents", "outages", "downtime", "service down", "alerts", "problems"
   → Use INCIDENT tools: search_incidents, get_incidents (for incident management)
+- "pods", "containers", "VMs", "databases", "resources", "infrastructure", "show X resources"
+  → Use RESOURCE tools: get_resources, search_resources (for infrastructure inventory)
 
 **Key distinction**: 
 - "logs" = raw log entries from VictoriaLogs (use search_logs)
 - "changelogs" = configuration/deployment change records (use search_changelogs)
 - "incidents" = service outage/problem records (use search_incidents)
+- "resources/infrastructure" = actual assets like pods, VMs, databases (use get_resources, search_resources)
 
 CRITICAL SEARCH STRATEGY:
 1. Use search_terms from query_analysis for flexible matching
-2. For LOG searches:
+2. For INFRASTRUCTURE queries:
+   - get_resources with resource_type filter if type mentioned (e.g., "Container", "VM")
+   - search_resources with query parameter to find specific resources by name/keyword
+   - Filter results by status, health, or other attributes
+3. For LOG searches:
    - search_logs with search_text parameter for simple text searches
    - query_logs with query parameter for complex LogSQL queries
-3. For incident searches, try multiple approaches:
+4. For incident searches, try multiple approaches:
    - search_incidents with query parameter using search_terms
    - get_incidents to list all, then filter by search_terms
    - If specific incident ID mentioned, use get_incident_by_id
-3. For changelog searches with filters:
+5. For changelog searches with filters:
    - search_changelogs with severity/provider_key/description
    - search_changelogs_by_event_type for deployment/configuration type filtering
    - get_changelog_by_resource for specific resource's change history
-4. Use partial matches and fuzzy search when exact match fails
-5. Extract key words: "Mit-runtime-api-services" → search for "runtime", "api", "mit"
+6. Use partial matches and fuzzy search when exact match fails
+7. Extract key words: "Mit-runtime-api-services" → search for "runtime", "api", "mit"
 
 Return a JSON array of tools with parameters in this exact format:
 [
     {{"name": "tool_name", "parameters": {{"param": "value"}}}},
     {{"name": "another_tool", "parameters": {{}}}}
+]
+
+For infrastructure queries about pods/containers:
+[
+    {{"name": "get_resources", "parameters": {{"resource_type": "Workload"}}}},
+    {{"name": "search_resources", "parameters": {{"query": "pod crash"}}}}
 ]
 
 For incident queries, ALWAYS include search_terms in parameters:
@@ -186,11 +220,27 @@ For incident queries, ALWAYS include search_terms in parameters:
     {{"name": "get_incidents", "parameters": {{}}}}
 ]
 
+For audit/comprehensive queries (e.g., "audit changes", "show all deployments and who made them"):
+[
+    {{"name": "get_changelogs", "parameters": {{}}}},
+    {{"name": "search_changelogs_by_event_type", "parameters": {{"event_type": "deployment"}}}},
+    {{"name": "query_nodes", "parameters": {{"label": "User"}}}}
+]
+
+For resource deep-dive queries (e.g., "tell me everything about resource X"):
+[
+    {{"name": "get_resource_by_id", "parameters": {{"resource_id": X}}}},
+    {{"name": "get_resource_metadata", "parameters": {{"resource_id": X}}}},
+    {{"name": "get_changelog_by_resource", "parameters": {{"resource_id": X}}}},
+    {{"name": "get_notifications_by_resource", "parameters": {{"resource_id": X}}}}
+]
+
 Consider:
 1. Tool dependencies and execution order
 2. Required vs optional parameters  
 3. Use search_terms for fuzzy/partial matching
-4. Context from previous executions: {json.dumps(context) if context else 'None'}"""
+4. For comprehensive queries, plan MULTIPLE tools to get complete picture
+5. Context from previous executions: {json.dumps(context) if context else 'None'}"""
         
         try:
             messages = [
@@ -211,6 +261,27 @@ Consider:
             logger.error(f"❌ Tool planning failed: {str(e)}")
             return self._fallback_tool_planning(query_analysis, available_tools)
     
+    def _extract_nested_value(self, obj: Any, *paths) -> Any:
+        """
+        Safely extract nested values from object using multiple possible paths.
+        Returns first found value or "Unknown".
+        Example: _extract_nested_value(data, "metadata.status.phase", "status", "resourceStatus")
+        """
+        for path in paths:
+            try:
+                value = obj
+                for key in path.split('.'):
+                    if isinstance(value, dict):
+                        value = value.get(key)
+                    else:
+                        value = None
+                        break
+                if value is not None and value != "":
+                    return value
+            except (KeyError, TypeError, AttributeError):
+                continue
+        return "Unknown"
+    
     def _preprocess_tool_result(self, result: Dict[str, Any], tool_name: str) -> Dict[str, Any]:
         """Pre-process complex nested data structures for better LLM consumption"""
         
@@ -220,15 +291,15 @@ Consider:
         if "log" in tool_name.lower() and "logs" in result:
             logs_data = result.get("logs")
             if logs_data and isinstance(logs_data, list):
-                logger.info(f"📋 Found {len(logs_data)} logs, limiting to 10 and truncating fields")
-                # Extract key fields from logs (limit to first 10 only!)
+                logger.info(f"📋 Found {len(logs_data)} logs, limiting to 20 and truncating fields")
                 simplified_logs = []
-                for log in logs_data[:10]:  # ONLY show 10 logs max
+                for log in logs_data[:20]:  # Increased to 20 logs
                     simplified = {
-                        "time": log.get("_time", "N/A"),
-                        "level": log.get("level", "N/A"),
-                        "msg": log.get("_msg", "No message")[:100],  # Truncate message
-                        "service": log.get("service", log.get("object", "Unknown"))
+                        "time": log.get("_time") or log.get("_ts") or "Unknown",
+                        "level": log.get("msg.logs.level") or log.get("labels.level") or "Unknown",
+                        "msg": str(log.get("_msg") or log.get("message") or "")[:150],
+                        "service": log.get("object") or log.get("labels.type") or "Unknown",
+                        "stream": log.get("_stream") or "Unknown"
                     }
                     simplified_logs.append(simplified)
                 
@@ -243,68 +314,166 @@ Consider:
         
         # Handle ticket data (from get_tickets, search_tickets_by_*, search_tickets)
         if "ticket" in tool_name.lower():
-            # Try both 'sample' and 'tickets' keys
             tickets_data = result.get("sample") or result.get("tickets")
             if tickets_data and isinstance(tickets_data, list):
-                logger.info(f"🎫 Found {len(tickets_data)} tickets, limiting to 3 and heavily truncating")
-                # Extract key fields from each ticket (limit to first 3 tickets only!)
+                logger.info(f"🎫 Found {len(tickets_data)} tickets, limiting to 5 and truncating")
                 simplified_tickets = []
-                for ticket in tickets_data[:3]:  # Limit to ONLY 3 tickets
+                for ticket in tickets_data[:5]:  # Increased to 5 tickets
                     simplified = {
-                        "id": ticket.get("id"),
-                        "ticket_id": ticket.get("sourceRef", "N/A"),
-                        "title": ticket.get("title", "No title")[:80],  # Heavily truncate title
-                        "description": ticket.get("description", "No description")[:100],  # Heavily truncate description
-                        "status": ticket.get("externalStatus", ticket.get("status", "Unknown")),
-                        "priority": ticket.get("externalPriority", ticket.get("priority", "Unknown")),
-                        "type": ticket.get("type", "Unknown")
-                        # Skip created/resolved dates, comments, and activities to save space
+                        "id": ticket.get("id", "Unknown"),
+                        "ticket_ref": ticket.get("sourceRef", "Unknown"),
+                        "title": str(ticket.get("title", ""))[:100],
+                        "description": str(ticket.get("description", ""))[:150],
+                        "status": ticket.get("status", "Unknown"),
+                        "priority": ticket.get("priority", "Unknown"),
+                        "type": ticket.get("type", "Unknown"),
+                        "project": ticket.get("project", "Unknown"),
+                        "source": ticket.get("source", "Unknown")
                     }
-                    
                     simplified_tickets.append(simplified)
                 
-                logger.info(f"✅ Simplified {len(simplified_tickets)} tickets (removed metadata, comments, activities)")
+                logger.info(f"✅ Simplified {len(simplified_tickets)} tickets")
                 return {
                     "count": result.get("count", len(tickets_data)),
                     "returned": len(simplified_tickets),
                     "tickets": simplified_tickets,
-                    "note": f"Showing first {len(simplified_tickets)} of {result.get('count', len(tickets_data))} tickets (heavily truncated for brevity)"
+                    "note": f"Showing first {len(simplified_tickets)} of {result.get('count', len(tickets_data))} tickets (truncated for brevity)"
                 }
         
-        # Handle incident data (limit to first 5)
-        if "incident" in tool_name.lower() and "sample" in result:
-            if isinstance(result["sample"], list):
+        # Handle incident data
+        if "incident" in tool_name.lower():
+            incidents_data = result.get("sample") or result.get("incidents")
+            if incidents_data and isinstance(incidents_data, list):
+                logger.info(f"🚨 Found {len(incidents_data)} incidents, limiting to 10")
                 simplified_incidents = []
-                for incident in result["sample"][:5]:
+                for incident in incidents_data[:10]:
                     simplified_incidents.append({
-                        "id": incident.get("id"),
-                        "title": incident.get("title", "No title")[:100],
+                        "id": incident.get("id", "Unknown"),
+                        "title": str(incident.get("title", ""))[:120],
+                        "description": str(incident.get("description", ""))[:150],
                         "severity": incident.get("severity", "Unknown"),
                         "status": incident.get("status", "Unknown"),
-                        "start_time": incident.get("startTime", "N/A"),
-                        "application": incident.get("applicationIds", [])[:3]  # Limit apps
+                        "triggered_by": incident.get("triggeredBy", "Unknown"),
+                        "source": incident.get("source", "Unknown"),
+                        "created_at": incident.get("createdAt", "Unknown"),
+                        "updated_at": incident.get("updatedAt", "Unknown")
                     })
+                logger.info(f"✅ Simplified {len(simplified_incidents)} incidents")
                 return {
-                    "count": result.get("count", len(result["sample"])),
+                    "count": result.get("count", len(incidents_data)),
                     "returned": len(simplified_incidents),
-                    "incidents": simplified_incidents
+                    "incidents": simplified_incidents,
+                    "note": f"Showing first {len(simplified_incidents)} incidents"
                 }
         
-        # Handle resource data (limit to first 5)
-        if "resource" in tool_name.lower() and "sample" in result:
-            if isinstance(result["sample"], list):
-                simplified_resources = []
-                for resource in result["sample"][:5]:
-                    simplified_resources.append({
-                        "id": resource.get("id"),
-                        "name": resource.get("name", "No name")[:100],
-                        "type": resource.get("type", "Unknown"),
-                        "status": resource.get("status", "Unknown")
+        # Handle changelog data
+        if "changelog" in tool_name.lower():
+            changelogs_data = result.get("sample") or result.get("changelogs") or result.get("data")
+            if changelogs_data and isinstance(changelogs_data, list):
+                logger.info(f"📝 Found {len(changelogs_data)} changelogs, limiting to 10")
+                simplified_changelogs = []
+                for changelog in changelogs_data[:10]:
+                    # Extract description from display or description field
+                    desc = changelog.get("display") or changelog.get("description") or ""
+                    if isinstance(desc, dict):
+                        desc = desc.get("description") or desc.get("title") or str(desc)
+                    
+                    simplified_changelogs.append({
+                        "id": changelog.get("id", "Unknown"),
+                        "event_type": changelog.get("eventType") or changelog.get("derivedType") or "Unknown",
+                        "category": changelog.get("eventCategory", "Unknown"),
+                        "description": str(desc)[:150] if desc else "No description",
+                        "severity": changelog.get("severity", "Unknown"),
+                        "timestamp": changelog.get("triggeredAt") or changelog.get("createdAt") or "Unknown",
+                        "source": changelog.get("source") or "Unknown",
+                        "region": changelog.get("region") or "Unknown",
+                        "is_human": changelog.get("isActorHuman", False)
                     })
+                logger.info(f"✅ Simplified {len(simplified_changelogs)} changelogs")
                 return {
-                    "count": result.get("count", len(result["sample"])),
+                    "count": result.get("count", len(changelogs_data)),
+                    "returned": len(simplified_changelogs),
+                    "changelogs": simplified_changelogs,
+                    "note": f"Showing first {len(simplified_changelogs)} changelogs"
+                }
+        
+        # Handle notification data
+        if "notification" in tool_name.lower():
+            notifications_data = result.get("sample") or result.get("notifications")
+            if notifications_data and isinstance(notifications_data, list):
+                logger.info(f"🔔 Found {len(notifications_data)} notifications, limiting to 10")
+                simplified_notifications = []
+                for notification in notifications_data[:10]:
+                    simplified_notifications.append({
+                        "id": self._extract_nested_value(notification, "id"),
+                        "message": str(self._extract_nested_value(notification, "message", "title"))[:150],
+                        "severity": self._extract_nested_value(notification, "severity", "priority", "level"),
+                        "timestamp": self._extract_nested_value(notification, "timestamp", "createdAt", "sentAt"),
+                        "source": self._extract_nested_value(notification, "source", "origin"),
+                        "target": str(self._extract_nested_value(notification, "target", "recipients"))[:80]
+                    })
+                logger.info(f"✅ Simplified {len(simplified_notifications)} notifications")
+                return {
+                    "count": result.get("count", len(notifications_data)),
+                    "returned": len(simplified_notifications),
+                    "notifications": simplified_notifications,
+                    "note": f"Showing first {len(simplified_notifications)} notifications"
+                }
+        
+        # Handle resource data - heavily filter and limit to relevant fields only
+        if "resource" in tool_name.lower():
+            resources_data = result.get("resources") or result.get("sample")
+            if resources_data and isinstance(resources_data, list):
+                logger.info(f"📦 Found {len(resources_data)} resources, filtering and limiting")
+                simplified_resources = []
+                
+                for resource in resources_data[:100]:  # Process max 100 resources
+                    # Extract using helper for robustness
+                    resource_name = self._extract_nested_value(resource, "resourceName", "name")
+                    resource_type = self._extract_nested_value(resource, "resourceType", "type")
+                    resource_subtype = self._extract_nested_value(resource, "resourceSubType", "subType", "kind")
+                    
+                    # Get status - try multiple paths
+                    phase = self._extract_nested_value(
+                        resource,
+                        "metadata.status.phase",
+                        "status.phase", 
+                        "resourceStatus",
+                        "status"
+                    )
+                    
+                    # Get namespace - try multiple paths
+                    namespace = self._extract_nested_value(
+                        resource,
+                        "metadata.metadata.namespace",
+                        "metadata.namespace",
+                        "namespace"
+                    )
+                    
+                    # Extract node from tags if available
+                    node = "Unknown"
+                    tags = resource.get("tags", [])
+                    if isinstance(tags, list):
+                        for tag in tags:
+                            if isinstance(tag, dict) and tag.get("Key") == "node":
+                                node = tag.get("Value", "Unknown")
+                                break
+                    
+                    simplified = {
+                        "name": resource_name,
+                        "type": f"{resource_type}/{resource_subtype}" if resource_subtype != "Unknown" else resource_type,
+                        "status": phase,
+                        "namespace": namespace,
+                        "node": node
+                    }
+                    simplified_resources.append(simplified)
+                
+                logger.info(f"✅ Simplified {len(simplified_resources)} resources from {len(resources_data)}")
+                return {
+                    "count": len(resources_data),
                     "returned": len(simplified_resources),
-                    "resources": simplified_resources
+                    "resources": simplified_resources,
+                    "note": f"Showing {len(simplified_resources)} resources with status, namespace, and node info"
                 }
         
         # Return original result for other cases
@@ -341,8 +510,7 @@ Consider:
             
             # Log size of preprocessed data
             import sys
-            import json as json_lib
-            preprocessed_size = sum(sys.getsizeof(json_lib.dumps(td)) for td in tool_data)
+            preprocessed_size = sum(sys.getsizeof(json.dumps(td)) for td in tool_data)
             logger.info(f"📊 Preprocessed tool data size: {preprocessed_size} bytes ({preprocessed_size/1024:.1f} KB)")
             
             context = {
@@ -357,7 +525,7 @@ Consider:
             }
             
             # Log context size to diagnose token issues
-            context_json = json_lib.dumps(context, indent=2)
+            context_json = json.dumps(context, indent=2)
             context_size = len(context_json)
             logger.info(f"📊 Context JSON size: {context_size} bytes ({context_size/1024:.1f} KB)")
             logger.info(f"📊 Estimated tokens: ~{context_size/4} (rough estimate)")
@@ -366,14 +534,36 @@ Consider:
 
 Context: {context_json}
 
+⚠️ CRITICAL ANTI-HALLUCINATION RULES:
+1. ONLY use data from tool_results - NEVER fabricate information
+2. If tool_results is EMPTY or tools FAILED, explicitly state: "I couldn't retrieve the data due to [reason]"
+3. If you have NO data for a requested field, say "Data not available" - DON'T make it up
+4. NEVER invent resource details, versions, metadata, or changelogs
+5. If execution_summary shows failures, acknowledge them in your response
+
+⚠️ CRITICAL: NO GENERIC INSTRUCTIONS!
+If the user asks about infrastructure state (pods, containers, resources), you MUST:
+- Use ACTUAL data from tool_results
+- Show REAL resource names, statuses, and details
+- Filter results based on user criteria (e.g., "CrashLoopBackOff" status)
+- NEVER provide generic kubectl commands or troubleshooting steps
+- If tool_results is empty, say "No tools were executed - I'll need to query the infrastructure"
+
 CRITICAL INSTRUCTIONS FOR SMART FILTERING:
 1. If search_terms exist, filter the tool_results to find matches
 2. Use fuzzy matching: "Mit-runtime-api-services" should match "runtime api" or "Incident on runtime api"
 3. Look for partial matches in: title, description, applicationIds, metadata
 4. If exact match not found, present the CLOSEST matches with explanation
 5. Always explain what you found and why it matches (or why nothing matched)
+6. For infrastructure queries: Filter by status in metadata.status.phase field (Running, Pending, Failed, CrashLoopBackOff)
 
 FORMATTING INSTRUCTIONS FOR DIFFERENT DATA TYPES:
+
+For KUBERNETES PODS/RESOURCES:
+- Filter by metadata.status.phase (e.g., "CrashLoopBackOff", "Pending", "Failed")
+- List each pod with: resourceName, status (phase), namespace, node
+- Include container status and restart counts if available
+- Format example: "vector-0 (Status: Pending) in namespace 'vector' on node 'gke-mit-acme-mit-default-61b6a85a-7hsc'"
 
 For TICKETS/SERVICE REQUESTS:
 - List each ticket with: ticket_id (e.g., CS-334), title, status, priority
@@ -392,6 +582,7 @@ For RESOURCES:
 
 Generate a comprehensive, natural language response to the user's question with SPECIFIC details from filtered results.
 If no exact match: explain what you searched for and present closest matches.
+If NO tools executed for infrastructure query: State that you need to query the system first.
 
 Write in a conversational, helpful tone as if you're ChatGPT explaining the results."""
             
@@ -409,7 +600,7 @@ Write in a conversational, helpful tone as if you're ChatGPT explaining the resu
                     token = chunk.content
                     if token:
                         content += token
-                        await websocket.send_text(json_lib.dumps({"on_chat_model_stream": token}))
+                        await websocket.send_text(json.dumps({"on_chat_model_stream": token}))
                 logger.info(f"Streaming completed, total length: {len(content)}")
                 
                 # Now generate metadata (forward links, recommendations) without streaming
@@ -480,7 +671,7 @@ Return ONLY valid JSON in this exact format:
             content = response.content
             
             json_str = self._extract_json_from_response(content)
-            metadata = json_lib.loads(json_str)
+            metadata = json.loads(json_str)
             
             return metadata
             

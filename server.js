@@ -596,8 +596,8 @@ const MCP_TOOLS = {
             type: "object",
             properties: {
                 resource_id: {
-                    type: "string",
-                    description: "Unique resource identifier",
+                    type: "integer",
+                    description: "Unique resource identifier (numeric)",
                     required: true
                 }
             },
@@ -652,8 +652,8 @@ const MCP_TOOLS = {
             type: "object",
             properties: {
                 resource_id: {
-                    type: "string",
-                    description: "Resource ID to get version for",
+                    type: "integer",
+                    description: "Resource ID to get version for (numeric)",
                     required: true
                 }
             },
@@ -668,8 +668,8 @@ const MCP_TOOLS = {
             type: "object",
             properties: {
                 resource_id: {
-                    type: "string",
-                    description: "Resource ID to get metadata for",
+                    type: "integer",
+                    description: "Resource ID to get metadata for (numeric)",
                     required: true
                 }
             },
@@ -733,8 +733,8 @@ const MCP_TOOLS = {
             type: "object",
             properties: {
                 resource_id: {
-                    type: "string",
-                    description: "Resource ID to get changelogs for",
+                    type: "integer",
+                    description: "Resource ID to get changelogs for (numeric)",
                     required: true
                 }
             },
@@ -749,8 +749,8 @@ const MCP_TOOLS = {
             type: "object",
             properties: {
                 resource_id: {
-                    type: "string",
-                    description: "Resource ID to get changelog list for",
+                    type: "integer",
+                    description: "Resource ID to get changelog list for (numeric)",
                     required: true
                 }
             },
@@ -793,8 +793,8 @@ const MCP_TOOLS = {
             type: "object",
             properties: {
                 resource_id: {
-                    type: "string",
-                    description: "Resource ID to search changelogs for",
+                    type: "integer",
+                    description: "Resource ID to search changelogs for (numeric)",
                     required: true
                 },
                 severity: {
@@ -2115,9 +2115,14 @@ class MCPToolRegistry {
     // Additional Resource Methods
     async getResourceById(params) {
         const { resource_id } = params;
+        const resourceIdInt = parseInt(resource_id, 10);
+
+        if (isNaN(resourceIdInt)) {
+            throw new Error(`Invalid resource_id: ${resource_id} must be a valid integer`);
+        }
 
         try {
-            const response = await axios.get(`${MANIFEST_API_URL}/client/resource/${resource_id}`, {
+            const response = await axios.get(`${MANIFEST_API_URL}/client/resource/${resourceIdInt}`, {
                 headers: {
                     'Mit-Api-Key': config.MANIFEST_API_KEY,
                     'Mit-Org-Key': config.MANIFEST_ORG_KEY || 'dev',
@@ -2137,10 +2142,15 @@ class MCPToolRegistry {
 
     async getResourceTickets(params) {
         const { resource_id } = params;
+        const resourceIdInt = parseInt(resource_id, 10);
+
+        if (isNaN(resourceIdInt)) {
+            throw new Error(`Invalid resource_id: ${resource_id} must be a valid integer`);
+        }
 
         try {
-            console.log(`🔍 Getting tickets for resource: ${resource_id} (type: ${typeof resource_id})`);
-            const url = `${MANIFEST_API_URL}/client/resource/${resource_id}/ticket`;
+            console.log(`🔍 Getting tickets for resource: ${resourceIdInt} (type: ${typeof resourceIdInt})`);
+            const url = `${MANIFEST_API_URL}/client/resource/${resourceIdInt}/ticket`;
             console.log(`📡 URL: ${url}`);
 
             const response = await axios.get(url, {
@@ -2198,9 +2208,14 @@ class MCPToolRegistry {
 
     async getResourceVersion(params) {
         const { resource_id } = params;
+        const resourceIdInt = parseInt(resource_id, 10);
+
+        if (isNaN(resourceIdInt)) {
+            throw new Error(`Invalid resource_id: ${resource_id} must be a valid integer`);
+        }
 
         try {
-            const response = await axios.get(`${MANIFEST_API_URL}/client/resource/${resource_id}/version`, {
+            const response = await axios.get(`${MANIFEST_API_URL}/client/resource/${resourceIdInt}/version`, {
                 headers: {
                     'Mit-Api-Key': config.MANIFEST_API_KEY,
                     'Mit-Org-Key': config.MANIFEST_ORG_KEY || 'dev',
@@ -2221,9 +2236,14 @@ class MCPToolRegistry {
 
     async getResourceMetadata(params) {
         const { resource_id } = params;
+        const resourceIdInt = parseInt(resource_id, 10);
+
+        if (isNaN(resourceIdInt)) {
+            throw new Error(`Invalid resource_id: ${resource_id} must be a valid integer`);
+        }
 
         try {
-            const response = await axios.get(`${MANIFEST_API_URL}/client/resource/${resource_id}/metadata`, {
+            const response = await axios.get(`${MANIFEST_API_URL}/client/resource/${resourceIdInt}/metadata`, {
                 headers: {
                     'Mit-Api-Key': config.MANIFEST_API_KEY,
                     'Mit-Org-Key': config.MANIFEST_ORG_KEY || 'dev',

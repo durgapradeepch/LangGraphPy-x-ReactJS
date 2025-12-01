@@ -16,13 +16,13 @@ Testing Neo4j connection...
 Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
 ❌ Neo4j connection failed: connect ECONNREFUSED 127.0.0.1:7474
 Please ensure Neo4j is running and credentials are correct
-🔍 searchLogs called with: search_text="database", labels={}, limit=20
-✅ VictoriaLogs returned 4 logs for query "_msg:*database*"
-🔍 searchLogs called with: search_text="database", labels={}, limit=20
-✅ VictoriaLogs returned 4 logs for query "_msg:*database*"
-🔍 searchLogs called with: search_text="database", labels={}, limit=20
-✅ VictoriaLogs returned 4 logs for query "_msg:*database*"
-🔍 searchLogs called with: search_text="database", labels={}, limit=20
-✅ VictoriaLogs returned 4 logs for query "_msg:*database*"
 🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
 🔑 Using API Key: Present
+🔍 searchLogs called with: search_text="undefined", labels={}, limit=20
+✅ VictoriaLogs returned 20 logs for query "*"
+Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
+Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
+Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
+Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
+Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
+Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
