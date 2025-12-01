@@ -580,11 +580,24 @@ For RESOURCES:
 - List each resource with: name, type, status
 - Include relevant metadata if available
 
+SPACING RULES - KEEP RESPONSES COMPACT:
+- Use single newlines between sentences, NOT double
+- Only add blank lines between major sections
+- Keep lists tight with no spacing between items
+- Avoid excessive paragraph breaks
+- Write in a dense, information-rich style like ChatGPT
+
+LIST FORMATTING RULES:
+- NEVER use numbered lists (1., 2., 3., etc.)
+- ALWAYS use bullet points with dots (•) for lists
+- Use dash (-) for sub-items or simple lists
+- Example: "• Changelogs: Found 5 changes" NOT "1. Changelogs: Found 5 changes"
+
 Generate a comprehensive, natural language response to the user's question with SPECIFIC details from filtered results.
 If no exact match: explain what you searched for and present closest matches.
 If NO tools executed for infrastructure query: State that you need to query the system first.
 
-Write in a conversational, helpful tone as if you're ChatGPT explaining the results."""
+Write in a conversational, helpful tone as if you're ChatGPT explaining the results with compact spacing and bullet points."""
             
             messages = [
                 {"role": "system", "content": system_prompt},
