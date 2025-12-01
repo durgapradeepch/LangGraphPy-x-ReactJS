@@ -1,6 +1,7 @@
 import json
 import os
 from fastapi import FastAPI, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from graph import invoke_our_graph
@@ -8,6 +9,15 @@ from datetime import datetime
 from cust_logger import logger, set_files_message_color
 
 app = FastAPI()
+
+# Add CORS middleware to allow frontend on port 3000 to connect
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 set_files_message_color('purple')  # Set log message color for this file to 'purple'
 

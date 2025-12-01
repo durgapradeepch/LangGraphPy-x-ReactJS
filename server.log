@@ -1,0 +1,13 @@
+INFO:     llm_client.py:35    - ✅ LLM client initialized with model: gpt-4o
+INFO:     cust_logger.py:68    - Set message color for graph.py to MAGENTA
+INFO:     cust_logger.py:68    - Set message color for server.py to PURPLE
+INFO:     Started server process [4619]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:52682 - "WebSocket /ws" [accepted]
+INFO:     connection open
+INFO:     server.py:53    - {"timestamp": "2025-12-01T13:07:11.415696", "uuid": null, "received": {"uuid": "record-principle-fallen-phrase", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-01T13:07:11.416085", "uuid": "record-principle-fallen-phrase", "op": "Initializing ws with client."}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T13:07:15.170095", "uuid": "record-principle-fallen-phrase", "received": {"uuid": "record-principle-fallen-phrase", "message": "hi", "init": false}}
+INFO:     graph.py:178   - {"timestamp": "2025-12-01T13:07:16.398484", "uuid": "record-principle-fallen-phrase", "llm_method": "on_chat_model_end", "sent": "Hello! How can I assist you today?"}

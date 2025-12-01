@@ -5,3 +5,4 @@ python-dotenv
 colorama
 langchain-openai
 langgraph
+aiohttp

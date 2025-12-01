@@ -1,0 +1,16 @@
+✅ OpenAI API configured
+   Model: gpt-4o
+🔧 Manifest API Configuration:
+   URL: https://api.dev.manifestit.tech
+   API Key: eyJhbGciOiJIUzI1NiIs...
+🚀 VictoriaLogs MCP Server running on port 3001
+🔗 Neo4j Bolt connection at: bolt://127.0.0.1:7687
+📊 Access VictoriaLogs at: https://vlinsert.dev.manifestit.tech/select/vmui
+🎨 Frontend should connect to: http://localhost:3001
+🤖 MCP Tools available at /api/mcp/tools
+⚡ MCP Tool execution at /api/mcp/execute
+🧠 AI execution endpoint at /api/ai-execute
+📊 Available VictoriaLogs Tools: query_logs, search_logs, get_log_metrics, get_log_stats
+🔧 Available Manifest API Tools: get_changelogs, get_graph, get_incidents, get_notifications, get_resources, get_tickets
+Testing Neo4j connection...
+✅ Neo4j connection successful

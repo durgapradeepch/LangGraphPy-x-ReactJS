@@ -1,0 +1,398 @@
+INFO:     llm_client.py:35    - ✅ LLM client initialized with model: gpt-4o
+INFO:     cust_logger.py:68    - Set message color for graph.py to MAGENTA
+INFO:     cust_logger.py:68    - Set message color for server.py to PURPLE
+INFO:     Started server process [74757]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:49984 - "WebSocket /ws" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:49985 - "WebSocket /ws" [accepted]
+INFO:     connection open
+INFO:     server.py:53    - {"timestamp": "2025-12-01T12:17:29.110108", "uuid": null, "received": {"uuid": "skin-particularly-view-slow", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-01T12:17:29.110203", "uuid": "skin-particularly-view-slow", "op": "Initializing ws with client."}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T12:17:29.110310", "uuid": null, "received": {"uuid": "driver-sky-identity-shall", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-01T12:17:29.110342", "uuid": "driver-sky-identity-shall", "op": "Initializing ws with client."}
+ERROR:     server.py:73    - {"timestamp": "2025-12-01T12:17:30.428684", "uuid": "driver-sky-identity-shall", "op": "Error: (1001, '')"}
+INFO:     server.py:77    - {"timestamp": "2025-12-01T12:17:30.428892", "uuid": "driver-sky-identity-shall", "op": "Closing connection."}
+ERROR:     server.py:82    - {"timestamp": "2025-12-01T12:17:30.428944", "uuid": "driver-sky-identity-shall", "op": "WebSocket close error: Unexpected ASGI message 'websocket.close', after sending 'websocket.close' or response already completed."}
+INFO:     connection closed
+INFO:     127.0.0.1:49993 - "WebSocket /ws" [accepted]
+INFO:     connection open
+INFO:     server.py:53    - {"timestamp": "2025-12-01T12:17:30.545095", "uuid": null, "received": {"uuid": "any-equipment-dawn-before", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-01T12:17:30.545335", "uuid": "any-equipment-dawn-before", "op": "Initializing ws with client."}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T12:17:42.734609", "uuid": "skin-particularly-view-slow", "received": {"uuid": "skin-particularly-view-slow", "message": "find high severity changes for last 3 days", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: find high severity changes for last 3 days...
+INFO:     workflow.py:128   - 🚀 Processing: 'find high severity changes for last 3 days'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:251   - ✅ Created MCP client for session default
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     mcp_client.py:56    - ✅ Fetched 47 MCP tools from server
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session skin-particularly-view-slow
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'find high severity changes for last 3 days...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=exploration, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_changelogs (attempt 1/2)
+INFO:     mcp_client.py:251   - ✅ Created MCP client for session skin-particularly-view-slow
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_changelogs
+INFO:     mcp_client.py:93    - ✅ Tool search_changelogs executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:203   - Processing 1 successful tool results with search_terms: []
+INFO:     llm_client.py:247   - Invoking LLM for response generation...
+INFO:     llm_client.py:249   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:271   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'I searched for high severity changes in the last 3 days, but there were no changelogs found that matched these criteria. This means that there have been no recorded high severity c
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 325 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T12:17:55.161519", "uuid": "skin-particularly-view-slow", "llm_method": "enhanced_workflow", "sent": "I searched for high severity changes in the last 3 days, but there were no changelogs found that mat"}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T12:18:18.132208", "uuid": "skin-particularly-view-slow", "received": {"uuid": "skin-particularly-view-slow", "message": "ind high severity changes ", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: ind high severity changes ...
+INFO:     workflow.py:128   - 🚀 Processing: 'ind high severity changes '
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session skin-particularly-view-slow
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'ind high severity changes ...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=exploration, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_changelogs (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_changelogs
+INFO:     mcp_client.py:93    - ✅ Tool search_changelogs executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:203   - Processing 1 successful tool results with search_terms: []
+INFO:     llm_client.py:247   - Invoking LLM for response generation...
+INFO:     llm_client.py:249   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:271   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "I searched for changelogs with high severity changes, but unfortunately, there were no results found. This means that there are currently no documented high severity changes in the
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 314 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T12:18:29.664593", "uuid": "skin-particularly-view-slow", "llm_method": "enhanced_workflow", "sent": "I searched for changelogs with high severity changes, but unfortunately, there were no results found"}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T12:18:50.576593", "uuid": "skin-particularly-view-slow", "received": {"uuid": "skin-particularly-view-slow", "message": "What changes happened to resource 50944068?", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: What changes happened to resource 50944068?...
+INFO:     workflow.py:128   - 🚀 Processing: 'What changes happened to resource 50944068?'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session skin-particularly-view-slow
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'What changes happened to resource 50944068?...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=exploration, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_changelog_by_resource (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_changelog_by_resource
+INFO:     mcp_client.py:93    - ✅ Tool get_changelog_by_resource executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:203   - Processing 1 successful tool results with search_terms: []
+INFO:     llm_client.py:247   - Invoking LLM for response generation...
+INFO:     llm_client.py:249   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:271   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "The resource with ID 50944068 underwent several changes, all of which were deletions. On December 1, 2025, there were three recorded deletion events for this resource. These events
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 510 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T12:19:04.042823", "uuid": "skin-particularly-view-slow", "llm_method": "enhanced_workflow", "sent": "The resource with ID 50944068 underwent several changes, all of which were deletions. On December 1,"}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T12:19:17.810748", "uuid": "skin-particularly-view-slow", "received": {"uuid": "skin-particularly-view-slow", "message": "List changelogs for resource 50944068 without version details", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: List changelogs for resource 50944068 without vers...
+INFO:     workflow.py:128   - 🚀 Processing: 'List changelogs for resource 50944068 without version details'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session skin-particularly-view-slow
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'List changelogs for resource 50944068 without vers...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=exploration, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_changelog_by_resource (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_changelog_by_resource
+INFO:     mcp_client.py:93    - ✅ Tool get_changelog_by_resource executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:203   - Processing 1 successful tool results with search_terms: []
+INFO:     llm_client.py:247   - Invoking LLM for response generation...
+INFO:     llm_client.py:249   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:271   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "The changelogs for resource 50944068 include several entries, all related to deletion events. The most recent changelog entry indicates that the resource was deleted on December 1,
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 605 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T12:19:47.596678", "uuid": "skin-particularly-view-slow", "llm_method": "enhanced_workflow", "sent": "The changelogs for resource 50944068 include several entries, all related to deletion events. The mo"}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T12:19:52.564826", "uuid": "skin-particularly-view-slow", "received": {"uuid": "skin-particularly-view-slow", "message": "Show me all deployment changes", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: Show me all deployment changes...
+INFO:     workflow.py:128   - 🚀 Processing: 'Show me all deployment changes'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session skin-particularly-view-slow
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'Show me all deployment changes...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=exploration, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_changelogs (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_changelogs
+INFO:     mcp_client.py:93    - ✅ Tool search_changelogs executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:203   - Processing 1 successful tool results with search_terms: []
+INFO:     llm_client.py:247   - Invoking LLM for response generation...
+INFO:     llm_client.py:249   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:271   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "I found several deployment changes related to Kubernetes and ArgoCD. Notably, there was a critical deployment event from ArgoCD for the 'mit-migration' application on December 1, 2
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 604 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T12:20:05.210924", "uuid": "skin-particularly-view-slow", "llm_method": "enhanced_workflow", "sent": "I found several deployment changes related to Kubernetes and ArgoCD. Notably, there was a critical d"}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T12:20:44.972480", "uuid": "skin-particularly-view-slow", "received": {"uuid": "skin-particularly-view-slow", "message": "Search changelogs for resource 50944068 with high severity", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: Search changelogs for resource 50944068 with high ...
+INFO:     workflow.py:128   - 🚀 Processing: 'Search changelogs for resource 50944068 with high severity'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session skin-particularly-view-slow
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'Search changelogs for resource 50944068 with high ...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 2 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=exploration, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 2 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_changelog_by_resource (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_changelog_by_resource
+INFO:     mcp_client.py:93    - ✅ Tool get_changelog_by_resource executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_changelogs_by_event_type (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_changelogs_by_event_type
+WARNING:     mcp_client.py:98    - ⚠️ Tool search_changelogs_by_event_type attempt 1 failed: Server returned 500: {"success":false,"error":"Manifest API search changelogs by event type failed: InternalServerError Server Error GET failed ERROR: syntax error at or near \")\" (SQLSTATE 42601)","tool_name":"search_changelogs_by_event_type"}, retrying...
+WARNING:     mcp_client.py:98    - ⚠️ Tool search_changelogs_by_event_type attempt 2 failed: Server returned 500: {"success":false,"error":"Manifest API search changelogs by event type failed: InternalServerError Server Error GET failed ERROR: syntax error at or near \")\" (SQLSTATE 42601)","tool_name":"search_changelogs_by_event_type"}, retrying...
+ERROR:     mcp_client.py:104   - ❌ Tool search_changelogs_by_event_type execution failed: Server returned 500: {"success":false,"error":"Manifest API search changelogs by event type failed: InternalServerError Server Error GET failed ERROR: syntax error at or near \")\" (SQLSTATE 42601)","tool_name":"search_changelogs_by_event_type"}
+WARNING:     tool_execution_agent.py:104   - ⚠️ Tool search_changelogs_by_event_type attempt 1 failed: Failed to execute tool search_changelogs_by_event_type: Server returned 500: {"success":false,"error":"Manifest API search changelogs by event type failed: InternalServerError Server Error GET failed ERROR: syntax error at or near \")\" (SQLSTATE 42601)","tool_name":"search_changelogs_by_event_type"}, retrying...
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_changelogs_by_event_type (attempt 2/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_changelogs_by_event_type
+WARNING:     mcp_client.py:98    - ⚠️ Tool search_changelogs_by_event_type attempt 1 failed: Server returned 500: {"success":false,"error":"Manifest API search changelogs by event type failed: InternalServerError Server Error GET failed ERROR: syntax error at or near \")\" (SQLSTATE 42601)","tool_name":"search_changelogs_by_event_type"}, retrying...
+WARNING:     mcp_client.py:98    - ⚠️ Tool search_changelogs_by_event_type attempt 2 failed: Server returned 500: {"success":false,"error":"Manifest API search changelogs by event type failed: InternalServerError Server Error GET failed ERROR: syntax error at or near \")\" (SQLSTATE 42601)","tool_name":"search_changelogs_by_event_type"}, retrying...
+ERROR:     mcp_client.py:104   - ❌ Tool search_changelogs_by_event_type execution failed: Server returned 500: {"success":false,"error":"Manifest API search changelogs by event type failed: InternalServerError Server Error GET failed ERROR: syntax error at or near \")\" (SQLSTATE 42601)","tool_name":"search_changelogs_by_event_type"}
+ERROR:     tool_execution_agent.py:106   - ❌ Tool search_changelogs_by_event_type failed after 2 attempts: Failed to execute tool search_changelogs_by_event_type: Server returned 500: {"success":false,"error":"Manifest API search changelogs by event type failed: InternalServerError Server Error GET failed ERROR: syntax error at or near \")\" (SQLSTATE 42601)","tool_name":"search_changelogs_by_event_type"}
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 50.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:203   - Processing 1 successful tool results with search_terms: []
+INFO:     llm_client.py:247   - Invoking LLM for response generation...
+INFO:     llm_client.py:249   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:271   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "I searched for changelogs related to resource 50944068 with high severity. However, all the changelogs found for this resource have a severity level of 'Low'. There are no changelo
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 365 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T12:21:04.578753", "uuid": "skin-particularly-view-slow", "llm_method": "enhanced_workflow", "sent": "I searched for changelogs related to resource 50944068 with high severity. However, all the changelo"}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T12:23:44.360304", "uuid": "skin-particularly-view-slow", "received": {"uuid": "skin-particularly-view-slow", "message": "Which IAM or RBAC changes occurred recently?", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: Which IAM or RBAC changes occurred recently?...
+INFO:     workflow.py:128   - 🚀 Processing: 'Which IAM or RBAC changes occurred recently?'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     mcp_client.py:56    - ✅ Fetched 47 MCP tools from server
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session skin-particularly-view-slow
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'Which IAM or RBAC changes occurred recently?...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 2 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=exploration, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 2 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_changelogs (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_changelogs
+INFO:     mcp_client.py:93    - ✅ Tool search_changelogs executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_changelogs_by_event_type (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_changelogs_by_event_type
+INFO:     mcp_client.py:93    - ✅ Tool search_changelogs_by_event_type executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:203   - Processing 2 successful tool results with search_terms: []
+INFO:     llm_client.py:247   - Invoking LLM for response generation...
+INFO:     llm_client.py:249   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:271   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'I searched for recent IAM or RBAC changes but did not find any specific changes related to IAM or RBAC in the recent changelogs. The search included looking for configuration chang
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 415 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T12:23:59.033413", "uuid": "skin-particularly-view-slow", "llm_method": "enhanced_workflow", "sent": "I searched for recent IAM or RBAC changes but did not find any specific changes related to IAM or RB"}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T12:25:39.035446", "uuid": "skin-particularly-view-slow", "received": {"uuid": "skin-particularly-view-slow", "message": "List all service tickets", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: List all service tickets...
+INFO:     workflow.py:128   - 🚀 Processing: 'List all service tickets'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session skin-particularly-view-slow
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'List all service tickets...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=exploration, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_tickets (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_tickets
+INFO:     mcp_client.py:93    - ✅ Tool search_tickets executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:203   - Processing 1 successful tool results with search_terms: []
+INFO:     llm_client.py:247   - Invoking LLM for response generation...
+ERROR:     llm_client.py:275   - ❌ Response generation failed: Error code: 400 - {'error': {'message': "This model's maximum context length is 128000 tokens. However, your messages resulted in 130653 tokens. Please reduce the length of the messages.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+ERROR:     llm_client.py:277   - Traceback: Traceback (most recent call last):
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/utils/llm_client.py", line 248, in generate_enriched_response
+    response = self.llm.invoke(messages)
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 398, in invoke
+    self.generate_prompt(
+    ~~~~~~~~~~~~~~~~~~~~^
+        [self._convert_input(input)],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    ).generations[0][0],
+    ^
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 1117, in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 927, in generate
+    self._generate_with_cache(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        m,
+        ^^
+    ...<2 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 1221, in _generate_with_cache
+    result = self._generate(
+        messages, stop=stop, run_manager=run_manager, **kwargs
+    )
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/langchain_openai/chat_models/base.py", line 1356, in _generate
+    raise e
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/langchain_openai/chat_models/base.py", line 1351, in _generate
+    raw_response = self.client.with_raw_response.create(**payload)
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/openai/_legacy_response.py", line 364, in wrapped
+    return cast(LegacyAPIResponse[R], func(*args, **kwargs))
+                                      ~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/openai/_utils/_utils.py", line 286, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/openai/resources/chat/completions/completions.py", line 1189, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<47 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/openai/_base_client.py", line 1259, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/pradeep/LangGraphPy-x-ReactJS/venv/lib/python3.13/site-packages/openai/_base_client.py", line 1047, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': "This model's maximum context length is 128000 tokens. However, your messages resulted in 130653 tokens. Please reduce the length of the messages.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'I executed 1 tools and 1 were successful. Here are the results.', 'forward_links': ['Check system status', 'View recent logs'], 'recommendations': ['Review the data', 'Monitor the 
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 63 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 2 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T12:25:43.836717", "uuid": "skin-particularly-view-slow", "llm_method": "enhanced_workflow", "sent": "I executed 1 tools and 1 were successful. Here are the results."}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T12:26:06.434286", "uuid": "skin-particularly-view-slow", "received": {"uuid": "skin-particularly-view-slow", "message": "Which IAM or RBAC changes occurred recently?", "init": false}}
+INFO:     graph.py:114   - 🚀 Using enhanced workflow for: Which IAM or RBAC changes occurred recently?...
+INFO:     workflow.py:128   - 🚀 Processing: 'Which IAM or RBAC changes occurred recently?'
+INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     workflow.py:78    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session skin-particularly-view-slow
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:96    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:25    - 🔍 Analyzing query: 'Which IAM or RBAC changes occurred recently?...'
+INFO:     llm_client.py:102   - 🔍 Query analyzed: exploration with confidence 0.9
+INFO:     llm_client.py:175   - 📋 Tool plan created: 2 tools planned
+INFO:     query_analysis_agent.py:59    - ✅ Query analyzed: type=exploration, confidence=0.9
+INFO:     workflow.py:101   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 2 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_changelogs (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_changelogs
+INFO:     mcp_client.py:93    - ✅ Tool search_changelogs executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_changelogs_by_event_type (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_changelogs_by_event_type
+INFO:     mcp_client.py:93    - ✅ Tool search_changelogs_by_event_type executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:106   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     llm_client.py:203   - Processing 2 successful tool results with search_terms: []
+INFO:     llm_client.py:247   - Invoking LLM for response generation...
+INFO:     llm_client.py:249   - LLM invocation completed, response type: <class 'langchain_core.messages.ai.AIMessage'>
+INFO:     llm_client.py:271   - ✅ Enriched response generated successfully
+INFO:     response_enrichment_agent.py:33    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'I searched for recent IAM or RBAC changes but did not find any specific entries related to IAM or RBAC in the recent changelogs. The search included looking for configuration chang
+INFO:     response_enrichment_agent.py:46    - 📝 LLM generated response: 433 chars
+INFO:     response_enrichment_agent.py:78    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:111   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:146   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-01T12:26:23.219573", "uuid": "skin-particularly-view-slow", "llm_method": "enhanced_workflow", "sent": "I searched for recent IAM or RBAC changes but did not find any specific entries related to IAM or RB"}
+./start.sh: line 56: 74757 Killed: 9               uvicorn server:app --host 0.0.0.0 --port 8000
