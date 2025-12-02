@@ -14,6 +14,7 @@ from orchestrator import OrchestratorAgent
 from agents.query_analysis_agent import QueryAnalysisAgent
 from agents.tool_execution_agent import ToolExecutionAgent
 from agents.response_enrichment_agent import ResponseEnrichmentAgent
+from agents.comprehensive_query_agent import ComprehensiveQueryAgent
 from utils.mcp_client import MCPClientManager
 
 logger = logging.getLogger(__name__)
@@ -33,6 +34,7 @@ class EnhancedLangGraphWorkflow:
         self.query_analyzer = QueryAnalysisAgent()
         self.tool_executor = ToolExecutionAgent(mcp_client_manager)
         self.response_enricher = ResponseEnrichmentAgent()
+        self.comprehensive_query = ComprehensiveQueryAgent()
         
         # Build the workflow graph
         self.workflow = self._build_workflow_graph()
@@ -51,16 +53,20 @@ class EnhancedLangGraphWorkflow:
         workflow.add_node("orchestrator_start", self._orchestrator_start_node)
         workflow.add_node("query_analysis", self._query_analysis_node)
         workflow.add_node("tool_execution", self._tool_execution_node)
+        workflow.add_node("comprehensive_check", self._comprehensive_check_node)
+        workflow.add_node("comprehensive_followup", self._comprehensive_followup_node)
         workflow.add_node("response_enrichment", self._response_enrichment_node)
         workflow.add_node("orchestrator_finish", self._orchestrator_finish_node)
         
         # Set entry point
         workflow.set_entry_point("orchestrator_start")
         
-        # Define the workflow path
+        # Define the workflow path with conditional comprehensive query handling
         workflow.add_edge("orchestrator_start", "query_analysis")
         workflow.add_edge("query_analysis", "tool_execution")
-        workflow.add_edge("tool_execution", "response_enrichment")
+        workflow.add_edge("tool_execution", "comprehensive_check")
+        workflow.add_edge("comprehensive_check", "comprehensive_followup")
+        workflow.add_edge("comprehensive_followup", "response_enrichment")
         workflow.add_edge("response_enrichment", "orchestrator_finish")
         workflow.add_edge("orchestrator_finish", END)
         
@@ -117,6 +123,65 @@ class EnhancedLangGraphWorkflow:
                 }))
         
         return await self.tool_executor.execute_tools(state)
+    
+    async def _comprehensive_check_node(self, state: ChatState) -> ChatState:
+        """Check if comprehensive follow-up is needed"""
+        logger.info("🔍 Comprehensive Check: Analyzing if follow-up needed")
+        updated_state = await self.comprehensive_query.analyze_and_expand(state)
+        logger.info(f"🔍 Comprehensive Check Result: needs_followup={updated_state.get('needs_comprehensive_followup', False)}, extracted_ids={updated_state.get('extracted_ids', {})}")
+        return updated_state
+    
+    async def _comprehensive_followup_node(self, state: ChatState) -> ChatState:
+        """Execute comprehensive follow-up tools if needed"""
+        
+        # Check if follow-up is actually needed
+        needs_followup = state.get("needs_comprehensive_followup", False)
+        extracted_ids = state.get("extracted_ids", {})
+        logger.info(f"🔍 Followup Node Check: needs_followup={needs_followup}, extracted_ids={extracted_ids}")
+        logger.info(f"🔍 Full state keys: {list(state.keys())}")
+        
+        if not needs_followup:
+            logger.info("⏭️  Comprehensive follow-up not needed, skipping")
+            return state
+        
+        logger.info("🔄 Comprehensive Follow-up: Creating and executing follow-up plan")
+        
+        # Create follow-up plan
+        state = await self.comprehensive_query.create_followup_plan(state)
+        
+        # Execute the follow-up tools
+        followup_plan = state.get("followup_tool_plan", [])
+        if followup_plan:
+            # Temporarily replace tool_plan with followup_plan
+            original_plan = state.get("tool_plan", [])
+            state["tool_plan"] = followup_plan
+            
+            # Send notification about follow-up tools
+            if hasattr(self, '_current_websocket') and self._current_websocket:
+                import json
+                tool_names = [tool.get("name", "Unknown") for tool in followup_plan]
+                await self._current_websocket.send_text(json.dumps({
+                    "on_tool_call": {
+                        "tools": tool_names,
+                        "count": len(tool_names),
+                        "type": "comprehensive_followup"
+                    }
+                }))
+            
+            # Execute the follow-up tools
+            logger.info(f"🔄 Executing {len(followup_plan)} comprehensive follow-up tools")
+            state = await self.tool_executor.execute_tools(state)
+            
+            # Restore original plan (now with additional results)
+            state["tool_plan"] = original_plan + followup_plan
+            
+            # Clear follow-up flags
+            state["needs_comprehensive_followup"] = False
+            state.pop("followup_tool_plan", None)
+            
+            logger.info("✅ Comprehensive follow-up execution completed")
+        
+        return state
     
     async def _response_enrichment_node(self, state: ChatState) -> ChatState:
         """Response enrichment"""

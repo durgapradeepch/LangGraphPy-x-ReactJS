@@ -229,15 +229,28 @@ Available tools:
 
 2. **CHECK FOR SERVICE NAME (Priority #2)**
    Only if `specific_id` is NULL, check `strict_service_name`.
-   - Use this name for `query` parameters in search tools.
-   - Example: `search_resources(query="acme-cart")`, `search_incidents(query="acme-cart")`.
+   
+   **COMPREHENSIVE QUERIES (when user asks for "everything", "all details", "complete information"):**
+   - If query intent is comprehensive (check query_analysis for keywords like "everything", "all", "details", "complete", "comprehensive"):
+     * Step 1: Use search tool to find the resource/incident and get its ID
+     * Step 2: SKIP remaining steps - let the system handle ID extraction from results
+     * Example: If user asks "everything about vector-0", just use `search_resources(query="vector-0")`
+     * The system will extract the resource_id from search results and can make a follow-up request
+   
+   **SPECIFIC QUERIES (when user asks for specific info like "status", "when created", "what type"):**
+   - Use appropriate search tool with the service name
+   - Example: `search_resources(query="acme-cart")`, `search_incidents(query="acme-cart")`
 
 3. **FALLBACK SEARCH (Priority #3)**
    - If both ID and Service Name are null, use `search_terms` in search tools.
 
+QUERY INTENT DETECTION:
+- **Comprehensive keywords**: "everything", "all details", "all information", "complete info", "tell me about", "full details", "comprehensive"
+- **Specific keywords**: "status", "when", "what type", "is it", "show me only"
+
 SCENARIO EXAMPLES:
 - User: "Everything about resource 50944068"
-  -> Analysis: {{"specific_id": "50944068"}}
+  -> Analysis: {{"specific_id": "50944068", "intent": "comprehensive"}}
   -> Plan: [
        {{"name": "get_resource_by_id", "parameters": {{"resource_id": "50944068"}}}},
        {{"name": "get_resource_version", "parameters": {{"resource_id": "50944068"}}}},
@@ -247,8 +260,13 @@ SCENARIO EXAMPLES:
        {{"name": "get_notifications_by_resource", "parameters": {{"resource_id": "50944068"}}}}
      ]
 
-- User: "Status of acme-cart"
-  -> Analysis: {{"strict_service_name": "acme-cart"}}
+- User: "Tell me everything about vector-0 resource - details, version, metadata, tickets, change history, notifications"
+  -> Analysis: {{"strict_service_name": "vector-0", "intent": "comprehensive"}}
+  -> Plan: [{{"name": "search_resources", "parameters": {{"query": "vector-0"}}}}]
+  -> Note: System will extract resource_id from results and can follow up if needed
+
+- User: "What's the status of acme-cart?"
+  -> Analysis: {{"strict_service_name": "acme-cart", "intent": "specific status query"}}
   -> Plan: [{{"name": "search_resources", "parameters": {{"query": "acme-cart"}}}}]
 
 Respond ONLY with valid JSON array format."""
@@ -307,8 +325,8 @@ Respond ONLY with valid JSON array format."""
             return score
         
         # [Simplified logic for brevity - keeping your existing robust preprocessing]
-        # Handle log data
-        if "log" in tool_name.lower() and "logs" in result:
+        # Handle log data (use more specific check to avoid matching "changelog")
+        if "log" in tool_name.lower() and "changelog" not in tool_name.lower() and "logs" in result:
             logs_data = result.get("logs", [])
             if logs_data and search_terms:
                 scored_logs = []
@@ -523,7 +541,7 @@ Respond ONLY with valid JSON array format."""
                 "execution_summary": {"tools_executed": len(state.get("executed_tools", []))}
             }
             
-            system_prompt = f"""You are a technical assistant. Answer ONLY using data from tool_results below.
+            system_prompt = f"""You are a technical assistant providing narrative analysis. Answer ONLY using data from tool_results below.
 Context: {json.dumps(context, indent=2)}
 
 CONVERSATION CONTEXT AWARENESS:
@@ -543,14 +561,32 @@ CRITICAL ANTI-HALLUCINATION RULES (MANDATORY):
 6. **Do NOT make diagnostic conclusions unless supported by explicit data.**
 7. **When uncertain, describe what data IS available and what is MISSING.**
 
-FORMATTING RULES:
-- Use SINGLE newlines (`\n`) not double (`\n\n`) between sections
-- Keep response compact and readable
-- Use bullet points with `-` for lists
-- Use `**bold**` for emphasis, not headers
-- Maximum 1 blank line between major sections
+RESPONSE FORMAT - PARAGRAPH ANALYSIS (MANDATORY):
+Write your response as flowing narrative paragraphs, NOT as structured lists or bullet points.
 
-Format: Provide factual summary → List what data shows → Identify gaps → Avoid speculation."""
+**Structure:**
+1. **Opening Summary** (1-2 paragraphs): Provide high-level overview of the resource/incident/topic with key identifying information woven naturally into sentences.
+
+2. **Detailed Analysis** (2-4 paragraphs): Discuss findings in narrative form:
+   - Weave version, metadata, status information into descriptive sentences
+   - Describe change history as a timeline narrative ("The resource experienced multiple deletion events, with the most recent occurring on December 1st at 10:30 AM...")
+   - Connect related information contextually ("While the resource shows an Active status, the version information indicates...")
+   
+3. **Data Gaps & Context** (1 paragraph): Naturally describe what information is unavailable ("The available data does not include details about related tickets or notifications, which limits our ability to understand...")
+
+**Style Guidelines:**
+- Use natural, flowing sentences that connect ideas
+- Avoid lists, bullet points, or structured sections with headers
+- Use transitional phrases: "Additionally," "Furthermore," "However," "Notably," "In contrast,"
+- Integrate specific data (IDs, timestamps, names) smoothly into narrative
+- Write as if explaining to a colleague, not documenting in a report
+- Keep paragraphs focused (3-5 sentences each)
+- Use bold (**text**) sparingly for critical terms or values
+
+**Example Paragraph Style:**
+"Resource 50944068, identified as vector-0, is a Kubernetes Pod workload currently showing an Active status. The resource was initially created on November 26th, 2025, and has been operating under version v0.0.5 since December 1st when a deletion operation was recorded. The metadata reveals it operates within the vector namespace and is categorized as a container orchestrator workload with minimal resource consumption at 0m CPU and 43 MiB memory."
+
+Format: Flowing narrative analysis → Integrated data points → Contextual gaps → Natural conclusions."""
             
             # Build messages with conversation history for context
             messages = [{"role": "system", "content": system_prompt}]

@@ -1,69 +1,55 @@
 INFO:     llm_client.py:47    - ✅ LLM clients initialized. Main: gpt-4o, Router: gpt-4o-mini
 INFO:     cust_logger.py:68    - Set message color for graph.py to MAGENTA
 INFO:     cust_logger.py:68    - Set message color for server.py to PURPLE
-INFO:     server.py:53    - {"timestamp": "2025-12-02T16:26:57.770050", "uuid": null, "received": {"uuid": "ruler-accident-maybe-late", "init": true}}
-INFO:     server.py:64    - {"timestamp": "2025-12-02T16:26:57.770468", "uuid": "ruler-accident-maybe-late", "op": "Initializing ws with client."}
-INFO:     server.py:53    - {"timestamp": "2025-12-02T16:27:35.472413", "uuid": "ruler-accident-maybe-late", "received": {"uuid": "ruler-accident-maybe-late", "message": "tell me everything about resource 50944068 - its details, version, metadata, related tickets, change history, and notifications", "init": false}}
+INFO:     server.py:53    - {"timestamp": "2025-12-02T16:53:01.819721", "uuid": null, "received": {"uuid": "will-forgot-cup-dozen", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-02T16:53:01.819869", "uuid": "will-forgot-cup-dozen", "op": "Initializing ws with client."}
+INFO:     server.py:53    - {"timestamp": "2025-12-02T16:53:19.592323", "uuid": "will-forgot-cup-dozen", "received": {"uuid": "will-forgot-cup-dozen", "message": "tell me everything about vector-0 resource", "init": false}}
 INFO:     graph.py:115   - 🚦 Routing query through semantic LLM router...
-INFO:     llm_client.py:118   - 🚦 Router (gpt-4o-mini) decision for 'tell me everything about resource 50944068 - its d...': Enhanced Mode
-INFO:     graph.py:121   - 🚀 Using enhanced workflow for: tell me everything about resource 50944068 - its d...
-INFO:     workflow.py:179   - 🚀 Processing: 'tell me everything about resource 50944068 - its details, version, metadata, related tickets, change history, and notifications'
-INFO:     workflow.py:73    - 🎯 Orchestrator: Starting workflow
+INFO:     llm_client.py:118   - 🚦 Router (gpt-4o-mini) decision for 'tell me everything about vector-0 resource...': Enhanced Mode
+INFO:     graph.py:121   - 🚀 Using enhanced workflow for: tell me everything about vector-0 resource...
+INFO:     workflow.py:244   - 🚀 Processing: 'tell me everything about vector-0 resource'
+INFO:     workflow.py:79    - 🎯 Orchestrator: Starting workflow
 INFO:     mcp_client.py:290   - ✅ Created MCP client for session default
 INFO:     mcp_client.py:229   - 📋 Fetching available MCP tools
 INFO:     mcp_client.py:57    - ✅ Fetched 47 MCP tools from server
-INFO:     workflow.py:80    - 📋 Loaded 47 available MCP tools
-INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session ruler-accident-maybe-late
+INFO:     workflow.py:86    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session will-forgot-cup-dozen
 INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
 INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
-INFO:     workflow.py:99    - 🔍 Query Analysis: Analyzing user query
-INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'tell me everything about resource 50944068 - its d...'
-INFO:     llm_client.py:174   - 🔍 Query analyzed: infrastructure_query
-INFO:     llm_client.py:175   - 🎯 IDs extracted: 50944068 | Service Name: None
-INFO:     llm_client.py:268   - 📋 Tool plan created: 6 tools planned
+INFO:     workflow.py:105   - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'tell me everything about vector-0 resource...'
+INFO:     llm_client.py:174   - 🔍 Query analyzed: exploration
+INFO:     llm_client.py:175   - 🎯 IDs extracted: None | Service Name: vector-0
+INFO:     llm_client.py:286   - 📋 Tool plan created: 1 tools planned
 INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
   {
-    "name": "get_resource_by_id",
+    "name": "search_resources",
     "parameters": {
-      "resource_id": "50944068"
-    }
-  },
-  {
-    "name": "get_resource_version",
-    "parameters": {
-      "resource_id": "50944068"
-    }
-  },
-  {
-    "name": "get_resource_metadata",
-    "parameters": {
-      "resource_id": "50944068"
-    }
-  },
-  {
-    "name": "get_resource_tickets",
-    "parameters": {
-      "resource_id": "50944068"
-    }
-  },
-  {
-    "name": "get_changelog_by_resource",
-    "parameters": {
-      "resource_id": "50944068"
-    }
-  },
-  {
-    "name": "get_notifications_by_resource",
-    "parameters": {
-      "resource_id": "50944068"
+      "query": "vector-0"
     }
   }
 ]
-INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=infrastructure_query, confidence=0.9
-INFO:     workflow.py:104   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=exploration, confidence=0.8
+INFO:     workflow.py:110   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_resources (attempt 1/2)
+INFO:     mcp_client.py:290   - ✅ Created MCP client for session will-forgot-cup-dozen
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_resources
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "vector-0"}
+INFO:     mcp_client.py:127   - ✅ Tool search_resources executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:129   - 🔍 Comprehensive Check: Analyzing if follow-up needed
+INFO:     comprehensive_query_agent.py:101   - ✅ Extracted resource_id: 50944068 (vector-0)
+INFO:     comprehensive_query_agent.py:64    - 🔄 Comprehensive query detected with extracted IDs: {'resource_id': 50944068, 'resource_name': 'vector-0'}
+INFO:     workflow.py:131   - 🔍 Comprehensive Check Result: needs_followup=True, extracted_ids={'resource_id': 50944068, 'resource_name': 'vector-0'}
+INFO:     workflow.py:140   - 🔍 Followup Node Check: needs_followup=True, extracted_ids={'resource_id': 50944068, 'resource_name': 'vector-0'}
+INFO:     workflow.py:141   - 🔍 Full state keys: ['user_query', 'session_id', 'request_id', 'timestamp', 'query_type', 'intent', 'entities', 'confidence_score', 'specificity_level', 'query_analysis', 'available_tools', 'tool_plan', 'execution_plan', 'execution_strategy', 'executed_tools', 'current_tool_index', 'multi_query_results', 'aggregated_context', 'sub_query_id', 'mcp_results', 'context_data', 'conversation_history', 'incident_analysis', 'root_cause_analysis', 'timeline_data', 'enrichment_data', 'forward_links', 'annotations', 'final_response', 'workflow_status', 'current_agent', 'error_count', 'retry_attempts', 'data_quality_score', 'response_completeness', 'investigation_depth', 'needs_comprehensive_followup', 'extracted_ids', 'followup_tool_plan', 'completion_timestamp', 'multi_query_summary']
+INFO:     workflow.py:147   - 🔄 Comprehensive Follow-up: Creating and executing follow-up plan
+INFO:     comprehensive_query_agent.py:146   - 📋 Created comprehensive resource plan for ID: 50944068
+INFO:     comprehensive_query_agent.py:159   - ✅ Follow-up plan created with 6 tools
+INFO:     workflow.py:172   - 🔄 Executing 6 comprehensive follow-up tools
 INFO:     tool_execution_agent.py:37    - 🛠️ Executing 6 tools
 INFO:     tool_execution_agent.py:92    - 🔧 Executing get_resource_by_id (attempt 1/2)
-INFO:     mcp_client.py:290   - ✅ Created MCP client for session ruler-accident-maybe-late
 INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_resource_by_id
 INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
 INFO:     mcp_client.py:127   - ✅ Tool get_resource_by_id executed successfully
@@ -88,18 +74,19 @@ INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_notifications_by_re
 INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
 INFO:     mcp_client.py:127   - ✅ Tool get_notifications_by_resource executed successfully
 INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
-INFO:     workflow.py:123   - ✨ Response Enrichment: Enriching response
+INFO:     workflow.py:182   - ✅ Comprehensive follow-up execution completed
+INFO:     workflow.py:188   - ✨ Response Enrichment: Enriching response
 INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
 INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
 INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
-INFO:     llm_client.py:363   - 🔍 DEBUG get_changelog_by_resource - result keys: ['resource_id', 'changelogs', 'count', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:368   - 🔍 DEBUG get_changelog_by_resource - found 'changelogs' array with 5 items
-INFO:     llm_client.py:394   - 📋 Preprocessed 5 changelogs for get_changelog_by_resource
-INFO:     llm_client.py:515   - 🔍 Preprocessed get_changelog_by_resource: 5 items
-INFO:     llm_client.py:515   - 🔍 Preprocessed get_notifications_by_resource: 0 items
-INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': '**Resource Details:**\n- **ID:** 50944068\n- **Name:** vector-0\n- **Type:** Workload\n- **SubType:** Pod\n- **Status:** Active\n- **Provider:** Kubernetes\n- **Created At:** 2025-
-INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 1380 chars
+INFO:     llm_client.py:381   - 🔍 DEBUG get_changelog_by_resource - result keys: ['resource_id', 'changelogs', 'count', 'timestamp', 'tool', 'parameters', 'success']
+INFO:     llm_client.py:386   - 🔍 DEBUG get_changelog_by_resource - found 'changelogs' array with 5 items
+INFO:     llm_client.py:412   - 📋 Preprocessed 5 changelogs for get_changelog_by_resource
+INFO:     llm_client.py:533   - 🔍 Preprocessed get_changelog_by_resource: 5 items
+INFO:     llm_client.py:533   - 🔍 Preprocessed get_notifications_by_resource: 0 items
+INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'The resource identified as **vector-0** is a Kubernetes Pod workload, which is currently marked as Active. It was created on November 26th, 2025, and is managed by the Kubernetes p
+INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 2085 chars
 INFO:     response_enrichment_agent.py:92    - ✅ Response enrichment completed with 3 forward links
-INFO:     workflow.py:138   - 🎯 Orchestrator: Finalizing workflow
-INFO:     workflow.py:220   - ✅ Processing completed successfully
-INFO:     graph.py:144   - {"timestamp": "2025-12-02T16:27:59.290801", "uuid": "ruler-accident-maybe-late", "llm_method": "enhanced_workflow", "sent": "**Resource Details:**\n- **ID:** 50944068\n- **Name:** vector-0\n- **Type:** Workload\n- **SubType:** Po"}
+INFO:     workflow.py:203   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:285   - ✅ Processing completed successfully
+INFO:     graph.py:144   - {"timestamp": "2025-12-02T16:54:14.863921", "uuid": "will-forgot-cup-dozen", "llm_method": "enhanced_workflow", "sent": "The resource identified as **vector-0** is a Kubernetes Pod workload, which is currently marked as A"}

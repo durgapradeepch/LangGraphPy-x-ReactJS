@@ -66,6 +66,11 @@ class ChatState(TypedDict):
     response_completeness: float
     investigation_depth: int
     
+    # Comprehensive query handling
+    needs_comprehensive_followup: bool
+    extracted_ids: Dict[str, Any]
+    followup_tool_plan: List[Dict[str, Any]]
+    
     completion_timestamp: Optional[str]
     multi_query_summary: Optional[Dict[str, Any]]
 
@@ -132,6 +137,11 @@ def create_initial_state(user_query: str, session_id: Optional[str] = None) -> C
         "data_quality_score": 0.0,
         "response_completeness": 0.0,
         "investigation_depth": 0,
+        
+        # Comprehensive query handling
+        "needs_comprehensive_followup": False,
+        "extracted_ids": {},
+        "followup_tool_plan": [],
         
         "completion_timestamp": None,
         "multi_query_summary": None
