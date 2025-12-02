@@ -3,6 +3,7 @@ Enhanced LangGraph Workflow - Intelligent orchestration with MCP tools
 """
 
 import logging
+import uuid
 from datetime import datetime
 from typing import Dict, Any
 from langgraph.graph import StateGraph, END
@@ -136,8 +137,24 @@ class EnhancedLangGraphWorkflow:
         """Orchestrator finalization"""
         logger.info("🎯 Orchestrator: Finalizing workflow")
         
+        # Update conversation history with current interaction
+        conversation_history = state.get("conversation_history", []).copy()
+        conversation_history.append({
+            "role": "user",
+            "content": state.get("user_query", "")
+        })
+        conversation_history.append({
+            "role": "assistant", 
+            "content": state.get("final_response", "")
+        })
+        
+        # Keep only last 10 messages (5 exchanges) to avoid context overflow
+        if len(conversation_history) > 10:
+            conversation_history = conversation_history[-10:]
+        
         final_state = {
             **state,
+            "conversation_history": conversation_history,
             "workflow_status": "completed",
             "completion_timestamp": datetime.now().isoformat()
         }
@@ -164,17 +181,37 @@ class EnhancedLangGraphWorkflow:
             # Store websocket separately (not in state - can't be serialized)
             self._current_websocket = websocket
             
+            # Determine the thread_id for this conversation
+            thread_id = session_id or str(uuid.uuid4())
+            thread_config = {"configurable": {"thread_id": thread_id}}
+            
+            # Try to get existing state from checkpointer to preserve conversation_history
+            existing_state = None
+            try:
+                existing_state = await self.app.aget_state(thread_config)
+                if existing_state and existing_state.values:
+                    logger.info(f"📚 Found existing conversation state for thread: {thread_id}")
+                    # Check if there's conversation history
+                    conv_history = existing_state.values.get("conversation_history", [])
+                    if conv_history:
+                        logger.info(f"💬 Loaded {len(conv_history)} previous messages from conversation history")
+            except Exception as e:
+                logger.debug(f"No existing state found (new conversation): {e}")
+            
             # Create initial state
-            initial_state = create_initial_state(user_query, session_id)
+            initial_state = create_initial_state(user_query, thread_id)
+            
+            # If we have existing conversation history, preserve it
+            if existing_state and existing_state.values:
+                existing_history = existing_state.values.get("conversation_history", [])
+                if existing_history:
+                    initial_state["conversation_history"] = existing_history
+                    logger.info(f"✅ Preserved {len(existing_history)} messages from previous conversation")
             
             # Run the workflow
             result = await self.app.ainvoke(
                 initial_state,
-                config={
-                    "configurable": {
-                        "thread_id": session_id or initial_state["session_id"]
-                    }
-                }
+                config=thread_config
             )
             
             # Format response

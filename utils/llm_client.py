@@ -80,12 +80,15 @@ IMPORTANT QUERY TYPE DETECTION:
 
 CRITICAL: For infrastructure queries, the user wants REAL data from your system, NOT generic instructions!
 
-IMPORTANT: Extract search terms intelligently:
+IMPORTANT: Extract search terms intelligently with AGGRESSIVE variations:
 - For "pods in CrashLoopBackOff", extract: ["pod", "crashloopbackoff", "crash", "failed", "error"]
-- For "Mit-runtime-api-services", extract: ["mit", "runtime", "api", "services", "mit-runtime-api-services"]
-- For "Shopping 3 website", extract: ["shopping", "shopping 3", "website"]
-- For "Acme-Cart", extract: ["acme", "cart", "acme-cart"]
-- Include variations and partial matches
+- For "Mit-runtime-api-services", extract: ["runtime", "api", "services", "runtime-api", "aws", "aws-api", "runtime-aws"]
+- For "Shopping 3 website", extract: ["shopping", "shopping 3", "website", "shopping3"]
+- For "Acme-Cart", extract: ["acme", "cart", "acme-cart", "acmecart"]
+- Break hyphenated/compound names into ALL parts: "Mit-runtime-api" → ["runtime", "api", "runtime-api"]
+- Include partial matches: "runtime-api" should also try "runtime", "api" individually
+- Remove common words: "the", "incident", "about", "on", "describe", "show", "tell", "mit", "acme" (company prefixes)
+- Focus on SERVICE names, not company prefixes
 
 Respond ONLY with valid JSON in this exact format:
 {{
@@ -282,18 +285,57 @@ Consider:
                 continue
         return "Unknown"
     
-    def _preprocess_tool_result(self, result: Dict[str, Any], tool_name: str) -> Dict[str, Any]:
+    def _preprocess_tool_result(self, result: Dict[str, Any], tool_name: str, search_terms: List[str] = None) -> Dict[str, Any]:
         """Pre-process complex nested data structures for better LLM consumption"""
         
+        if search_terms is None:
+            search_terms = []
+        
         logger.info(f"🔧 Preprocessing tool: {tool_name}, result keys: {list(result.keys()) if isinstance(result, dict) else 'not a dict'}")
+        
+        # Helper function to calculate fuzzy match score
+        def calculate_match_score(text: str, terms: List[str]) -> int:
+            if not terms or not text:
+                return 0
+            text_lower = text.lower()
+            score = 0
+            for term in terms:
+                term_lower = term.lower()
+                # Exact match gets 3 points
+                if term_lower in text_lower:
+                    score += 3
+                # Partial match (term is part of a word) gets 1 point
+                elif any(term_lower in word for word in text_lower.split()):
+                    score += 1
+            return score
         
         # Handle log data (from search_logs, query_logs) - CRITICAL: these can return 1000s of logs
         if "log" in tool_name.lower() and "logs" in result:
             logs_data = result.get("logs")
             if logs_data and isinstance(logs_data, list):
-                logger.info(f"📋 Found {len(logs_data)} logs, limiting to 20 and truncating fields")
+                logger.info(f"📋 Found {len(logs_data)} logs")
+                
+                # Apply fuzzy matching if search_terms provided
+                if search_terms:
+                    logger.info(f"🔍 Applying fuzzy matching to logs with terms: {search_terms}")
+                    scored_logs = []
+                    for log in logs_data:
+                        msg = str(log.get("_msg") or log.get("message") or "")
+                        service = str(log.get("object") or log.get("labels.type") or "")
+                        search_text = f"{msg} {service}"
+                        score = calculate_match_score(search_text, search_terms)
+                        scored_logs.append((score, log))
+                    
+                    # Sort by score and take top 20
+                    scored_logs.sort(key=lambda x: x[0], reverse=True)
+                    logs_data = [log for score, log in scored_logs[:20]]
+                    logger.info(f"🎯 After fuzzy matching, top log scores: {[score for score, _ in scored_logs[:20]]}")
+                else:
+                    logs_data = logs_data[:20]
+                
+                logger.info(f"✅ Processing {len(logs_data)} logs")
                 simplified_logs = []
-                for log in logs_data[:20]:  # Increased to 20 logs
+                for log in logs_data:
                     simplified = {
                         "time": log.get("_time") or log.get("_ts") or "Unknown",
                         "level": log.get("msg.logs.level") or log.get("labels.level") or "Unknown",
@@ -303,22 +345,41 @@ Consider:
                     }
                     simplified_logs.append(simplified)
                 
-                logger.info(f"✅ Simplified {len(simplified_logs)} logs from {len(logs_data)} total")
                 return {
                     "query": result.get("query", result.get("search_text", "N/A")),
-                    "total_count": result.get("total_count", result.get("count", len(logs_data))),
+                    "total_count": result.get("total_count", result.get("count", len(result.get("logs", [])))),
                     "returned": len(simplified_logs),
                     "logs": simplified_logs,
-                    "note": f"Showing first {len(simplified_logs)} of {result.get('total_count', result.get('count', len(logs_data)))} logs (truncated for brevity)"
+                    "note": f"Showing top {len(simplified_logs)} logs" + (" (fuzzy matched)" if search_terms else "")
                 }
         
         # Handle ticket data (from get_tickets, search_tickets_by_*, search_tickets)
         if "ticket" in tool_name.lower():
             tickets_data = result.get("sample") or result.get("tickets")
             if tickets_data and isinstance(tickets_data, list):
-                logger.info(f"🎫 Found {len(tickets_data)} tickets, limiting to 5 and truncating")
+                logger.info(f"🎫 Found {len(tickets_data)} tickets")
+                
+                # Apply fuzzy matching if search_terms provided
+                if search_terms:
+                    logger.info(f"🔍 Applying fuzzy matching to tickets with terms: {search_terms}")
+                    scored_tickets = []
+                    for ticket in tickets_data:
+                        title = str(ticket.get("title", ""))
+                        description = str(ticket.get("description", ""))
+                        search_text = f"{title} {description}"
+                        score = calculate_match_score(search_text, search_terms)
+                        scored_tickets.append((score, ticket))
+                    
+                    # Sort by score and take top 5
+                    scored_tickets.sort(key=lambda x: x[0], reverse=True)
+                    tickets_data = [ticket for score, ticket in scored_tickets[:5]]
+                    logger.info(f"🎯 After fuzzy matching, top ticket scores: {[score for score, _ in scored_tickets[:5]]}")
+                else:
+                    tickets_data = tickets_data[:5]
+                
+                logger.info(f"✅ Processing {len(tickets_data)} tickets")
                 simplified_tickets = []
-                for ticket in tickets_data[:5]:  # Increased to 5 tickets
+                for ticket in tickets_data:
                     simplified = {
                         "id": ticket.get("id", "Unknown"),
                         "ticket_ref": ticket.get("sourceRef", "Unknown"),
@@ -332,21 +393,41 @@ Consider:
                     }
                     simplified_tickets.append(simplified)
                 
-                logger.info(f"✅ Simplified {len(simplified_tickets)} tickets")
                 return {
-                    "count": result.get("count", len(tickets_data)),
+                    "count": result.get("count", len(result.get("tickets", []))),
                     "returned": len(simplified_tickets),
                     "tickets": simplified_tickets,
-                    "note": f"Showing first {len(simplified_tickets)} of {result.get('count', len(tickets_data))} tickets (truncated for brevity)"
+                    "note": f"Showing top {len(simplified_tickets)} tickets" + (" (fuzzy matched)" if search_terms else "")
                 }
         
         # Handle incident data
         if "incident" in tool_name.lower():
             incidents_data = result.get("sample") or result.get("incidents")
             if incidents_data and isinstance(incidents_data, list):
-                logger.info(f"🚨 Found {len(incidents_data)} incidents, limiting to 10")
+                logger.info(f"🚨 Found {len(incidents_data)} incidents")
+                
+                # Apply fuzzy matching if search_terms provided
+                if search_terms:
+                    logger.info(f"🔍 Applying fuzzy matching with terms: {search_terms}")
+                    scored_incidents = []
+                    for incident in incidents_data:
+                        title = str(incident.get("title", ""))
+                        description = str(incident.get("description", ""))
+                        search_text = f"{title} {description}"
+                        score = calculate_match_score(search_text, search_terms)
+                        scored_incidents.append((score, incident))
+                    
+                    # Sort by score (highest first) and take top 10
+                    scored_incidents.sort(key=lambda x: x[0], reverse=True)
+                    incidents_data = [inc for score, inc in scored_incidents[:10]]
+                    logger.info(f"🎯 After fuzzy matching, top incident scores: {[score for score, _ in scored_incidents[:10]]}")
+                else:
+                    # No search terms, just take first 10
+                    incidents_data = incidents_data[:10]
+                
+                logger.info(f"✅ Processing {len(incidents_data)} incidents")
                 simplified_incidents = []
-                for incident in incidents_data[:10]:
+                for incident in incidents_data:
                     simplified_incidents.append({
                         "id": incident.get("id", "Unknown"),
                         "title": str(incident.get("title", ""))[:120],
@@ -358,21 +439,43 @@ Consider:
                         "created_at": incident.get("createdAt", "Unknown"),
                         "updated_at": incident.get("updatedAt", "Unknown")
                     })
-                logger.info(f"✅ Simplified {len(simplified_incidents)} incidents")
                 return {
-                    "count": result.get("count", len(incidents_data)),
+                    "count": result.get("count", len(result.get("incidents", []))),
                     "returned": len(simplified_incidents),
                     "incidents": simplified_incidents,
-                    "note": f"Showing first {len(simplified_incidents)} incidents"
+                    "note": f"Showing top {len(simplified_incidents)} incidents" + (" (fuzzy matched)" if search_terms else "")
                 }
         
         # Handle changelog data
         if "changelog" in tool_name.lower():
             changelogs_data = result.get("sample") or result.get("changelogs") or result.get("data")
             if changelogs_data and isinstance(changelogs_data, list):
-                logger.info(f"📝 Found {len(changelogs_data)} changelogs, limiting to 10")
+                logger.info(f"📝 Found {len(changelogs_data)} changelogs")
+                
+                # Apply fuzzy matching if search_terms provided
+                if search_terms:
+                    logger.info(f"🔍 Applying fuzzy matching to changelogs with terms: {search_terms}")
+                    scored_changelogs = []
+                    for changelog in changelogs_data:
+                        desc = changelog.get("display") or changelog.get("description") or ""
+                        if isinstance(desc, dict):
+                            desc = desc.get("description") or desc.get("title") or str(desc)
+                        event_type = changelog.get("eventType") or changelog.get("derivedType") or ""
+                        source = changelog.get("source") or ""
+                        search_text = f"{desc} {event_type} {source}"
+                        score = calculate_match_score(search_text, search_terms)
+                        scored_changelogs.append((score, changelog))
+                    
+                    # Sort by score and take top 10
+                    scored_changelogs.sort(key=lambda x: x[0], reverse=True)
+                    changelogs_data = [changelog for score, changelog in scored_changelogs[:10]]
+                    logger.info(f"🎯 After fuzzy matching, top changelog scores: {[score for score, _ in scored_changelogs[:10]]}")
+                else:
+                    changelogs_data = changelogs_data[:10]
+                
+                logger.info(f"✅ Processing {len(changelogs_data)} changelogs")
                 simplified_changelogs = []
-                for changelog in changelogs_data[:10]:
+                for changelog in changelogs_data:
                     # Extract description from display or description field
                     desc = changelog.get("display") or changelog.get("description") or ""
                     if isinstance(desc, dict):
@@ -389,12 +492,11 @@ Consider:
                         "region": changelog.get("region") or "Unknown",
                         "is_human": changelog.get("isActorHuman", False)
                     })
-                logger.info(f"✅ Simplified {len(simplified_changelogs)} changelogs")
                 return {
-                    "count": result.get("count", len(changelogs_data)),
+                    "count": result.get("count", len(result.get("changelogs", []))),
                     "returned": len(simplified_changelogs),
                     "changelogs": simplified_changelogs,
-                    "note": f"Showing first {len(simplified_changelogs)} changelogs"
+                    "note": f"Showing top {len(simplified_changelogs)} changelogs" + (" (fuzzy matched)" if search_terms else "")
                 }
         
         # Handle notification data
@@ -493,14 +595,22 @@ Consider:
             
             # Extract tool results
             mcp_results = state.get("mcp_results", [])
-            query_analysis = state.get("query_analysis") or {}
-            search_terms = query_analysis.get("search_terms", [])
+            # Get query_analysis from context_data (where it's actually stored)
+            context_data = state.get("context_data", {})
+            query_analysis = context_data.get("query_analysis", {})
+            # Get search terms from llm_analysis (where they're actually stored)
+            llm_analysis = query_analysis.get("llm_analysis", {})
+            search_terms = llm_analysis.get("search_terms", [])
             
             tool_data = []
             for result in mcp_results:
                 if result.get("success"):
-                    # Pre-process complex nested data structures
-                    processed_data = self._preprocess_tool_result(result.get("result", {}), result.get("tool_name", ""))
+                    # Pre-process complex nested data structures with fuzzy matching
+                    processed_data = self._preprocess_tool_result(
+                        result.get("result", {}), 
+                        result.get("tool_name", ""),
+                        search_terms=search_terms
+                    )
                     tool_data.append({
                         "tool": result.get("tool_name"),
                         "data": processed_data
@@ -521,7 +631,8 @@ Consider:
                 "execution_summary": {
                     "tools_executed": len(state.get("executed_tools", [])),
                     "success_count": len([r for r in mcp_results if r.get("success")])
-                }
+                },
+                "conversation_history": state.get("conversation_history", [])
             }
             
             # Log context size to diagnose token issues
@@ -551,10 +662,21 @@ If the user asks about infrastructure state (pods, containers, resources), you M
 
 CRITICAL INSTRUCTIONS FOR SMART FILTERING:
 1. If search_terms exist, filter the tool_results to find matches
-2. Use fuzzy matching: "Mit-runtime-api-services" should match "runtime api" or "Incident on runtime api"
-3. Look for partial matches in: title, description, applicationIds, metadata
-4. If exact match not found, present the CLOSEST matches with explanation
-5. Always explain what you found and why it matches (or why nothing matched)
+2. Use AGGRESSIVE fuzzy matching with these rules:
+   - Break query into keywords: "Mit-runtime-api-services" → ["runtime", "api", "services"]
+   - Match if ANY significant keyword (2+ chars) appears in title/description/source
+   - Ignore case, hyphens, underscores, apostrophes: "runtime-api" = "Runtime api" = "runtime_api" = "Runtime-aws-api's"
+   - Remove company prefixes: "mit", "acme", "gcp" - focus on service names
+   - Partial word matching: "api" matches "api's", "apis", "api-services"
+   - Score matches: 2+ keyword matches = strong match, 1 match = possible match
+   - Examples:
+     * "Mit-runtime-api-services" should match "Runtime-aws-api's are not working"
+     * "runtime api" should match "Incident on runtime api services"
+     * "cart service" should match "Acme cart service are down"
+3. Look for partial matches in ALL fields: title, description, applicationIds, metadata, source
+4. If no exact match, ALWAYS present the CLOSEST matches ranked by relevance
+5. Explain your matching logic: "I found 'Runtime-aws-api's are not working' which matches 'runtime' and 'api' from your query"
+6. For infrastructure queries: Filter by status in metadata.status.phase field (Running, Pending, Failed, CrashLoopBackOff)
 6. For infrastructure queries: Filter by status in metadata.status.phase field (Running, Pending, Failed, CrashLoopBackOff)
 
 FORMATTING INSTRUCTIONS FOR DIFFERENT DATA TYPES:
@@ -597,12 +719,25 @@ Generate a comprehensive, natural language response to the user's question with 
 If no exact match: explain what you searched for and present closest matches.
 If NO tools executed for infrastructure query: State that you need to query the system first.
 
+CONVERSATION CONTEXT:
+The conversation_history field contains previous exchanges. Use it to:
+- Answer follow-up questions (e.g., "what incidents did you mention?" → refer to previous assistant messages)
+- Maintain context across messages (e.g., "tell me more about that" → know what "that" refers to)
+- Avoid repeating information already shared
+
 Write in a conversational, helpful tone as if you're ChatGPT explaining the results with compact spacing and bullet points."""
             
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": "Generate the enriched response."}
-            ]
+            # Build messages array with conversation history
+            messages = [{"role": "system", "content": system_prompt}]
+            
+            # Add conversation history if available
+            conversation_history = context.get("conversation_history", [])
+            if conversation_history:
+                logger.info(f"📜 Including {len(conversation_history)} previous messages in context")
+                messages.extend(conversation_history)
+            
+            # Add current query
+            messages.append({"role": "user", "content": "Generate the enriched response."})
             
             logger.info("Invoking LLM for response generation...")
             

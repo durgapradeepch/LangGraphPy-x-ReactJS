@@ -1,65 +1,116 @@
 INFO:     llm_client.py:35    - ✅ LLM client initialized with model: gpt-4o
 INFO:     cust_logger.py:68    - Set message color for graph.py to MAGENTA
 INFO:     cust_logger.py:68    - Set message color for server.py to PURPLE
-INFO:     server.py:53    - {"timestamp": "2025-12-01T17:54:26.203087", "uuid": null, "received": {"uuid": "graph-stone-middle-through", "init": true}}
-INFO:     server.py:64    - {"timestamp": "2025-12-01T17:54:26.203482", "uuid": "graph-stone-middle-through", "op": "Initializing ws with client."}
-INFO:     server.py:53    - {"timestamp": "2025-12-01T17:54:59.124051", "uuid": "graph-stone-middle-through", "received": {"uuid": "graph-stone-middle-through", "message": "Audit all changes in the last 24 hours - show me changelogs, deployments, and who made them", "init": false}}
-INFO:     graph.py:118   - 🚀 Using enhanced workflow for: Audit all changes in the last 24 hours - show me c...
-INFO:     workflow.py:162   - 🚀 Processing: 'Audit all changes in the last 24 hours - show me changelogs, deployments, and who made them'
-INFO:     workflow.py:72    - 🎯 Orchestrator: Starting workflow
+INFO:     server.py:53    - {"timestamp": "2025-12-01T19:13:12.180068", "uuid": null, "received": {"uuid": "earlier-plate-compound-shop", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-01T19:13:12.180518", "uuid": "earlier-plate-compound-shop", "op": "Initializing ws with client."}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T19:13:46.873630", "uuid": "earlier-plate-compound-shop", "received": {"uuid": "earlier-plate-compound-shop", "message": "Tell me more about incident 415", "init": false}}
+INFO:     graph.py:118   - 🚀 Using enhanced workflow for: Tell me more about incident 415...
+INFO:     workflow.py:179   - 🚀 Processing: 'Tell me more about incident 415'
+INFO:     workflow.py:73    - 🎯 Orchestrator: Starting workflow
 INFO:     mcp_client.py:251   - ✅ Created MCP client for session default
 INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
 INFO:     mcp_client.py:56    - ✅ Fetched 47 MCP tools from server
-INFO:     workflow.py:79    - 📋 Loaded 47 available MCP tools
-INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session graph-stone-middle-through
+INFO:     workflow.py:80    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session earlier-plate-compound-shop
 INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
 INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
-INFO:     workflow.py:98    - 🔍 Query Analysis: Analyzing user query
-INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'Audit all changes in the last 24 hours - show me c...'
-INFO:     llm_client.py:114   - 🔍 Query analyzed: exploration with confidence 0.9
-INFO:     llm_client.py:257   - 📋 Tool plan created: 2 tools planned
+INFO:     workflow.py:99    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'Tell me more about incident 415...'
+INFO:     llm_client.py:117   - 🔍 Query analyzed: incident_analysis with confidence 0.9
+INFO:     llm_client.py:260   - 📋 Tool plan created: 1 tools planned
 INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
   {
-    "name": "search_changelogs",
+    "name": "get_incident_by_id",
     "parameters": {
-      "description": "last 24 hours"
-    }
-  },
-  {
-    "name": "search_changelogs_by_event_type",
-    "parameters": {
-      "event_type": "deployment"
+      "incident_id": "415"
     }
   }
 ]
-INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=exploration, confidence=0.9
-INFO:     workflow.py:103   - 🛠️ Tool Execution: Executing MCP tools
-INFO:     tool_execution_agent.py:37    - 🛠️ Executing 2 tools
-INFO:     tool_execution_agent.py:92    - 🔧 Executing search_changelogs (attempt 1/2)
-INFO:     mcp_client.py:251   - ✅ Created MCP client for session graph-stone-middle-through
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_changelogs
-INFO:     mcp_client.py:93    - ✅ Tool search_changelogs executed successfully
-INFO:     tool_execution_agent.py:92    - 🔧 Executing search_changelogs_by_event_type (attempt 1/2)
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_changelogs_by_event_type
-INFO:     mcp_client.py:93    - ✅ Tool search_changelogs_by_event_type executed successfully
+INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=incident_analysis, confidence=0.9
+INFO:     workflow.py:104   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_incident_by_id (attempt 1/2)
+INFO:     mcp_client.py:251   - ✅ Created MCP client for session earlier-plate-compound-shop
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_incident_by_id
+INFO:     mcp_client.py:93    - ✅ Tool get_incident_by_id executed successfully
 INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
-INFO:     workflow.py:122   - ✨ Response Enrichment: Enriching response
+INFO:     workflow.py:123   - ✨ Response Enrichment: Enriching response
 INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
 INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
 INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
-INFO:     llm_client.py:288   - 🔧 Preprocessing tool: search_changelogs, result keys: ['changelogs', 'count', 'count_is_exact', 'is_limited', 'page', 'page_size', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:480   - ⚠️ No preprocessing applied for tool: search_changelogs
-INFO:     llm_client.py:288   - 🔧 Preprocessing tool: search_changelogs_by_event_type, result keys: ['event_type', 'changelogs', 'count', 'page', 'page_size', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:480   - ⚠️ No preprocessing applied for tool: search_changelogs_by_event_type
-INFO:     llm_client.py:509   - Processing 2 successful tool results with search_terms: []
-INFO:     llm_client.py:514   - 📊 Preprocessed tool data size: 651 bytes (0.6 KB)
-INFO:     llm_client.py:530   - 📊 Context JSON size: 1097 bytes (1.1 KB)
-INFO:     llm_client.py:531   - 📊 Estimated tokens: ~274.25 (rough estimate)
-INFO:     llm_client.py:607   - Invoking LLM for response generation...
-INFO:     llm_client.py:617   - Streaming completed, total length: 639
-INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "I checked for changes in the last 24 hours, including changelogs and deployments, but here's what I found:\n\n• **Changelogs**: There were no changelogs recorded in the last 24 hou
-INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 639 chars
+INFO:     llm_client.py:294   - 🔧 Preprocessing tool: get_incident_by_id, result keys: ['incident', 'timestamp', 'tool', 'parameters', 'success']
+INFO:     llm_client.py:582   - ⚠️ No preprocessing applied for tool: get_incident_by_id
+INFO:     llm_client.py:619   - Processing 1 successful tool results with search_terms: ['incident', '415']
+INFO:     llm_client.py:624   - 📊 Preprocessed tool data size: 1642 bytes (1.6 KB)
+INFO:     llm_client.py:641   - 📊 Context JSON size: 2554 bytes (2.5 KB)
+INFO:     llm_client.py:642   - 📊 Estimated tokens: ~638.5 (rough estimate)
+INFO:     llm_client.py:742   - Invoking LLM for response generation...
+INFO:     llm_client.py:752   - Streaming completed, total length: 722
+INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'Here is the detailed information about incident 415:\n\n• **ID**: 415\n• **Title**: GCP Services are down\n• **Severity**: High\n• **Status**: New\n• **Description**: GCP Services 
+INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 722 chars
 INFO:     response_enrichment_agent.py:86    - ✅ Response enrichment completed with 5 forward links
-INFO:     workflow.py:137   - 🎯 Orchestrator: Finalizing workflow
-INFO:     workflow.py:183   - ✅ Processing completed successfully
-INFO:     graph.py:141   - {"timestamp": "2025-12-01T17:55:10.484078", "uuid": "graph-stone-middle-through", "llm_method": "enhanced_workflow", "sent": "I checked for changes in the last 24 hours, including changelogs and deployments, but here's what I "}
+INFO:     workflow.py:138   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:220   - ✅ Processing completed successfully
+INFO:     graph.py:141   - {"timestamp": "2025-12-01T19:13:56.674143", "uuid": "earlier-plate-compound-shop", "llm_method": "enhanced_workflow", "sent": "Here is the detailed information about incident 415:\n\n\u2022 **ID**: 415\n\u2022 **Title**: GCP Services are do"}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T19:14:08.150387", "uuid": "earlier-plate-compound-shop", "received": {"uuid": "earlier-plate-compound-shop", "message": "What was the severity of those incidents?", "init": false}}
+INFO:     graph.py:118   - 🚀 Using enhanced workflow for: What was the severity of those incidents?...
+INFO:     workflow.py:179   - 🚀 Processing: 'What was the severity of those incidents?'
+INFO:     workflow.py:193   - 📚 Found existing conversation state for thread: earlier-plate-compound-shop
+INFO:     workflow.py:197   - 💬 Loaded 2 previous messages from conversation history
+INFO:     workflow.py:209   - ✅ Preserved 2 messages from previous conversation
+INFO:     workflow.py:73    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
+INFO:     workflow.py:80    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session earlier-plate-compound-shop
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:99    - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'What was the severity of those incidents?...'
+INFO:     llm_client.py:117   - 🔍 Query analyzed: incident_analysis with confidence 0.9
+INFO:     llm_client.py:260   - 📋 Tool plan created: 2 tools planned
+INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
+  {
+    "name": "search_incidents",
+    "parameters": {
+      "query": "severity incidents"
+    }
+  },
+  {
+    "name": "get_incidents",
+    "parameters": {}
+  }
+]
+INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=incident_analysis, confidence=0.9
+INFO:     workflow.py:104   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 2 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:93    - ✅ Tool search_incidents executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_incidents (attempt 1/2)
+INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_incidents
+INFO:     mcp_client.py:93    - ✅ Tool get_incidents executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:123   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
+INFO:     llm_client.py:294   - 🔧 Preprocessing tool: search_incidents, result keys: ['incidents', 'count', 'page', 'page_size', 'timestamp', 'tool', 'parameters', 'success']
+INFO:     llm_client.py:582   - ⚠️ No preprocessing applied for tool: search_incidents
+INFO:     llm_client.py:294   - 🔧 Preprocessing tool: get_incidents, result keys: ['incidents', 'count', 'count_is_exact', 'is_limited', 'timestamp', 'tool', 'parameters', 'success']
+INFO:     llm_client.py:407   - 🚨 Found 41 incidents
+INFO:     llm_client.py:411   - 🔍 Applying fuzzy matching with terms: ['severity', 'incidents']
+INFO:     llm_client.py:423   - 🎯 After fuzzy matching, top incident scores: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+INFO:     llm_client.py:428   - ✅ Processing 10 incidents
+INFO:     llm_client.py:619   - Processing 2 successful tool results with search_terms: ['severity', 'incidents']
+INFO:     llm_client.py:624   - 📊 Preprocessed tool data size: 3312 bytes (3.2 KB)
+INFO:     llm_client.py:641   - 📊 Context JSON size: 5964 bytes (5.8 KB)
+INFO:     llm_client.py:642   - 📊 Estimated tokens: ~1491.0 (rough estimate)
+INFO:     llm_client.py:736   - 📜 Including 2 previous messages in context
+INFO:     llm_client.py:742   - Invoking LLM for response generation...
+INFO:     llm_client.py:752   - Streaming completed, total length: 742
+INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'Certainly! Here\'s an enriched response with detailed information about incident 415:\n\nIncident 415 is a high-severity issue titled "GCP Services are down." This incident was tri
+INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 742 chars
+INFO:     response_enrichment_agent.py:86    - ✅ Response enrichment completed with 5 forward links
+INFO:     workflow.py:138   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:220   - ✅ Processing completed successfully
+INFO:     graph.py:141   - {"timestamp": "2025-12-01T19:14:20.085691", "uuid": "earlier-plate-compound-shop", "llm_method": "enhanced_workflow", "sent": "Certainly! Here's an enriched response with detailed information about incident 415:\n\nIncident 415 i"}

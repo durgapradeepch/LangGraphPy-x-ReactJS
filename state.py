@@ -42,6 +42,7 @@ class ChatState(TypedDict):
     
     # Context and metadata
     context_data: Dict[str, Any]
+    conversation_history: List[Dict[str, str]]  # Previous user/assistant messages
     
     # Analysis results
     incident_analysis: Optional[Dict[str, Any]]
@@ -108,6 +109,7 @@ def create_initial_state(user_query: str, session_id: Optional[str] = None) -> C
         
         # Context and metadata
         "context_data": {},
+        "conversation_history": [],
         
         # Analysis results
         "incident_analysis": None,
