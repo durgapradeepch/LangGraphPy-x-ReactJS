@@ -1,0 +1,52 @@
+INFO:     llm_client.py:47    - ✅ LLM clients initialized. Main: gpt-4o, Router: gpt-4o-mini
+INFO:     cust_logger.py:68    - Set message color for graph.py to MAGENTA
+INFO:     cust_logger.py:68    - Set message color for server.py to PURPLE
+INFO:     server.py:53    - {"timestamp": "2025-12-02T18:51:18.937842", "uuid": null, "received": {"uuid": "slip-current-usually-against", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-02T18:51:18.937972", "uuid": "slip-current-usually-against", "op": "Initializing ws with client."}
+INFO:     server.py:53    - {"timestamp": "2025-12-02T18:51:48.497331", "uuid": "slip-current-usually-against", "received": {"uuid": "slip-current-usually-against", "message": "describe me about the incident happened on 'Mit-runtime-api-services'", "init": false}}
+INFO:     graph.py:115   - 🚦 Routing query through semantic LLM router...
+INFO:     llm_client.py:118   - 🚦 Router (gpt-4o-mini) decision for 'describe me about the incident happened on 'Mit-ru...': Enhanced Mode
+INFO:     graph.py:121   - 🚀 Using enhanced workflow for: describe me about the incident happened on 'Mit-ru...
+INFO:     workflow.py:254   - 🚀 Processing: 'describe me about the incident happened on 'Mit-runtime-api-services''
+INFO:     workflow.py:79    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:290   - ✅ Created MCP client for session default
+INFO:     mcp_client.py:229   - 📋 Fetching available MCP tools
+INFO:     mcp_client.py:57    - ✅ Fetched 47 MCP tools from server
+INFO:     workflow.py:86    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session slip-current-usually-against
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:105   - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'describe me about the incident happened on 'Mit-ru...'
+INFO:     llm_client.py:210   - 🔍 Query analyzed: incident_analysis
+INFO:     llm_client.py:211   - 🎯 IDs extracted: None | Service Name: Mit-runtime-api-services
+INFO:     llm_client.py:392   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
+  {
+    "name": "search_incidents",
+    "parameters": {
+      "query": "Mit-runtime-api-services"
+    }
+  }
+]
+INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=incident_analysis, confidence=0.8
+INFO:     workflow.py:110   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
+INFO:     mcp_client.py:290   - ✅ Created MCP client for session slip-current-usually-against
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "Mit-runtime-api-services"}
+INFO:     mcp_client.py:165   - 🔍 MCP DEBUG - Tool search_incidents returned 0 incidents
+INFO:     mcp_client.py:127   - ✅ Tool search_incidents executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:129   - 🔍 Comprehensive Check: Analyzing if follow-up needed
+INFO:     comprehensive_query_agent.py:76    - ⏭️  No IDs found in search results, skipping expansion
+INFO:     workflow.py:131   - 🔍 Comprehensive Check Result: needs_followup=False, extracted_ids={}
+INFO:     workflow.py:140   - 🔍 Followup Node Check: needs_followup=False, extracted_ids={}
+INFO:     workflow.py:141   - 🔍 Full state keys: ['user_query', 'session_id', 'request_id', 'timestamp', 'query_type', 'intent', 'entities', 'confidence_score', 'specificity_level', 'query_analysis', 'available_tools', 'tool_plan', 'execution_plan', 'execution_strategy', 'executed_tools', 'current_tool_index', 'multi_query_results', 'aggregated_context', 'sub_query_id', 'mcp_results', 'context_data', 'conversation_history', 'incident_analysis', 'root_cause_analysis', 'timeline_data', 'enrichment_data', 'forward_links', 'annotations', 'final_response', 'workflow_status', 'current_agent', 'error_count', 'retry_attempts', 'data_quality_score', 'response_completeness', 'investigation_depth', 'needs_comprehensive_followup', 'extracted_ids', 'followup_tool_plan', 'completion_timestamp', 'multi_query_summary']
+INFO:     workflow.py:144   - ⏭️  Comprehensive follow-up not needed, skipping
+INFO:     workflow.py:188   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
+INFO:     llm_client.py:695   - 💡 No results found for exact query. Attempting broader search for suggestions...

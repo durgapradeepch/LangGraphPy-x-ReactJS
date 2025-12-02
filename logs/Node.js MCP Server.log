@@ -16,78 +16,7 @@ Testing Neo4j connection...
 Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
 ❌ Neo4j connection failed: connect ECONNREFUSED 127.0.0.1:7474
 Please ensure Neo4j is running and credentials are correct
-🔧 MCP Execute - Tool: search_incidents, Params: {"query":"GCP"}
-🔍 searchIncidents - Received params: {"query":"GCP"}
-🔍 searchIncidents - Search title: "GCP"
-🔍 searchIncidents - Manifest API returned 2 incidents
-🔧 MCP Execute - Tool: search_resources, Params: {"query":"GCP"}
-🔧 MCP Execute - Tool: get_tickets, Params: {}
-🔧 MCP Execute - Tool: get_notifications, Params: {}
-🔧 MCP Execute - Tool: list_tools, Params: {}
-🔧 MCP Execute - Tool: search_tickets, Params: {"query":"GCP"}
-🔧 MCP Execute - Tool: search_notifications, Params: {"query":"GCP"}
-🔧 MCP Execute - Tool: search_changelogs, Params: {"query":"GCP"}
-🔧 MCP Execute - Tool: search_logs, Params: {"query":"error"}
-🔍 searchLogs called with: search_text="undefined", labels={}, limit=20
-✅ VictoriaLogs returned 20 logs for query "*"
-🔧 MCP Execute - Tool: query_logs, Params: {"query":"error"}
-🔍 queryLogs called with params: {"query":"error"}
-📊 Total matching logs: , returning up to 1000
-🔧 MCP Execute - Tool: search_incidents, Params: {"query":"*"}
-🔍 searchIncidents - Received params: {"query":"*"}
-🔍 searchIncidents - Search title: "*"
-🔍 searchIncidents - Manifest API returned 0 incidents
-🔧 MCP Execute - Tool: search_incidents, Params: {"query":""}
-🔍 searchIncidents - Received params: {"query":""}
-🔍 searchIncidents - Search title: "undefined"
-🔍 searchIncidents - Manifest API returned 20 incidents
-🔧 MCP Execute - Tool: list_tools, Params: {}
-🔧 MCP Execute - Tool: search_incidents, Params: {"query":"GCP","page":1,"limit":5}
-🔍 searchIncidents - Received params: {"query":"GCP","page":1,"limit":5}
-🔍 searchIncidents - Search title: "GCP"
-🔍 searchIncidents - Manifest API returned 2 incidents
-🔧 MCP Execute - Tool: search_resources, Params: {"query":"vector","resourceType":"Workload","limit":3}
-🔧 MCP Execute - Tool: search_logs, Params: {"query":"error","limit":5,"start_time":"2025-12-02T00:00:00Z"}
-🔍 searchLogs called with: search_text="undefined", labels={}, limit=5
-✅ VictoriaLogs returned 5 logs for query "*"
-🔧 MCP Execute - Tool: get_incident_by_id, Params: {"incident_id":415}
-🔍 get_incident_by_id: input='415' (type: number), parsed=415 (type: number)
-📡 Making request to: https://api.dev.manifestit.tech/client/incident/415
-🔧 MCP Execute - Tool: get_incident_by_id, Params: {"incident_id":415}
-🔍 get_incident_by_id: input='415' (type: number), parsed=415 (type: number)
-📡 Making request to: https://api.dev.manifestit.tech/client/incident/415
-🔧 MCP Execute - Tool: get_incident_by_id, Params: {"incident_id":1500}
-🔍 get_incident_by_id: input='1500' (type: number), parsed=1500 (type: number)
-📡 Making request to: https://api.dev.manifestit.tech/client/incident/1500
-🔧 MCP Execute - Tool: search_incidents, Params: {"query":"GCP"}
-🔍 searchIncidents - Received params: {"query":"GCP"}
-🔍 searchIncidents - Search title: "GCP"
-🔍 searchIncidents - Manifest API returned 2 incidents
-🔧 MCP Execute - Tool: search_resources, Params: {"query":"GCP"}
-🔧 MCP Execute - Tool: search_tickets, Params: {"query":"GCP"}
-🔧 MCP Execute - Tool: get_notifications, Params: {}
 🔧 MCP Execute - Tool: search_incidents, Params: {"query":"Mit-runtime-api-services"}
 🔍 searchIncidents - Received params: {"query":"Mit-runtime-api-services"}
 🔍 searchIncidents - Search title: "Mit-runtime-api-services"
 🔍 searchIncidents - Manifest API returned 0 incidents
-🔧 MCP Execute - Tool: search_incidents, Params: {"query":"Mit-runtime-api-services"}
-🔍 searchIncidents - Received params: {"query":"Mit-runtime-api-services"}
-🔍 searchIncidents - Search title: "Mit-runtime-api-services"
-🔍 searchIncidents - Manifest API returned 0 incidents
-🔧 MCP Execute - Tool: search_incidents, Params: {"query":"Mit-runtime-api-services"}
-🔍 searchIncidents - Received params: {"query":"Mit-runtime-api-services"}
-🔍 searchIncidents - Search title: "Mit-runtime-api-services"
-🔍 searchIncidents - Manifest API returned 0 incidents
-🔧 MCP Execute - Tool: search_incidents, Params: {"query":"runtime"}
-🔍 searchIncidents - Received params: {"query":"runtime"}
-🔍 searchIncidents - Search title: "runtime"
-🔍 searchIncidents - Manifest API returned 2 incidents
-🔧 MCP Execute - Tool: search_incidents, Params: {"query":"api"}
-🔍 searchIncidents - Received params: {"query":"api"}
-🔍 searchIncidents - Search title: "api"
-🔍 searchIncidents - Manifest API returned 4 incidents
-🔧 MCP Execute - Tool: search_resources, Params: {"query":"Mit-runtime-api"}
-🔧 MCP Execute - Tool: search_resources, Params: {"query":"runtime-api-services","limit":10}
-🔧 MCP Execute - Tool: search_resources, Params: {"query":"Mit","limit":10}
-🔧 MCP Execute - Tool: search_resources, Params: {"query":"mit-runtime-api","resourceType":"Service","limit":10}
-🔧 MCP Execute - Tool: search_resources, Params: {"query":"runtime-api","limit":20}

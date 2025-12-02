@@ -917,7 +917,7 @@ Format: Flowing narrative analysis → Integrated data points → Contextual gap
                     # Try searching for each keyword
                     for keyword in keywords[:2]:  # Limit to first 2 keywords
                         try:
-                            result = await mcp_client.call_tool("search_incidents", {"query": keyword, "limit": 3})
+                            result = await mcp_client.execute_tool("search_incidents", {"query": keyword, "limit": 3})
                             
                             if result.get("success") and result.get("result", {}).get("incidents"):
                                 incidents = result["result"]["incidents"]
@@ -936,7 +936,7 @@ Format: Flowing narrative analysis → Integrated data points → Contextual gap
                     # Try searching for resources with keywords
                     for keyword in keywords[:2]:
                         try:
-                            result = await mcp_client.call_tool("search_resources", {"query": keyword, "limit": 3})
+                            result = await mcp_client.execute_tool("search_resources", {"query": keyword, "limit": 3})
                             
                             if result.get("success") and result.get("result", {}).get("resources"):
                                 resources = result["result"]["resources"]
