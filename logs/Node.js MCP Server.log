@@ -68,3 +68,9 @@ Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
 📡 Making request to: https://api.dev.manifestit.tech/client/incident/415
 🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
 🔑 Using API Key: Present
+🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
+🔑 Using API Key: Present
+🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
+🔑 Using API Key: Present
+🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
+🔑 Using API Key: Present

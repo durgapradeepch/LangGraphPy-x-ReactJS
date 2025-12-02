@@ -724,8 +724,15 @@ The conversation_history field contains previous exchanges. Use it to:
 - Answer follow-up questions (e.g., "what incidents did you mention?" → refer to previous assistant messages)
 - Maintain context across messages (e.g., "tell me more about that" → know what "that" refers to)
 - Avoid repeating information already shared
+- IMPORTANT: Always answer the CURRENT query provided in the user message, not previous questions from conversation history
 
 Write in a conversational, helpful tone as if you're ChatGPT explaining the results with compact spacing and bullet points."""
+            
+            # Add current query to system prompt
+            current_query = context.get("original_query", "")
+            # Add current query to system prompt
+            current_query = context.get("original_query", "")
+            system_prompt += f"\n\nCURRENT USER QUERY: {current_query}"
             
             # Build messages array with conversation history
             messages = [{"role": "system", "content": system_prompt}]
@@ -736,8 +743,11 @@ Write in a conversational, helpful tone as if you're ChatGPT explaining the resu
                 logger.info(f"📜 Including {len(conversation_history)} previous messages in context")
                 messages.extend(conversation_history)
             
-            # Add current query
-            messages.append({"role": "user", "content": "Generate the enriched response."})
+            # Add current query with explicit instruction
+            messages.append({
+                "role": "user", 
+                "content": f"Answer this question: {current_query}\n\nGenerate the enriched response based on the tool results provided above."
+            })
             
             logger.info("Invoking LLM for response generation...")
             
