@@ -16,150 +16,46 @@ Testing Neo4j connection...
 Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
 ❌ Neo4j connection failed: connect ECONNREFUSED 127.0.0.1:7474
 Please ensure Neo4j is running and credentials are correct
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"GCP"}
+🔍 searchIncidents - Received params: {"query":"GCP"}
+🔍 searchIncidents - Search title: "GCP"
+🔍 searchIncidents - Manifest API returned 2 incidents
+🔧 MCP Execute - Tool: search_resources, Params: {"query":"GCP"}
+🔧 MCP Execute - Tool: get_tickets, Params: {}
+🔧 MCP Execute - Tool: get_notifications, Params: {}
+🔧 MCP Execute - Tool: list_tools, Params: {}
+🔧 MCP Execute - Tool: search_tickets, Params: {"query":"GCP"}
+🔧 MCP Execute - Tool: search_notifications, Params: {"query":"GCP"}
+🔧 MCP Execute - Tool: search_changelogs, Params: {"query":"GCP"}
+🔧 MCP Execute - Tool: search_logs, Params: {"query":"error"}
 🔍 searchLogs called with: search_text="undefined", labels={}, limit=20
 ✅ VictoriaLogs returned 20 logs for query "*"
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 get_incident_by_id: input='415' (type: string), parsed=415 (type: number)
+🔧 MCP Execute - Tool: query_logs, Params: {"query":"error"}
+🔍 queryLogs called with params: {"query":"error"}
+📊 Total matching logs: , returning up to 1000
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"*"}
+🔍 searchIncidents - Received params: {"query":"*"}
+🔍 searchIncidents - Search title: "*"
+🔍 searchIncidents - Manifest API returned 0 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":""}
+🔍 searchIncidents - Received params: {"query":""}
+🔍 searchIncidents - Search title: "undefined"
+🔍 searchIncidents - Manifest API returned 20 incidents
+🔧 MCP Execute - Tool: list_tools, Params: {}
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"GCP","page":1,"limit":5}
+🔍 searchIncidents - Received params: {"query":"GCP","page":1,"limit":5}
+🔍 searchIncidents - Search title: "GCP"
+🔍 searchIncidents - Manifest API returned 2 incidents
+🔧 MCP Execute - Tool: search_resources, Params: {"query":"vector","resourceType":"Workload","limit":3}
+🔧 MCP Execute - Tool: search_logs, Params: {"query":"error","limit":5,"start_time":"2025-12-02T00:00:00Z"}
+🔍 searchLogs called with: search_text="undefined", labels={}, limit=5
+✅ VictoriaLogs returned 5 logs for query "*"
+🔧 MCP Execute - Tool: get_incident_by_id, Params: {"incident_id":415}
+🔍 get_incident_by_id: input='415' (type: number), parsed=415 (type: number)
 📡 Making request to: https://api.dev.manifestit.tech/client/incident/415
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 get_incident_by_id: input='415' (type: string), parsed=415 (type: number)
+🔧 MCP Execute - Tool: get_incident_by_id, Params: {"incident_id":415}
+🔍 get_incident_by_id: input='415' (type: number), parsed=415 (type: number)
 📡 Making request to: https://api.dev.manifestit.tech/client/incident/415
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 searchLogs called with: search_text="failure", labels={"service":"acme-cart"}, limit=20
-✅ VictoriaLogs returned 0 logs for query "_msg:*failure*"
-🔍 Calling Manifest API: https://api.dev.manifestit.tech/client/incident
-🔑 Using API Key: Present
-🔍 searchLogs called with: search_text="failure ai acme cart ai-acme acme-cart", labels={}, limit=20
-🔍 searchLogs called with: search_text="failure ai acme cart ai-acme acme-cart", labels={}, limit=20
-🔍 searchLogs called with: search_text="failure ai acme cart ai-acme acme-cart", labels={}, limit=20
-🔍 searchLogs called with: search_text="failure ai acme cart ai-acme acme-cart", labels={}, limit=20
-🔍 searchLogs called with: search_text="failure ai acme cart ai-acme acme-cart", labels={}, limit=20
-🔍 searchLogs called with: search_text="failure ai acme cart ai-acme acme-cart", labels={}, limit=20
-📊 VictoriaMetrics Query: {
-  url: 'undefined/select/0/prometheus/api/v1/query_range',
-  query: "rate(errors_total{service='acme-cart'}[5m])",
-  start: '2025-12-02T18:07:33.000Z',
-  end: '2025-12-02T19:07:33.000Z',
-  step: '1m'
-}
-VictoriaMetrics query error: Invalid URL
-📊 VictoriaMetrics Query: {
-  url: 'undefined/select/0/prometheus/api/v1/query_range',
-  query: "rate(errors_total{service='acme-cart'}[5m])",
-  start: '2025-12-02T18:07:34.000Z',
-  end: '2025-12-02T19:07:34.000Z',
-  step: '1m'
-}
-VictoriaMetrics query error: Invalid URL
-📊 VictoriaMetrics Query: {
-  url: 'undefined/select/0/prometheus/api/v1/query_range',
-  query: "rate(errors_total{service='acme-cart'}[5m])",
-  start: '2025-12-02T18:07:36.000Z',
-  end: '2025-12-02T19:07:36.000Z',
-  step: '1m'
-}
-VictoriaMetrics query error: Invalid URL
-📊 VictoriaMetrics Query: {
-  url: 'undefined/select/0/prometheus/api/v1/query_range',
-  query: "rate(errors_total{service='acme-cart'}[5m])",
-  start: '2025-12-02T18:07:36.000Z',
-  end: '2025-12-02T19:07:36.000Z',
-  step: '1m'
-}
-VictoriaMetrics query error: Invalid URL
-📊 VictoriaMetrics Query: {
-  url: 'undefined/select/0/prometheus/api/v1/query_range',
-  query: "rate(errors_total{service='acme-cart'}[5m])",
-  start: '2025-12-02T18:07:37.000Z',
-  end: '2025-12-02T19:07:37.000Z',
-  step: '1m'
-}
-VictoriaMetrics query error: Invalid URL
-📊 VictoriaMetrics Query: {
-  url: 'undefined/select/0/prometheus/api/v1/query_range',
-  query: "rate(errors_total{service='acme-cart'}[5m])",
-  start: '2025-12-02T18:07:39.000Z',
-  end: '2025-12-02T19:07:39.000Z',
-  step: '1m'
-}
-VictoriaMetrics query error: Invalid URL
-🔍 queryLogs called with params: {"query":"failure ai acme cart ai-acme acme-cart"}
-📊 Total matching logs: , returning up to 1000
-🔍 searchLogs called with: search_text="failure ai acme cart", labels={}, limit=20
-🔍 searchLogs called with: search_text="failure ai acme cart", labels={}, limit=20
-🔍 searchLogs called with: search_text="failure ai acme cart", labels={}, limit=20
-🔍 searchLogs called with: search_text="failure ai acme cart", labels={}, limit=20
-🔍 searchLogs called with: search_text="failure ai acme cart", labels={}, limit=20
-🔍 searchLogs called with: search_text="failure ai acme cart", labels={}, limit=20
-🔍 queryLogs called with params: {"query":"failure ai acme cart ai-acme acme-cart"}
-📊 Total matching logs: , returning up to 1000
-🔍 queryLogs called with params: {"query":"failure ai acme cart ai-acme acme-cart"}
-📊 Total matching logs: , returning up to 1000
-🔍 queryLogs called with params: {"query":"failure"}
-📊 Total matching logs: , returning up to 1000
-🔍 queryLogs called with params: {"query":"ai-acme"}
-📊 Total matching logs: , returning up to 1000
-start.sh: line 56: 44813 Killed: 9               node server.js
+🔧 MCP Execute - Tool: get_incident_by_id, Params: {"incident_id":1500}
+🔍 get_incident_by_id: input='1500' (type: number), parsed=1500 (type: number)
+📡 Making request to: https://api.dev.manifestit.tech/client/incident/1500

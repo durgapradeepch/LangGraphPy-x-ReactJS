@@ -137,23 +137,30 @@ async def invoke_our_graph(websocket: WebSocket, data: str, user_uuid: str, use_
             # Note: Streaming already happened in real-time during LLM generation
             # No need for post-processing word chunks anymore
             
-            # Send completion with metadata
-            await websocket.send_text(json.dumps(response_message))
-            await websocket.send_text(json.dumps({"on_chat_model_end": True}))
-            
-            logger.info(json.dumps({
-                "timestamp": datetime.now().isoformat(),
-                "uuid": user_uuid,
-                "llm_method": "enhanced_workflow",
-                "sent": result.get("response", "")[:100]
-            }))
+            # Send completion with metadata (check if websocket is still open)
+            try:
+                await websocket.send_text(json.dumps(response_message))
+                await websocket.send_text(json.dumps({"on_chat_model_end": True}))
+                
+                logger.info(json.dumps({
+                    "timestamp": datetime.now().isoformat(),
+                    "uuid": user_uuid,
+                    "llm_method": "enhanced_workflow",
+                    "sent": result.get("response", "")[:100]
+                }))
+            except Exception as ws_error:
+                # WebSocket already closed - just log it, don't fail the whole request
+                logger.warning(f"⚠️ WebSocket already closed when trying to send completion: {ws_error}")
             
         except Exception as e:
             import traceback
             logger.error(f"❌ Enhanced workflow error: {e}")
             logger.error(f"❌ Traceback: {traceback.format_exc()}")
-            # Fallback to simple mode
-            await invoke_simple_mode(websocket, data, user_uuid)
+            # Try to send error if websocket still open
+            try:
+                await websocket.send_text(json.dumps({"error": str(e)}))
+            except:
+                pass
     else:
         # Use simple chat mode
         await invoke_simple_mode(websocket, data, user_uuid)

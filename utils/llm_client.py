@@ -129,35 +129,71 @@ User Query: """
         if not self.llm:
             return self._fallback_query_analysis(user_query)
         
-        system_prompt = f"""You are a query analysis expert. Analyze the user's query.
+        system_prompt = f"""You are an intelligent query analyzer. Extract ALL relevant information from the user's query to help select the right tools.
 
 Respond ONLY with valid JSON in this exact format:
 {{
-    "query_type": "incident_analysis|exploration|root_cause|infrastructure_query|graph_query|conversational",
-    "intent": "brief description",
-    "entities": [{{"type": "resource", "value": "id"}}],
+    "query_type": "incident_analysis|exploration|root_cause|infrastructure_query|graph_query|list_browse|multi_entity_summary|conversational",
+    "intent": "what user wants (be specific: 'list all', 'get details', 'search for', 'compare', 'aggregate multiple entities', etc.)",
+    "scope": "single|multiple|all",
+    "multi_entity": true|false,
+    "entities": [{{"type": "resource|incident|ticket|notification|changelog|service|log|metric", "value": "identifier", "id_type": "numeric_id|name|keyword"}}],
     "search_terms": ["term1", "term2"],
-    "strict_service_name": "service-name or null",
-    "specific_id": "12345 or null",
+    "strict_service_name": "exact-service-name or null",
+    "specific_id": "numeric-or-alphanumeric-id or null",
+    "filters": {{"severity": "high|critical", "status": "open|closed", "type": "resource_type"}},
+    "sorting": {{"field": "severity|time|status", "order": "asc|desc", "limit": 5}},
+    "comprehensive": true|false,
     "confidence_score": 0.8
 }}
 
-CRITICAL EXTRACTION RULES:
-1. **Specific IDs (HIGHEST PRIORITY)**: 
-   - If the user provides a numeric ID (e.g., "50944068", "1529"), extract it to `specific_id`.
-   - If the user provides a ticket ID (e.g., "CS-335"), extract it to `specific_id`.
-   
-2. **Strict Service Name**:
-   - Extract the service name string (e.g., "acme-cart").
-   - **IMPORTANT**: If the input is just a number (like "50944068"), `strict_service_name` must be NULL. Numbers are IDs, not names.
-   - Clean generic/company prefixes: "ai-acme cart" → "acme-cart" (NOT "ai-acme")
-   - Context-aware: "billing service error" → "billing"
+INTELLIGENT EXTRACTION:
+
+1. **Identify what user wants:**
+   - Listing/browsing: "all", "top N", "list", "show me" → scope: "all" or "multiple"
+   - Specific item: Has ID or name → scope: "single"
+   - Comprehensive: "everything", "all details", "complete" → comprehensive: true
+
+2. **CRITICAL: Detect Multi-Entity Queries:**
+   - When query lists multiple entity types separated by commas, "and", or similar:
+     * "incidents, resources, tickets" → multi_entity: true
+     * "incidents and affected resources" → multi_entity: true
+     * "tickets, changelogs, and notifications" → multi_entity: true
+   - Extract EACH entity type separately in entities array:
+     * "GCP incidents, resources, tickets, notifications" → entities: [
+         {{"type": "incident", "value": "GCP", "id_type": "keyword"}},
+         {{"type": "resource", "value": "GCP", "id_type": "keyword"}},
+         {{"type": "ticket", "value": "open", "id_type": "keyword"}},
+         {{"type": "notification", "value": "recent", "id_type": "keyword"}}
+       ]
+   - Query type should be "multi_entity_summary" when multi_entity: true
+
+3. **Extract identifiers naturally:**
+   - Pure numbers: "50944068", "1529" → specific_id, NOT service_name
+   - Hyphenated names: "vector-0", "acme-cart" → strict_service_name
+   - Alphanumeric codes: "CS-335", "INC-123" → specific_id
+   - Keywords: "payment", "database" → search_terms
+
+4. **Detect filters and sorting:**
+   - "top 5 by severity" → sorting: {{field: "severity", order: "desc", limit: 5}}
+   - "critical incidents" → filters: {{severity: "critical"}}
+   - "open tickets" → filters: {{status: "open"}}
+
+5. **Entity type detection:**
+   - "resource", "pod", "container", "server", "workload" → type: "resource"
+   - "incident", "outage", "failure", "issue" → type: "incident"
+   - "ticket", "request" → type: "ticket"
+   - "notification", "alert" → type: "notification"
+   - "changelog", "change", "update" → type: "changelog"
+   - "log", "logs" → type: "log"
+   - "metric", "metrics" → type: "metric"
 
 Examples:
-- "tell me about resource 50944068" → {{"specific_id": "50944068", "strict_service_name": null, "query_type": "infrastructure_query"}}
-- "status of acme-cart" → {{"specific_id": null, "strict_service_name": "acme-cart"}}
-- "incident 1529" → {{"specific_id": "1529", "strict_service_name": null, "query_type": "incident_analysis"}}
-- "failure in ai-acme cart" → {{"specific_id": null, "strict_service_name": "acme-cart", "query_type": "incident_analysis"}}"""
+- "tell me about resource 50944068" → {{"specific_id": "50944068", "scope": "single", "query_type": "infrastructure_query", "multi_entity": false, "entities": [{{"type": "resource", "value": "50944068", "id_type": "numeric_id"}}]}}
+- "top 5 incidents by severity" → {{"scope": "multiple", "query_type": "incident_analysis", "multi_entity": false, "sorting": {{"field": "severity", "order": "desc", "limit": 5}}}}
+- "everything about vector-0" → {{"strict_service_name": "vector-0", "scope": "single", "comprehensive": true, "multi_entity": false, "entities": [{{"type": "resource", "value": "vector-0", "id_type": "name"}}]}}
+- "critical incidents in payment service" → {{"strict_service_name": "payment", "filters": {{"severity": "critical"}}, "scope": "multiple", "multi_entity": false, "entities": [{{"type": "incident", "value": "payment", "id_type": "keyword"}}]}}
+- "GCP incidents, resources, tickets, and notifications" → {{"query_type": "multi_entity_summary", "scope": "all", "multi_entity": true, "search_terms": ["GCP"], "entities": [{{"type": "incident", "value": "GCP", "id_type": "keyword"}}, {{"type": "resource", "value": "GCP", "id_type": "keyword"}}, {{"type": "ticket", "value": "all", "id_type": "keyword"}}, {{"type": "notification", "value": "all", "id_type": "keyword"}}], "sorting": {{"field": "severity", "order": "desc"}}}}"""
         
         try:
             messages = [
@@ -204,72 +240,142 @@ Examples:
         
         tools_with_schemas = '\n'.join(tools_info)
         
-        system_prompt = f"""You are a tool execution planner. Based on the query analysis, create a plan of tools to execute.
+        system_prompt = f"""You are an intelligent tool execution planner. Select tools by understanding what the user wants and matching it to tool capabilities.
 
 Query Analysis: {json.dumps(query_analysis)}
 
 Available tools:
 {tools_with_schemas}
 
-⚠️ CRITICAL DECISION LOGIC (FOLLOW ORDER EXACTLY):
+INTELLIGENT TOOL SELECTION:
 
-1. **CHECK FOR SPECIFIC ID (Priority #1)**
-   If `specific_id` is present in Query Analysis (e.g., "50944068" or "CS-335"):
-   - **DO NOT USE SEARCH TOOLS.**
-   - **Resource ID (numeric):** Use `get_resource_by_id(resource_id=ID)`.
-     * OPTIONAL: For "everything" queries, also add:
-       - `get_resource_version(resource_id=ID)`
-       - `get_resource_metadata(resource_id=ID)`
-       - `get_resource_tickets(resource_id=ID)`
-       - `get_changelog_by_resource(resource_id=ID)`
-       - `get_notifications_by_resource(resource_id=ID)`
-   - **Incident ID:** Use `get_incident_by_id(incident_id=ID)` + `get_incident_changelogs(incident_id=ID)`.
-   - **Ticket ID:** Use `get_ticket_by_id(ticket_id=ID)`.
-   - **Changelog ID:** Use `get_changelog_by_id(changelog_id=ID)`.
+**CRITICAL PRINCIPLE: ALWAYS PREFER SEARCH TOOLS OVER GET_ALL TOOLS**
+- Search tools return filtered, relevant subsets → More efficient, better context usage
+- Get_all tools return EVERYTHING → Inefficient, can cause context overflow
+- When in doubt, use search_* with a broad term ("*" or general keyword) rather than get_*()
 
-2. **CHECK FOR SERVICE NAME (Priority #2)**
-   Only if `specific_id` is NULL, check `strict_service_name`.
-   
-   **COMPREHENSIVE QUERIES (when user asks for "everything", "all details", "complete information"):**
-   - If query intent is comprehensive (check query_analysis for keywords like "everything", "all", "details", "complete", "comprehensive"):
-     * Step 1: Use search tool to find the resource/incident and get its ID
-     * Step 2: SKIP remaining steps - let the system handle ID extraction from results
-     * Example: If user asks "everything about vector-0", just use `search_resources(query="vector-0")`
-     * The system will extract the resource_id from search results and can make a follow-up request
-   
-   **SPECIFIC QUERIES (when user asks for specific info like "status", "when created", "what type"):**
-   - Use appropriate search tool with the service name
-   - Example: `search_resources(query="acme-cart")`, `search_incidents(query="acme-cart")`
+**Step 1: Understand the data pattern**
+- Tool names reveal their purpose:
+  * `get_*_by_id` → Needs specific ID, returns ONE detailed item (EFFICIENT ✅)
+  * `search_*` → Needs keywords/name, returns MULTIPLE matching items (EFFICIENT ✅)
+  * `get_*` (no suffix) → No required params, returns ALL items (INEFFICIENT ❌ - AVOID)
 
-3. **FALLBACK SEARCH (Priority #3)**
-   - If both ID and Service Name are null, use `search_terms` in search tools.
+**Step 2: Handle Multi-Entity Queries FIRST**
+- If `multi_entity: true` in query_analysis:
+  * Extract each entity from entities array
+  * For each entity type, plan ONE corresponding tool:
+    - Entity type "incident" → ALWAYS use search_incidents(query=value), use "" (empty string) if no specific term
+    - Entity type "resource" → ALWAYS use search_resources(query=value), use "" (empty string) if no specific term
+    - Entity type "ticket" → ALWAYS use search_tickets(query=value), use "" (empty string) if no specific term
+    - Entity type "notification" → get_notifications() (no search tool available, filter in response)
+    - Entity type "changelog" → ALWAYS use search_changelogs(query=value), use "" (empty string) if no specific term
+    - Entity type "log" → ALWAYS use search_logs(query=value), use "" (empty string) if no specific term
+    - Entity type "metric" → get_metrics(resource_id=id) if ID available
+  * Use shared search_terms/filters across all tools when applicable
+  * If no specific search term for an entity, use "" (empty string) to get relevant subset (NOT get_all)
+  * Result: Array of tools, one per entity type
 
-QUERY INTENT DETECTION:
-- **Comprehensive keywords**: "everything", "all details", "all information", "complete info", "tell me about", "full details", "comprehensive"
-- **Specific keywords**: "status", "when", "what type", "is it", "show me only"
+**Step 3: Match query analysis to tools (for single-entity queries)**
+- `scope: "single"` + `specific_id` present → Use `get_*_by_id(id=value)`
+- `scope: "single"` + `strict_service_name` present → Use `search_*(query=name)` to find it
+- `scope: "multiple"` or `scope: "all"` → ALWAYS prefer search_*(query=term) over get_*()
+- `search_terms` present → ALWAYS use `search_*(query=terms)`
+- No search terms but need list → Use search_*(query="") with empty string to get relevant subset (NEVER use get_all)
 
-SCENARIO EXAMPLES:
-- User: "Everything about resource 50944068"
-  -> Analysis: {{"specific_id": "50944068", "intent": "comprehensive"}}
-  -> Plan: [
-       {{"name": "get_resource_by_id", "parameters": {{"resource_id": "50944068"}}}},
-       {{"name": "get_resource_version", "parameters": {{"resource_id": "50944068"}}}},
-       {{"name": "get_resource_metadata", "parameters": {{"resource_id": "50944068"}}}},
-       {{"name": "get_resource_tickets", "parameters": {{"resource_id": "50944068"}}}},
-       {{"name": "get_changelog_by_resource", "parameters": {{"resource_id": "50944068"}}}},
-       {{"name": "get_notifications_by_resource", "parameters": {{"resource_id": "50944068"}}}}
-     ]
+**Step 4: Handle comprehensive requests intelligently**
+- If `comprehensive: true` and have specific_id:
+  * Include ALL related tools for that entity type
+  * Example: resource_id → get_resource_by_id + get_resource_version + get_resource_metadata + get_resource_tickets + get_changelog_by_resource + get_notifications_by_resource
+  
+- If `comprehensive: true` but only have name:
+  * Use search_* to find it first
+  * System will automatically fetch comprehensive data after extracting ID
 
-- User: "Tell me everything about vector-0 resource - details, version, metadata, tickets, change history, notifications"
-  -> Analysis: {{"strict_service_name": "vector-0", "intent": "comprehensive"}}
-  -> Plan: [{{"name": "search_resources", "parameters": {{"query": "vector-0"}}}}]
-  -> Note: System will extract resource_id from results and can follow up if needed
+**Step 5: Apply filters and sorting naturally**
+- If `filters` present in query_analysis, add as parameters if tool supports them
+- If `sorting` present, note it (LLM will handle sorting in response)
+- If `limit` present, LLM will apply it to results
 
-- User: "What's the status of acme-cart?"
-  -> Analysis: {{"strict_service_name": "acme-cart", "intent": "specific status query"}}
-  -> Plan: [{{"name": "search_resources", "parameters": {{"query": "acme-cart"}}}}]
+**Step 6: Read tool descriptions for edge cases**
+- Tool descriptions explain WHEN to use each tool
+- Trust tool descriptions over assumptions
+- Related tools are mentioned in descriptions - use them together when appropriate
 
-Respond ONLY with valid JSON array format."""
+LEARN FROM PATTERNS (generalize, don't memorize):
+
+Pattern A - Direct ID access:
+Query: "Everything about resource 50944068"
+Analysis: {{"specific_id": "50944068", "scope": "single", "comprehensive": true}}
+Thought Process: Have ID + want comprehensive → Use get_*_by_id + all related tools
+Plan: [{{"name": "get_resource_by_id", "parameters": {{"resource_id": "50944068"}}}}, {{"name": "get_resource_version", "parameters": {{"resource_id": "50944068"}}}}, {{"name": "get_resource_metadata", "parameters": {{"resource_id": "50944068"}}}}, {{"name": "get_resource_tickets", "parameters": {{"resource_id": "50944068"}}}}, {{"name": "get_changelog_by_resource", "parameters": {{"resource_id": "50944068"}}}}, {{"name": "get_notifications_by_resource", "parameters": {{"resource_id": "50944068"}}}}]
+
+Pattern B - Name lookup with comprehensive intent:
+Query: "Tell me everything about vector-0"
+Analysis: {{"strict_service_name": "vector-0", "scope": "single", "comprehensive": true}}
+Thought Process: Have name + want comprehensive → Search first to get ID, system follows up automatically
+Plan: [{{"name": "search_resources", "parameters": {{"query": "vector-0"}}}}]
+
+Pattern C - List with sorting/filtering:
+Query: "Top 5 incidents by severity"
+Analysis: {{"scope": "multiple", "sorting": {{"field": "severity", "order": "desc", "limit": 5}}}}
+Thought Process: Want multiple + sorting → Use search with empty string to get relevant subset, LLM will sort
+Plan: [{{"name": "search_incidents", "parameters": {{"query": ""}}}}]
+
+Pattern D - Keyword search:
+Query: "Find incidents about payment failure"
+Analysis: {{"search_terms": ["payment", "failure"], "scope": "multiple"}}
+Thought Process: Have keywords + want multiple → Use search tool
+Plan: [{{"name": "search_incidents", "parameters": {{"query": "payment failure"}}}}]
+
+Pattern E - Quick status check:
+Query: "Status of acme-cart"
+Analysis: {{"strict_service_name": "acme-cart", "scope": "single", "comprehensive": false}}
+Thought Process: Have name + want basic info → Search is sufficient
+Plan: [{{"name": "search_resources", "parameters": {{"query": "acme-cart"}}}}]
+
+Pattern F - Filtered listing:
+Query: "Show open critical incidents"
+Analysis: {{"scope": "multiple", "filters": {{"severity": "critical", "status": "open"}}}}
+Thought Process: Want filtered list → Use search with relevant term, LLM will apply additional filters
+Plan: [{{"name": "search_incidents", "parameters": {{"query": "critical"}}}}]
+
+Pattern G - Multi-Entity Summary (NEW):
+Query: "Give me a summary of all GCP-related issues: incidents, affected resources, open tickets, and recent notifications - prioritized by severity"
+Analysis: {{"query_type": "multi_entity_summary", "multi_entity": true, "scope": "all", "search_terms": ["GCP"], "entities": [{{"type": "incident", "value": "GCP", "id_type": "keyword"}}, {{"type": "resource", "value": "GCP", "id_type": "keyword"}}, {{"type": "ticket", "value": "GCP", "id_type": "keyword"}}, {{"type": "notification", "value": "all", "id_type": "keyword"}}], "sorting": {{"field": "severity", "order": "desc"}}}}
+Thought Process: Multi-entity query → Plan ONE tool for EACH entity type using shared search term. Use search_tickets (not get_tickets) when search_terms present.
+Plan: [{{"name": "search_incidents", "parameters": {{"query": "GCP"}}}}, {{"name": "search_resources", "parameters": {{"query": "GCP"}}}}, {{"name": "search_tickets", "parameters": {{"query": "GCP"}}}}, {{"name": "get_notifications", "parameters": {{}}}}]
+
+Pattern H - Multi-Entity with specific filters:
+Query: "Show me vector namespace: resources, incidents, and changelogs"
+Analysis: {{"query_type": "multi_entity_summary", "multi_entity": true, "search_terms": ["vector"], "entities": [{{"type": "resource", "value": "vector", "id_type": "keyword"}}, {{"type": "incident", "value": "vector", "id_type": "keyword"}}, {{"type": "changelog", "value": "vector", "id_type": "keyword"}}]}}
+Thought Process: Multi-entity + namespace filter → Use search for each entity with "vector" term
+Plan: [{{"name": "search_resources", "parameters": {{"query": "vector"}}}}, {{"name": "search_incidents", "parameters": {{"query": "vector"}}}}, {{"name": "get_changelogs", "parameters": {{}}}}]
+
+Pattern I - Multi-Entity with tickets:
+Query: "Show me payment service: incidents, resources, and related tickets"
+Analysis: {{"query_type": "multi_entity_summary", "multi_entity": true, "search_terms": ["payment"], "entities": [{{"type": "incident", "value": "payment", "id_type": "keyword"}}, {{"type": "resource", "value": "payment", "id_type": "keyword"}}, {{"type": "ticket", "value": "payment", "id_type": "keyword"}}]}}
+Thought Process: Multi-entity + service context → Use search_tickets with shared search term
+Plan: [{{"name": "search_incidents", "parameters": {{"query": "payment"}}}}, {{"name": "search_resources", "parameters": {{"query": "payment"}}}}, {{"name": "search_tickets", "parameters": {{"query": "payment"}}}}]
+
+Pattern J - Multi-Entity with changelogs and logs:
+Query: "Show me vector namespace: resources, changelogs, and error logs"
+Analysis: {{"query_type": "multi_entity_summary", "multi_entity": true, "search_terms": ["vector", "error"], "entities": [{{"type": "resource", "value": "vector", "id_type": "keyword"}}, {{"type": "changelog", "value": "vector", "id_type": "keyword"}}, {{"type": "log", "value": "error", "id_type": "keyword"}}]}}
+Thought Process: Multi-entity + multiple contexts → Use search tools for each with appropriate terms
+Plan: [{{"name": "search_resources", "parameters": {{"query": "vector"}}}}, {{"name": "search_changelogs", "parameters": {{"query": "vector"}}}}, {{"name": "search_logs", "parameters": {{"query": "error"}}}}]
+
+Pattern K - Generic listing (use empty string):
+Query: "Show me all recent incidents"
+Analysis: {{"scope": "multiple", "query_type": "incident_analysis", "filters": {{"status": "recent"}}, "search_terms": []}}
+Thought Process: No specific search term but want list → Use search with "" to get relevant subset instead of get_incidents()
+Plan: [{{"name": "search_incidents", "parameters": {{"query": ""}}}}]
+
+Pattern L - Broad multi-entity (use empty strings):
+Query: "Give me an overview: incidents, resources, and tickets"
+Analysis: {{"query_type": "multi_entity_summary", "multi_entity": true, "entities": [{{"type": "incident"}}, {{"type": "resource"}}, {{"type": "ticket"}}], "search_terms": []}}
+Thought Process: No specific terms → Use search with "" for each entity to get relevant subsets (NOT get_all tools)
+Plan: [{{"name": "search_incidents", "parameters": {{"query": ""}}}}, {{"name": "search_resources", "parameters": {{"query": ""}}}}, {{"name": "search_tickets", "parameters": {{"query": ""}}}}]
+
+Now apply these principles to create the optimal tool plan. Respond ONLY with valid JSON array format."""
         
         try:
             messages = [
@@ -415,6 +521,35 @@ Respond ONLY with valid JSON array format."""
                 logger.warning(f"⚠️ No changelog data found in result for {tool_name}. Keys: {list(result.keys())}")
                 return {"changelogs": [], "count": 0}
 
+        # Handle tickets FIRST (before resources which also checks for "tickets")
+        if "ticket" in tool_name.lower() and "resource" not in tool_name.lower():
+            tickets_data = []
+            
+            # Check various possible response structures
+            if "tickets" in result and isinstance(result["tickets"], list):
+                tickets_data = result["tickets"]
+            elif "sample" in result and isinstance(result["sample"], list):
+                tickets_data = result["sample"]
+            elif "ticket" in result and isinstance(result["ticket"], dict):
+                tickets_data = [result["ticket"]]
+            
+            if tickets_data:
+                # AGGRESSIVE LIMIT for tickets (can be very large)
+                simplified = []
+                for ticket in tickets_data[:10]:  # Limit to 10 tickets max
+                    simplified.append({
+                        "id": ticket.get("id"),
+                        "title": str(ticket.get("title", ""))[:100],
+                        "status": ticket.get("status"),
+                        "priority": ticket.get("priority"),
+                        "type": ticket.get("type"),
+                        "createdAt": ticket.get("createdAt"),
+                        "assignee": ticket.get("assignee")
+                    })
+                return {"tickets": simplified, "count": len(simplified), "total": len(tickets_data)}
+            else:
+                return {"tickets": [], "count": 0}
+        
         # Handle notifications (BEFORE resources to avoid conflict with get_notifications_by_resource)
         if "notification" in tool_name.lower():
             notifications_data = []
@@ -430,8 +565,9 @@ Respond ONLY with valid JSON array format."""
                 notifications_data = result["sample"]
             
             if notifications_data:
+                # AGGRESSIVE LIMIT for notifications (can be very large)
                 simplified = []
-                for notif in notifications_data[:20]:
+                for notif in notifications_data[:10]:  # Limit to 10 notifications max
                     simplified.append({
                         "id": notif.get("id"),
                         "type": notif.get("type"),
@@ -440,7 +576,7 @@ Respond ONLY with valid JSON array format."""
                         "createdAt": notif.get("createdAt"),
                         "status": notif.get("status")
                     })
-                return {"notifications": simplified, "count": len(simplified)}
+                return {"notifications": simplified, "count": len(simplified), "total": len(notifications_data)}
             else:
                 return {"notifications": [], "count": 0}
 
@@ -519,13 +655,28 @@ Respond ONLY with valid JSON array format."""
             query_analysis = context_data.get("query_analysis", {})
             llm_analysis = query_analysis.get("llm_analysis", {})
             search_terms = llm_analysis.get("search_terms", [])
+            multi_entity = llm_analysis.get("multi_entity", False)
             
             mcp_results = state.get("mcp_results", [])
+            
+            # For multi-entity queries, apply aggressive limits to prevent context overflow
+            item_limit = 3 if multi_entity and len(mcp_results) > 2 else 10
+            
             tool_data = []
             for result in mcp_results:
                 if result.get("success"):
                     tool_name = result.get("tool_name", "")
                     processed = self._preprocess_tool_result(result.get("result", {}), tool_name, search_terms)
+                    
+                    # Apply multi-entity item limits
+                    if multi_entity:
+                        if isinstance(processed, dict):
+                            # Limit lists within the processed data
+                            for key in ["incidents", "resources", "tickets", "notifications", "changelogs", "logs"]:
+                                if key in processed and isinstance(processed[key], list):
+                                    processed[key] = processed[key][:item_limit]
+                                    processed["count"] = len(processed[key])
+                    
                     tool_data.append({"tool": tool_name, "data": processed})
                     # Log preprocessing results for debugging
                     if "changelog" in tool_name.lower() or "notification" in tool_name.lower():
