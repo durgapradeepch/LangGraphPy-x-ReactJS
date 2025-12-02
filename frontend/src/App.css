@@ -288,14 +288,24 @@ body {
 
 .markdown-content ul,
 .markdown-content ol {
-  margin: 2px 0 6px 0;
+  margin: 4px 0;
   padding: 0 0 0 20px;
 }
 
 .markdown-content li {
-  margin: 0 0 1px 0;
+  margin: 0;
   padding: 0;
-  line-height: 1.3;
+  line-height: 1.4;
+}
+
+.markdown-content li ul,
+.markdown-content li ol {
+  margin: 2px 0;
+}
+
+.markdown-content li>p {
+  margin: 0;
+  display: inline;
 }
 
 .markdown-content strong {

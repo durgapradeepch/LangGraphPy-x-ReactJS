@@ -6,6 +6,7 @@ Supports Neo4j, VictoriaLogs, VictoriaMetrics, and Manifest API
 import logging
 import asyncio
 import aiohttp
+import json
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
@@ -79,12 +80,45 @@ class MCPClient:
             {"name": "search_resources", "description": "Search resources"},
         ]
     
+    def _convert_parameter_types(self, tool_name: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Convert parameter types based on tool requirements.
+        Ensures integer IDs are integers, not strings.
+        """
+        # Define parameters that should be integers
+        integer_params = {
+            'resource_id', 'incident_id', 'changelog_id', 'ticket_id', 
+            'notification_id', 'page', 'page_size', 'limit'
+        }
+        
+        converted = {}
+        for key, value in parameters.items():
+            if key in integer_params and value is not None:
+                try:
+                    # Convert string numbers to integers
+                    if isinstance(value, str) and value.isdigit():
+                        converted[key] = int(value)
+                    elif isinstance(value, (int, float)):
+                        converted[key] = int(value)
+                    else:
+                        converted[key] = value
+                except (ValueError, TypeError):
+                    converted[key] = value
+            else:
+                converted[key] = value
+        
+        return converted
+    
     async def execute_tool(self, tool_name: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute a single MCP tool via Node.js server
         """
         try:
+            # Convert parameter types
+            parameters = self._convert_parameter_types(tool_name, parameters)
+            
             logger.info(f"🔧 Executing MCP tool: {tool_name}")
+            logger.info(f"🔧 Tool parameters: {json.dumps(parameters)}")
             
             # Execute with retry logic
             for attempt in range(self.config["max_retries"]):
@@ -125,6 +159,11 @@ class MCPClient:
                         
                         # Add metadata
                         result = data.get("result", {})
+                        
+                        # DEBUG: Log result structure
+                        if "incidents" in result:
+                            logger.info(f"🔍 MCP DEBUG - Tool {tool_name} returned {len(result.get('incidents', []))} incidents")
+                        
                         result["tool"] = tool_name
                         result["parameters"] = parameters
                         result["timestamp"] = datetime.now().isoformat()

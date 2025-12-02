@@ -16,9 +16,77 @@ Testing Neo4j connection...
 Neo4j query error: connect ECONNREFUSED 127.0.0.1:7474
 ❌ Neo4j connection failed: connect ECONNREFUSED 127.0.0.1:7474
 Please ensure Neo4j is running and credentials are correct
-🔍 searchLogs called with: search_text="undefined", labels={}, limit=20
-✅ VictoriaLogs returned 20 logs for query "*"
-🔍 searchLogs called with: search_text="undefined", labels={}, limit=20
-❌ Rejected invalid search_text: "undefined"
-🔍 searchLogs called with: search_text="undefined", labels={}, limit=20
-✅ VictoriaLogs returned 20 logs for query "*"
+🔧 MCP Execute - Tool: get_resource_by_id, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_version, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_metadata, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_tickets, Params: {"resource_id":50944068}
+🔍 Getting tickets for resource: 50944068 (type: number)
+📡 URL: https://api.dev.manifestit.tech/client/resource/50944068/ticket
+✅ Got 0 tickets for resource 50944068
+🔧 MCP Execute - Tool: get_changelog_by_resource, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_notifications_by_resource, Params: {"resource_id":50944068}
+🔔 Getting notifications for resource: 50944068 (type: number)
+📡 URL: https://api.dev.manifestit.tech/client/notification/resource/50944068
+✅ Got 0 notifications for resource 50944068
+🔧 MCP Execute - Tool: get_changelog_by_resource, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_tickets, Params: {"resource_id":50944068}
+🔍 Getting tickets for resource: 50944068 (type: number)
+📡 URL: https://api.dev.manifestit.tech/client/resource/50944068/ticket
+✅ Got 0 tickets for resource 50944068
+🔧 MCP Execute - Tool: get_notifications_by_resource, Params: {"resource_id":50944068}
+🔔 Getting notifications for resource: 50944068 (type: number)
+📡 URL: https://api.dev.manifestit.tech/client/notification/resource/50944068
+✅ Got 0 notifications for resource 50944068
+🔧 MCP Execute - Tool: get_notifications_by_resource, Params: {"resource_id":50944068}
+🔔 Getting notifications for resource: 50944068 (type: number)
+📡 URL: https://api.dev.manifestit.tech/client/notification/resource/50944068
+✅ Got 0 notifications for resource 50944068
+🔧 MCP Execute - Tool: get_resource_by_id, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_version, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_metadata, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_tickets, Params: {"resource_id":50944068}
+🔍 Getting tickets for resource: 50944068 (type: number)
+📡 URL: https://api.dev.manifestit.tech/client/resource/50944068/ticket
+✅ Got 0 tickets for resource 50944068
+🔧 MCP Execute - Tool: get_changelog_by_resource, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_notifications_by_resource, Params: {"resource_id":50944068}
+🔔 Getting notifications for resource: 50944068 (type: number)
+📡 URL: https://api.dev.manifestit.tech/client/notification/resource/50944068
+✅ Got 0 notifications for resource 50944068
+🔧 MCP Execute - Tool: get_changelog_by_resource, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_by_id, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_version, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_metadata, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_tickets, Params: {"resource_id":50944068}
+🔍 Getting tickets for resource: 50944068 (type: number)
+📡 URL: https://api.dev.manifestit.tech/client/resource/50944068/ticket
+✅ Got 0 tickets for resource 50944068
+🔧 MCP Execute - Tool: get_changelog_by_resource, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_notifications_by_resource, Params: {"resource_id":50944068}
+🔔 Getting notifications for resource: 50944068 (type: number)
+📡 URL: https://api.dev.manifestit.tech/client/notification/resource/50944068
+✅ Got 0 notifications for resource 50944068
+🔧 MCP Execute - Tool: get_resource_by_id, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_version, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_metadata, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_tickets, Params: {"resource_id":50944068}
+🔍 Getting tickets for resource: 50944068 (type: number)
+📡 URL: https://api.dev.manifestit.tech/client/resource/50944068/ticket
+✅ Got 0 tickets for resource 50944068
+🔧 MCP Execute - Tool: get_changelog_by_resource, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_notifications_by_resource, Params: {"resource_id":50944068}
+🔔 Getting notifications for resource: 50944068 (type: number)
+📡 URL: https://api.dev.manifestit.tech/client/notification/resource/50944068
+✅ Got 0 notifications for resource 50944068
+🔧 MCP Execute - Tool: get_resource_by_id, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_version, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_metadata, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_resource_tickets, Params: {"resource_id":50944068}
+🔍 Getting tickets for resource: 50944068 (type: number)
+📡 URL: https://api.dev.manifestit.tech/client/resource/50944068/ticket
+✅ Got 0 tickets for resource 50944068
+🔧 MCP Execute - Tool: get_changelog_by_resource, Params: {"resource_id":50944068}
+🔧 MCP Execute - Tool: get_notifications_by_resource, Params: {"resource_id":50944068}
+🔔 Getting notifications for resource: 50944068 (type: number)
+📡 URL: https://api.dev.manifestit.tech/client/notification/resource/50944068
+✅ Got 0 notifications for resource 50944068

@@ -98,19 +98,22 @@ async def invoke_our_graph(websocket: WebSocket, data: str, user_uuid: str, use_
         use_enhanced: If True, use enhanced workflow with MCP tools
     """
     
-    # Check if user wants enhanced mode (detect keywords or special commands)
-    use_enhanced_mode = use_enhanced or any(keyword in data.lower() for keyword in [
-        "analyze", "search", "investigate", "incident", "logs", "metrics", "system status",
-        "neo4j", "database", "nodes", "relationships", "graph", "cypher",
-        "query", "count", "schema", "labels", "show me", "get", "find",
-        "incidents", "resources", "changelogs", "tickets", "notifications",
-        "iam", "rbac", "role", "permission", "access", "changes", "recent", "occurred",
-        "what happened", "which", "when did", "how many", "list", "tell me", "describe",
-        # Infrastructure keywords
-        "pods", "pod", "containers", "container", "kubernetes", "k8s", "workload",
-        "crash", "crashloop", "failed", "pending", "running", "status",
-        "namespace", "deployment", "service", "node"
-    ])
+    # Layer 1: Semantic Router - Use LLM to decide if query needs tools
+    # This replaces brittle keyword matching with intelligent semantic understanding
+    # Benefits:
+    # - Handles variations: "kaput", "stuck", "wonky" vs hardcoded "failed", "error"
+    # - Context-aware: "python" (language?) vs "python pod" (infrastructure)
+    # - Flexible: No need to maintain massive keyword lists
+    from utils.llm_client import llm_client
+    
+    if use_enhanced:
+        # Manually forced to use enhanced mode
+        use_enhanced_mode = True
+        logger.info(f"🎯 Enhanced mode manually enabled for: {data[:50]}...")
+    else:
+        # Ask the LLM Router to decide based on semantic understanding
+        logger.info(f"🚦 Routing query through semantic LLM router...")
+        use_enhanced_mode = await llm_client.should_use_tools(data)
     
     if use_enhanced_mode:
         # Use enhanced workflow with MCP tools
@@ -146,7 +149,9 @@ async def invoke_our_graph(websocket: WebSocket, data: str, user_uuid: str, use_
             }))
             
         except Exception as e:
-            logger.error(f"Enhanced workflow error: {e}")
+            import traceback
+            logger.error(f"❌ Enhanced workflow error: {e}")
+            logger.error(f"❌ Traceback: {traceback.format_exc()}")
             # Fallback to simple mode
             await invoke_simple_mode(websocket, data, user_uuid)
     else:

@@ -2680,6 +2680,9 @@ class MCPToolRegistry {
         // Map 'query' parameter to 'title' for the API call
         const searchTitle = query || title;
 
+        console.log(`🔍 searchIncidents - Received params:`, JSON.stringify(params));
+        console.log(`🔍 searchIncidents - Search title: "${searchTitle}"`);
+
         try {
             const response = await axios.get(`${MANIFEST_API_URL}/client/incident/search`, {
                 headers: {
@@ -2690,6 +2693,8 @@ class MCPToolRegistry {
                 params: { title: searchTitle, priority, status, severity, page, page_size },
                 timeout: 30000
             });
+
+            console.log(`🔍 searchIncidents - Manifest API returned ${response.data.length} incidents`);
 
             return {
                 incidents: response.data,
@@ -2922,13 +2927,17 @@ app.get('/api/health', (req, res) => {
 // MCP Tool Execution Endpoint
 app.post('/api/mcp/execute', async (req, res) => {
     try {
-        const { tool_name, parameters = {} } = req.body;
+        // Support both 'parameters' and 'arguments' keys
+        const tool_name = req.body.tool_name;
+        const toolParams = req.body.parameters || req.body.arguments || {};
+
+        console.log(`🔧 MCP Execute - Tool: ${tool_name}, Params:`, JSON.stringify(toolParams));
 
         if (!tool_name) {
             return res.status(400).json({ error: 'tool_name is required' });
         }
 
-        const result = await mcpRegistry.executeTool(tool_name, parameters);
+        const result = await mcpRegistry.executeTool(tool_name, toolParams);
 
         res.json({
             success: true,

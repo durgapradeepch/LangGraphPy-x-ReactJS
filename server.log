@@ -1,206 +1,105 @@
-INFO:     llm_client.py:35    - ✅ LLM client initialized with model: gpt-4o
+INFO:     llm_client.py:47    - ✅ LLM clients initialized. Main: gpt-4o, Router: gpt-4o-mini
 INFO:     cust_logger.py:68    - Set message color for graph.py to MAGENTA
 INFO:     cust_logger.py:68    - Set message color for server.py to PURPLE
-INFO:     server.py:53    - {"timestamp": "2025-12-01T22:51:34.184765", "uuid": null, "received": {"uuid": "earlier-plate-compound-shop", "init": true}}
-INFO:     server.py:64    - {"timestamp": "2025-12-01T22:51:34.185127", "uuid": "earlier-plate-compound-shop", "op": "Initializing ws with client."}
-INFO:     server.py:53    - {"timestamp": "2025-12-01T22:51:59.292700", "uuid": "earlier-plate-compound-shop", "received": {"uuid": "earlier-plate-compound-shop", "message": "What incidents have been open the longest without resolution and what's blocking them?", "init": false}}
-INFO:     graph.py:118   - 🚀 Using enhanced workflow for: What incidents have been open the longest without ...
-INFO:     workflow.py:179   - 🚀 Processing: 'What incidents have been open the longest without resolution and what's blocking them?'
+INFO:     server.py:53    - {"timestamp": "2025-12-02T16:26:57.770050", "uuid": null, "received": {"uuid": "ruler-accident-maybe-late", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-02T16:26:57.770468", "uuid": "ruler-accident-maybe-late", "op": "Initializing ws with client."}
+INFO:     server.py:53    - {"timestamp": "2025-12-02T16:27:35.472413", "uuid": "ruler-accident-maybe-late", "received": {"uuid": "ruler-accident-maybe-late", "message": "tell me everything about resource 50944068 - its details, version, metadata, related tickets, change history, and notifications", "init": false}}
+INFO:     graph.py:115   - 🚦 Routing query through semantic LLM router...
+INFO:     llm_client.py:118   - 🚦 Router (gpt-4o-mini) decision for 'tell me everything about resource 50944068 - its d...': Enhanced Mode
+INFO:     graph.py:121   - 🚀 Using enhanced workflow for: tell me everything about resource 50944068 - its d...
+INFO:     workflow.py:179   - 🚀 Processing: 'tell me everything about resource 50944068 - its details, version, metadata, related tickets, change history, and notifications'
 INFO:     workflow.py:73    - 🎯 Orchestrator: Starting workflow
-INFO:     mcp_client.py:251   - ✅ Created MCP client for session default
-INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
-INFO:     mcp_client.py:56    - ✅ Fetched 47 MCP tools from server
+INFO:     mcp_client.py:290   - ✅ Created MCP client for session default
+INFO:     mcp_client.py:229   - 📋 Fetching available MCP tools
+INFO:     mcp_client.py:57    - ✅ Fetched 47 MCP tools from server
 INFO:     workflow.py:80    - 📋 Loaded 47 available MCP tools
-INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session earlier-plate-compound-shop
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session ruler-accident-maybe-late
 INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
 INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
 INFO:     workflow.py:99    - 🔍 Query Analysis: Analyzing user query
-INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'What incidents have been open the longest without ...'
-INFO:     llm_client.py:117   - 🔍 Query analyzed: incident_analysis with confidence 0.9
-INFO:     llm_client.py:260   - 📋 Tool plan created: 2 tools planned
+INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'tell me everything about resource 50944068 - its d...'
+INFO:     llm_client.py:174   - 🔍 Query analyzed: infrastructure_query
+INFO:     llm_client.py:175   - 🎯 IDs extracted: 50944068 | Service Name: None
+INFO:     llm_client.py:268   - 📋 Tool plan created: 6 tools planned
 INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
   {
-    "name": "search_incidents",
+    "name": "get_resource_by_id",
     "parameters": {
-      "query": "incident open longest resolution block blocking"
+      "resource_id": "50944068"
     }
   },
   {
-    "name": "get_incidents",
-    "parameters": {}
+    "name": "get_resource_version",
+    "parameters": {
+      "resource_id": "50944068"
+    }
+  },
+  {
+    "name": "get_resource_metadata",
+    "parameters": {
+      "resource_id": "50944068"
+    }
+  },
+  {
+    "name": "get_resource_tickets",
+    "parameters": {
+      "resource_id": "50944068"
+    }
+  },
+  {
+    "name": "get_changelog_by_resource",
+    "parameters": {
+      "resource_id": "50944068"
+    }
+  },
+  {
+    "name": "get_notifications_by_resource",
+    "parameters": {
+      "resource_id": "50944068"
+    }
   }
 ]
-INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=incident_analysis, confidence=0.9
+INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=infrastructure_query, confidence=0.9
 INFO:     workflow.py:104   - 🛠️ Tool Execution: Executing MCP tools
-INFO:     tool_execution_agent.py:37    - 🛠️ Executing 2 tools
-INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
-INFO:     mcp_client.py:251   - ✅ Created MCP client for session earlier-plate-compound-shop
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_incidents
-INFO:     mcp_client.py:93    - ✅ Tool search_incidents executed successfully
-INFO:     tool_execution_agent.py:92    - 🔧 Executing get_incidents (attempt 1/2)
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_incidents
-INFO:     mcp_client.py:93    - ✅ Tool get_incidents executed successfully
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 6 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_resource_by_id (attempt 1/2)
+INFO:     mcp_client.py:290   - ✅ Created MCP client for session ruler-accident-maybe-late
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_resource_by_id
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
+INFO:     mcp_client.py:127   - ✅ Tool get_resource_by_id executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_resource_version (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_resource_version
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
+INFO:     mcp_client.py:127   - ✅ Tool get_resource_version executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_resource_metadata (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_resource_metadata
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
+INFO:     mcp_client.py:127   - ✅ Tool get_resource_metadata executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_resource_tickets (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_resource_tickets
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
+INFO:     mcp_client.py:127   - ✅ Tool get_resource_tickets executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_changelog_by_resource (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_changelog_by_resource
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
+INFO:     mcp_client.py:127   - ✅ Tool get_changelog_by_resource executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_notifications_by_resource (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_notifications_by_resource
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
+INFO:     mcp_client.py:127   - ✅ Tool get_notifications_by_resource executed successfully
 INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
 INFO:     workflow.py:123   - ✨ Response Enrichment: Enriching response
 INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
 INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
 INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
-INFO:     llm_client.py:294   - 🔧 Preprocessing tool: search_incidents, result keys: ['incidents', 'count', 'page', 'page_size', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:582   - ⚠️ No preprocessing applied for tool: search_incidents
-INFO:     llm_client.py:294   - 🔧 Preprocessing tool: get_incidents, result keys: ['incidents', 'count', 'count_is_exact', 'is_limited', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:407   - 🚨 Found 41 incidents
-INFO:     llm_client.py:411   - 🔍 Applying fuzzy matching with terms: ['incident', 'open', 'longest', 'resolution', 'block', 'blocking']
-INFO:     llm_client.py:423   - 🎯 After fuzzy matching, top incident scores: [3, 3, 3, 3, 3, 3, 3, 0, 0, 0]
-INFO:     llm_client.py:428   - ✅ Processing 10 incidents
-INFO:     llm_client.py:619   - Processing 2 successful tool results with search_terms: ['incident', 'open', 'longest', 'resolution', 'block', 'blocking']
-INFO:     llm_client.py:624   - 📊 Preprocessed tool data size: 3418 bytes (3.3 KB)
-INFO:     llm_client.py:641   - 📊 Context JSON size: 5221 bytes (5.1 KB)
-INFO:     llm_client.py:642   - 📊 Estimated tokens: ~1305.25 (rough estimate)
-INFO:     llm_client.py:752   - Invoking LLM for response generation...
-INFO:     llm_client.py:762   - Streaming completed, total length: 1254
-INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'Based on the tool results, here are the incidents that have been open the longest without resolution:\n\n• **ID: 20 - New incident**\n  - **Severity:** Low\n  - **Status:** New\n  
-INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 1254 chars
-INFO:     response_enrichment_agent.py:86    - ✅ Response enrichment completed with 5 forward links
+INFO:     llm_client.py:363   - 🔍 DEBUG get_changelog_by_resource - result keys: ['resource_id', 'changelogs', 'count', 'timestamp', 'tool', 'parameters', 'success']
+INFO:     llm_client.py:368   - 🔍 DEBUG get_changelog_by_resource - found 'changelogs' array with 5 items
+INFO:     llm_client.py:394   - 📋 Preprocessed 5 changelogs for get_changelog_by_resource
+INFO:     llm_client.py:515   - 🔍 Preprocessed get_changelog_by_resource: 5 items
+INFO:     llm_client.py:515   - 🔍 Preprocessed get_notifications_by_resource: 0 items
+INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': '**Resource Details:**\n- **ID:** 50944068\n- **Name:** vector-0\n- **Type:** Workload\n- **SubType:** Pod\n- **Status:** Active\n- **Provider:** Kubernetes\n- **Created At:** 2025-
+INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 1380 chars
+INFO:     response_enrichment_agent.py:92    - ✅ Response enrichment completed with 3 forward links
 INFO:     workflow.py:138   - 🎯 Orchestrator: Finalizing workflow
 INFO:     workflow.py:220   - ✅ Processing completed successfully
-INFO:     graph.py:141   - {"timestamp": "2025-12-01T22:52:13.352419", "uuid": "earlier-plate-compound-shop", "llm_method": "enhanced_workflow", "sent": "Based on the tool results, here are the incidents that have been open the longest without resolution"}
-ERROR:     server.py:73    - {"timestamp": "2025-12-01T22:53:08.902483", "uuid": "earlier-plate-compound-shop", "op": "Error: (<CloseCode.ABNORMAL_CLOSURE: 1006>, '')"}
-INFO:     server.py:77    - {"timestamp": "2025-12-01T22:53:08.902635", "uuid": "earlier-plate-compound-shop", "op": "Closing connection."}
-ERROR:     server.py:82    - {"timestamp": "2025-12-01T22:53:08.902707", "uuid": "earlier-plate-compound-shop", "op": "WebSocket close error: Unexpected ASGI message 'websocket.close', after sending 'websocket.close' or response already completed."}
-INFO:     server.py:53    - {"timestamp": "2025-12-01T22:53:11.907350", "uuid": null, "received": {"uuid": "earlier-plate-compound-shop", "init": true}}
-INFO:     server.py:64    - {"timestamp": "2025-12-01T22:53:11.907781", "uuid": "earlier-plate-compound-shop", "op": "Initializing ws with client."}
-ERROR:     server.py:73    - {"timestamp": "2025-12-01T22:53:13.051731", "uuid": "earlier-plate-compound-shop", "op": "Error: (<CloseCode.ABNORMAL_CLOSURE: 1006>, '')"}
-INFO:     server.py:77    - {"timestamp": "2025-12-01T22:53:13.051884", "uuid": "earlier-plate-compound-shop", "op": "Closing connection."}
-ERROR:     server.py:82    - {"timestamp": "2025-12-01T22:53:13.051957", "uuid": "earlier-plate-compound-shop", "op": "WebSocket close error: Unexpected ASGI message 'websocket.close', after sending 'websocket.close' or response already completed."}
-INFO:     server.py:53    - {"timestamp": "2025-12-01T22:53:16.184987", "uuid": null, "received": {"uuid": "earlier-plate-compound-shop", "init": true}}
-INFO:     server.py:64    - {"timestamp": "2025-12-01T22:53:16.185447", "uuid": "earlier-plate-compound-shop", "op": "Initializing ws with client."}
-INFO:     server.py:53    - {"timestamp": "2025-12-02T08:09:13.939869", "uuid": "earlier-plate-compound-shop", "received": {"uuid": "earlier-plate-compound-shop", "message": "  describe me about the incident happened on 'Mit-runtime-api-services'", "init": false}}
-INFO:     graph.py:118   - 🚀 Using enhanced workflow for:   describe me about the incident happened on 'Mit-...
-INFO:     workflow.py:179   - 🚀 Processing: '  describe me about the incident happened on 'Mit-runtime-api-services''
-INFO:     workflow.py:193   - 📚 Found existing conversation state for thread: earlier-plate-compound-shop
-INFO:     workflow.py:197   - 💬 Loaded 2 previous messages from conversation history
-INFO:     workflow.py:209   - ✅ Preserved 2 messages from previous conversation
-INFO:     workflow.py:73    - 🎯 Orchestrator: Starting workflow
-INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
-INFO:     mcp_client.py:56    - ✅ Fetched 47 MCP tools from server
-INFO:     workflow.py:80    - 📋 Loaded 47 available MCP tools
-INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session earlier-plate-compound-shop
-INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
-INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
-INFO:     workflow.py:99    - 🔍 Query Analysis: Analyzing user query
-INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: '  describe me about the incident happened on 'Mit-...'
-INFO:     llm_client.py:117   - 🔍 Query analyzed: incident_analysis with confidence 0.9
-INFO:     llm_client.py:260   - 📋 Tool plan created: 2 tools planned
-INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
-  {
-    "name": "search_incidents",
-    "parameters": {
-      "query": "runtime api services runtime-api aws aws-api runtime-aws"
-    }
-  },
-  {
-    "name": "get_incidents",
-    "parameters": {}
-  }
-]
-INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=incident_analysis, confidence=0.9
-INFO:     workflow.py:104   - 🛠️ Tool Execution: Executing MCP tools
-INFO:     tool_execution_agent.py:37    - 🛠️ Executing 2 tools
-INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_incidents
-INFO:     mcp_client.py:93    - ✅ Tool search_incidents executed successfully
-INFO:     tool_execution_agent.py:92    - 🔧 Executing get_incidents (attempt 1/2)
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_incidents
-INFO:     mcp_client.py:93    - ✅ Tool get_incidents executed successfully
-INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
-INFO:     workflow.py:123   - ✨ Response Enrichment: Enriching response
-INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
-INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
-INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
-INFO:     llm_client.py:294   - 🔧 Preprocessing tool: search_incidents, result keys: ['incidents', 'count', 'page', 'page_size', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:582   - ⚠️ No preprocessing applied for tool: search_incidents
-INFO:     llm_client.py:294   - 🔧 Preprocessing tool: get_incidents, result keys: ['incidents', 'count', 'count_is_exact', 'is_limited', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:407   - 🚨 Found 41 incidents
-INFO:     llm_client.py:411   - 🔍 Applying fuzzy matching with terms: ['runtime', 'api', 'services', 'runtime-api', 'aws', 'aws-api', 'runtime-aws']
-INFO:     llm_client.py:423   - 🎯 After fuzzy matching, top incident scores: [15, 6, 3, 3, 3, 3, 3, 3, 3, 3]
-INFO:     llm_client.py:428   - ✅ Processing 10 incidents
-INFO:     llm_client.py:619   - Processing 2 successful tool results with search_terms: ['runtime', 'api', 'services', 'runtime-api', 'aws', 'aws-api', 'runtime-aws']
-INFO:     llm_client.py:624   - 📊 Preprocessed tool data size: 3395 bytes (3.3 KB)
-INFO:     llm_client.py:641   - 📊 Context JSON size: 6710 bytes (6.6 KB)
-INFO:     llm_client.py:642   - 📊 Estimated tokens: ~1677.5 (rough estimate)
-INFO:     llm_client.py:743   - 📜 Including 2 previous messages in context
-INFO:     llm_client.py:752   - Invoking LLM for response generation...
-INFO:     llm_client.py:762   - Streaming completed, total length: 673
-INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "I found an incident that closely matches your query about 'Mit-runtime-api-services':\n\n• **ID: 1499 - Runtime-aws-api's are not working**\n  - **Severity:** High\n  - **Status:**
-INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 673 chars
-INFO:     response_enrichment_agent.py:86    - ✅ Response enrichment completed with 5 forward links
-INFO:     workflow.py:138   - 🎯 Orchestrator: Finalizing workflow
-INFO:     workflow.py:220   - ✅ Processing completed successfully
-INFO:     graph.py:141   - {"timestamp": "2025-12-02T08:09:24.594824", "uuid": "earlier-plate-compound-shop", "llm_method": "enhanced_workflow", "sent": "I found an incident that closely matches your query about 'Mit-runtime-api-services':\n\n\u2022 **ID: 1499 "}
-INFO:     server.py:53    - {"timestamp": "2025-12-02T08:09:41.390495", "uuid": "earlier-plate-compound-shop", "received": {"uuid": "earlier-plate-compound-shop", "message": "  describe me about the incident happened on 'Mit-runtime-api-services'", "init": false}}
-INFO:     graph.py:118   - 🚀 Using enhanced workflow for:   describe me about the incident happened on 'Mit-...
-INFO:     workflow.py:179   - 🚀 Processing: '  describe me about the incident happened on 'Mit-runtime-api-services''
-INFO:     workflow.py:193   - 📚 Found existing conversation state for thread: earlier-plate-compound-shop
-INFO:     workflow.py:197   - 💬 Loaded 4 previous messages from conversation history
-INFO:     workflow.py:209   - ✅ Preserved 4 messages from previous conversation
-INFO:     workflow.py:73    - 🎯 Orchestrator: Starting workflow
-INFO:     mcp_client.py:190   - 📋 Fetching available MCP tools
-INFO:     workflow.py:80    - 📋 Loaded 47 available MCP tools
-INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session earlier-plate-compound-shop
-INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
-INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
-INFO:     workflow.py:99    - 🔍 Query Analysis: Analyzing user query
-INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: '  describe me about the incident happened on 'Mit-...'
-INFO:     llm_client.py:117   - 🔍 Query analyzed: incident_analysis with confidence 0.9
-INFO:     llm_client.py:260   - 📋 Tool plan created: 2 tools planned
-INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
-  {
-    "name": "search_incidents",
-    "parameters": {
-      "query": "runtime api services runtime-api aws aws-api runtime-aws"
-    }
-  },
-  {
-    "name": "get_incidents",
-    "parameters": {}
-  }
-]
-INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=incident_analysis, confidence=0.9
-INFO:     workflow.py:104   - 🛠️ Tool Execution: Executing MCP tools
-INFO:     tool_execution_agent.py:37    - 🛠️ Executing 2 tools
-INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: search_incidents
-INFO:     mcp_client.py:93    - ✅ Tool search_incidents executed successfully
-INFO:     tool_execution_agent.py:92    - 🔧 Executing get_incidents (attempt 1/2)
-INFO:     mcp_client.py:87    - 🔧 Executing MCP tool: get_incidents
-INFO:     mcp_client.py:93    - ✅ Tool get_incidents executed successfully
-INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
-INFO:     workflow.py:123   - ✨ Response Enrichment: Enriching response
-INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
-INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
-INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
-INFO:     llm_client.py:294   - 🔧 Preprocessing tool: search_incidents, result keys: ['incidents', 'count', 'page', 'page_size', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:582   - ⚠️ No preprocessing applied for tool: search_incidents
-INFO:     llm_client.py:294   - 🔧 Preprocessing tool: get_incidents, result keys: ['incidents', 'count', 'count_is_exact', 'is_limited', 'timestamp', 'tool', 'parameters', 'success']
-INFO:     llm_client.py:407   - 🚨 Found 41 incidents
-INFO:     llm_client.py:411   - 🔍 Applying fuzzy matching with terms: ['runtime', 'api', 'services', 'runtime-api', 'aws', 'aws-api', 'runtime-aws']
-INFO:     llm_client.py:423   - 🎯 After fuzzy matching, top incident scores: [15, 6, 3, 3, 3, 3, 3, 3, 3, 3]
-INFO:     llm_client.py:428   - ✅ Processing 10 incidents
-INFO:     llm_client.py:619   - Processing 2 successful tool results with search_terms: ['runtime', 'api', 'services', 'runtime-api', 'aws', 'aws-api', 'runtime-aws']
-INFO:     llm_client.py:624   - 📊 Preprocessed tool data size: 3395 bytes (3.3 KB)
-INFO:     llm_client.py:641   - 📊 Context JSON size: 7584 bytes (7.4 KB)
-INFO:     llm_client.py:642   - 📊 Estimated tokens: ~1896.0 (rough estimate)
-INFO:     llm_client.py:743   - 📜 Including 4 previous messages in context
-INFO:     llm_client.py:752   - Invoking LLM for response generation...
-INFO:     llm_client.py:762   - Streaming completed, total length: 672
-INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "I found an incident that is relevant to your query about 'Mit-runtime-api-services':\n\n• **ID: 1499 - Runtime-aws-api's are not working**\n  - **Severity:** High\n  - **Status:** 
-INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 672 chars
-INFO:     response_enrichment_agent.py:86    - ✅ Response enrichment completed with 5 forward links
-INFO:     workflow.py:138   - 🎯 Orchestrator: Finalizing workflow
-INFO:     workflow.py:220   - ✅ Processing completed successfully
-INFO:     graph.py:141   - {"timestamp": "2025-12-02T08:09:51.141203", "uuid": "earlier-plate-compound-shop", "llm_method": "enhanced_workflow", "sent": "I found an incident that is relevant to your query about 'Mit-runtime-api-services':\n\n\u2022 **ID: 1499 -"}
-ERROR:     server.py:73    - {"timestamp": "2025-12-02T08:09:55.367263", "uuid": "earlier-plate-compound-shop", "op": "Error: (<CloseCode.ABNORMAL_CLOSURE: 1006>, '')"}
-INFO:     server.py:77    - {"timestamp": "2025-12-02T08:09:55.368272", "uuid": "earlier-plate-compound-shop", "op": "Closing connection."}
-ERROR:     server.py:82    - {"timestamp": "2025-12-02T08:09:55.368712", "uuid": "earlier-plate-compound-shop", "op": "WebSocket close error: Unexpected ASGI message 'websocket.close', after sending 'websocket.close' or response already completed."}
-INFO:     server.py:53    - {"timestamp": "2025-12-02T08:09:58.809026", "uuid": null, "received": {"uuid": "earlier-plate-compound-shop", "init": true}}
-INFO:     server.py:64    - {"timestamp": "2025-12-02T08:09:58.809475", "uuid": "earlier-plate-compound-shop", "op": "Initializing ws with client."}
+INFO:     graph.py:144   - {"timestamp": "2025-12-02T16:27:59.290801", "uuid": "ruler-accident-maybe-late", "llm_method": "enhanced_workflow", "sent": "**Resource Details:**\n- **ID:** 50944068\n- **Name:** vector-0\n- **Type:** Workload\n- **SubType:** Po"}
