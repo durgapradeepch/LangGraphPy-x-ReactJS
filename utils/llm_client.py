@@ -663,10 +663,17 @@ Now apply these principles to create the optimal tool plan. Respond ONLY with va
             item_limit = 3 if multi_entity and len(mcp_results) > 2 else 10
             
             tool_data = []
+            empty_results = []  # Track which searches returned no data
+            
             for result in mcp_results:
                 if result.get("success"):
                     tool_name = result.get("tool_name", "")
                     processed = self._preprocess_tool_result(result.get("result", {}), tool_name, search_terms)
+                    
+                    # Check if result is empty
+                    is_empty = self._is_empty_result(processed)
+                    if is_empty:
+                        empty_results.append(tool_name)
                     
                     # Apply multi-entity item limits
                     if multi_entity:
@@ -682,6 +689,14 @@ Now apply these principles to create the optimal tool plan. Respond ONLY with va
                     if "changelog" in tool_name.lower() or "notification" in tool_name.lower():
                         data_count = processed.get("count", len(processed) if isinstance(processed, list) else "N/A")
                         logger.info(f"🔍 Preprocessed {tool_name}: {data_count} items")
+            
+            # 🔍 SMART NO-RESULTS HANDLING: If all searches are empty, try broader search
+            if empty_results and len(empty_results) == len(tool_data):
+                logger.info(f"💡 No results found for exact query. Attempting broader search for suggestions...")
+                suggestions = await self._find_similar_entities(state, search_terms, empty_results)
+                if suggestions:
+                    # Add suggestions to tool_data for LLM to use
+                    tool_data.append({"tool": "suggestions", "data": suggestions})
             
             # Include conversation history for context awareness
             conversation_history = state.get("conversation_history", [])
@@ -711,6 +726,13 @@ CRITICAL ANTI-HALLUCINATION RULES (MANDATORY):
 5. **If data shows "N/A", "Unknown", empty arrays, or null - acknowledge this gap.**
 6. **Do NOT make diagnostic conclusions unless supported by explicit data.**
 7. **When uncertain, describe what data IS available and what is MISSING.**
+
+HANDLING NO RESULTS / SUGGESTIONS:
+- If tool_results contains a "suggestions" entry with similar_items, this means NO EXACT MATCH was found
+- Start response with: "I couldn't find an exact match for '[search term]'. However, I found these similar items:"
+- List the suggestions naturally: "Incident 1507: 'Incident on runtime api' (High severity)"
+- End with: "Would you like details about one of these?"
+- **Do NOT** pretend the suggestions are the answer - they are alternatives!
 
 RESPONSE FORMAT - PARAGRAPH ANALYSIS (MANDATORY):
 Write your response as flowing narrative paragraphs, NOT as structured lists or bullet points.
@@ -834,6 +856,111 @@ Format: Flowing narrative analysis → Integrated data points → Contextual gap
     
     def _fallback_response_generation(self, state: Dict[str, Any]) -> Dict[str, Any]:
         return {"final_response": "I'm having trouble connecting to the tools right now.", "forward_links": [], "recommendations": [], "insights": {}}
+    
+    def _is_empty_result(self, processed_data: Any) -> bool:
+        """Check if a processed result is empty or has no meaningful data"""
+        if not processed_data:
+            return True
+        
+        if isinstance(processed_data, dict):
+            # Check common data fields
+            for key in ["incidents", "resources", "tickets", "notifications", "changelogs", "logs"]:
+                if key in processed_data:
+                    data_list = processed_data[key]
+                    if isinstance(data_list, list) and len(data_list) > 0:
+                        return False
+            
+            # Check count field
+            count = processed_data.get("count", 0)
+            if count > 0:
+                return False
+        
+        elif isinstance(processed_data, list) and len(processed_data) > 0:
+            return False
+        
+        return True
+    
+    async def _find_similar_entities(self, state: Dict[str, Any], search_terms: List[str], empty_tools: List[str]) -> Dict[str, Any]:
+        """
+        When exact search returns no results, try to find similar entities
+        by extracting keywords and searching more broadly
+        
+        NOTE: This requires mcp_client to be passed in state or accessible globally
+        """
+        try:
+            # Get mcp_client from state if available
+            mcp_client = state.get("_mcp_client")
+            if not mcp_client:
+                logger.warning("MCP client not available in state, cannot find similar entities")
+                return None
+            
+            suggestions = {
+                "message": "No exact match found. Here are similar items:",
+                "similar_items": []
+            }
+            
+            # Extract keywords from search terms
+            keywords = []
+            for term in search_terms:
+                # Split on hyphens and extract meaningful words
+                words = term.lower().replace('-', ' ').split()
+                keywords.extend([w for w in words if len(w) > 3])  # Only words > 3 chars
+            
+            if not keywords:
+                return None
+            
+            logger.info(f"🔍 Searching for similar entities with keywords: {keywords}")
+            
+            # Try broader searches with individual keywords
+            for tool_name in empty_tools:
+                if "search_incidents" in tool_name:
+                    # Try searching for each keyword
+                    for keyword in keywords[:2]:  # Limit to first 2 keywords
+                        try:
+                            result = await mcp_client.call_tool("search_incidents", {"query": keyword, "limit": 3})
+                            
+                            if result.get("success") and result.get("result", {}).get("incidents"):
+                                incidents = result["result"]["incidents"]
+                                for inc in incidents:
+                                    suggestions["similar_items"].append({
+                                        "type": "incident",
+                                        "id": inc.get("id"),
+                                        "title": inc.get("title"),
+                                        "severity": inc.get("severity"),
+                                        "suggestion": f"Incident {inc.get('id')}: {inc.get('title')}"
+                                    })
+                        except Exception as e:
+                            logger.warning(f"Failed to search for similar incidents: {e}")
+                
+                elif "search_resources" in tool_name:
+                    # Try searching for resources with keywords
+                    for keyword in keywords[:2]:
+                        try:
+                            result = await mcp_client.call_tool("search_resources", {"query": keyword, "limit": 3})
+                            
+                            if result.get("success") and result.get("result", {}).get("resources"):
+                                resources = result["result"]["resources"]
+                                for res in resources:
+                                    suggestions["similar_items"].append({
+                                        "type": "resource",
+                                        "id": res.get("id"),
+                                        "name": res.get("resourceName"),
+                                        "type": res.get("resourceType"),
+                                        "suggestion": f"Resource: {res.get('resourceName')} ({res.get('resourceType')})"
+                                    })
+                        except Exception as e:
+                            logger.warning(f"Failed to search for similar resources: {e}")
+            
+            # Return suggestions if we found any
+            if suggestions["similar_items"]:
+                logger.info(f"✅ Found {len(suggestions['similar_items'])} similar items")
+                return suggestions
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error finding similar entities: {e}")
+            return None
 
 
 # Global instance

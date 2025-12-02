@@ -1,5 +1,0 @@
-INFO:     llm_client.py:47    - ✅ LLM clients initialized. Main: gpt-4o, Router: gpt-4o-mini
-INFO:     cust_logger.py:68    - Set message color for graph.py to MAGENTA
-INFO:     cust_logger.py:68    - Set message color for server.py to PURPLE
-INFO:     server.py:53    - {"timestamp": "2025-12-02T18:13:12.947271", "uuid": null, "received": {"uuid": "likely-warn-remove-brave", "init": true}}
-INFO:     server.py:64    - {"timestamp": "2025-12-02T18:13:12.947380", "uuid": "likely-warn-remove-brave", "op": "Initializing ws with client."}

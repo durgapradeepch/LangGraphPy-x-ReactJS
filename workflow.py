@@ -187,16 +187,26 @@ class EnhancedLangGraphWorkflow:
         """Response enrichment"""
         logger.info("✨ Response Enrichment: Enriching response")
         
-        # Inject websocket reference if available (as non-serializable context)
+        # Inject websocket reference and mcp_client if available (as non-serializable context)
+        state_with_context = {**state}
+        
         if hasattr(self, '_current_websocket') and self._current_websocket:
-            state_with_ws = {**state, "_websocket_ref": self._current_websocket}
-            result = await self.response_enricher.enrich_response(state_with_ws)
-            # Remove websocket ref before returning (don't serialize it)
-            if "_websocket_ref" in result:
-                del result["_websocket_ref"]
-            return result
-        else:
-            return await self.response_enricher.enrich_response(state)
+            state_with_context["_websocket_ref"] = self._current_websocket
+        
+        # Add mcp_client for similar entity search when no results found
+        if hasattr(self, 'mcp_client') and self.mcp_client:
+            client = await self.mcp_client.get_client()
+            state_with_context["_mcp_client"] = client
+        
+        result = await self.response_enricher.enrich_response(state_with_context)
+        
+        # Remove non-serializable refs before returning
+        if "_websocket_ref" in result:
+            del result["_websocket_ref"]
+        if "_mcp_client" in result:
+            del result["_mcp_client"]
+        
+        return result
     
     async def _orchestrator_finish_node(self, state: ChatState) -> ChatState:
         """Orchestrator finalization"""
