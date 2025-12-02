@@ -114,3 +114,8 @@ INFO:     response_enrichment_agent.py:86    - ✅ Response enrichment completed
 INFO:     workflow.py:138   - 🎯 Orchestrator: Finalizing workflow
 INFO:     workflow.py:220   - ✅ Processing completed successfully
 INFO:     graph.py:141   - {"timestamp": "2025-12-01T19:14:20.085691", "uuid": "earlier-plate-compound-shop", "llm_method": "enhanced_workflow", "sent": "Certainly! Here's an enriched response with detailed information about incident 415:\n\nIncident 415 i"}
+ERROR:     server.py:73    - {"timestamp": "2025-12-01T19:16:56.979280", "uuid": "earlier-plate-compound-shop", "op": "Error: (<CloseCode.ABNORMAL_CLOSURE: 1006>, '')"}
+INFO:     server.py:77    - {"timestamp": "2025-12-01T19:16:56.979648", "uuid": "earlier-plate-compound-shop", "op": "Closing connection."}
+ERROR:     server.py:82    - {"timestamp": "2025-12-01T19:16:56.979769", "uuid": "earlier-plate-compound-shop", "op": "WebSocket close error: Unexpected ASGI message 'websocket.close', after sending 'websocket.close' or response already completed."}
+INFO:     server.py:53    - {"timestamp": "2025-12-01T19:17:00.181352", "uuid": null, "received": {"uuid": "earlier-plate-compound-shop", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-01T19:17:00.181648", "uuid": "earlier-plate-compound-shop", "op": "Initializing ws with client."}

@@ -37,6 +37,79 @@ kill_port() {
     fi
 }
 
+# Function to check if Docker is running
+check_docker() {
+    if ! command -v docker &> /dev/null; then
+        echo -e "${RED}❌ Docker is not installed. Please install Docker Desktop.${NC}"
+        echo -e "${YELLOW}   Download from: https://www.docker.com/products/docker-desktop${NC}"
+        return 1
+    fi
+    
+    if ! docker info &> /dev/null; then
+        echo -e "${RED}❌ Docker is not running. Please start Docker Desktop.${NC}"
+        return 1
+    fi
+    
+    echo -e "${GREEN}✅ Docker is running${NC}"
+    return 0
+}
+
+# Function to start VictoriaLogs Docker container
+start_victorialogs() {
+    echo -e "${BLUE}Checking VictoriaLogs Docker container...${NC}"
+    
+    local container_name="victorialogs"
+    local image="victoriametrics/victoria-logs:latest"
+    local port=9428
+    
+    # Check if container already exists
+    if docker ps -a --format '{{.Names}}' | grep -q "^${container_name}$"; then
+        # Container exists, check if it's running
+        if docker ps --format '{{.Names}}' | grep -q "^${container_name}$"; then
+            echo -e "${GREEN}✅ VictoriaLogs container is already running${NC}"
+            return 0
+        else
+            # Container exists but not running, start it
+            echo -e "${YELLOW}⚠️  Starting existing VictoriaLogs container...${NC}"
+            docker start $container_name
+            sleep 3
+            echo -e "${GREEN}✅ VictoriaLogs container started${NC}"
+            return 0
+        fi
+    else
+        # Container doesn't exist, create and start it
+        echo -e "${YELLOW}⚠️  Creating VictoriaLogs Docker container...${NC}"
+        
+        # Create data directory for persistent storage
+        mkdir -p "$PROJECT_DIR/victoria-logs-data"
+        
+        # Pull the latest image
+        echo -e "${BLUE}Pulling VictoriaLogs Docker image...${NC}"
+        docker pull $image
+        
+        # Run the container
+        docker run -d \
+            --name $container_name \
+            --restart unless-stopped \
+            -p $port:$port \
+            -v "$PROJECT_DIR/victoria-logs-data:/victoria-logs-data" \
+            $image \
+            -storageDataPath=/victoria-logs-data \
+            -httpListenAddr=:$port
+        
+        if [ $? -eq 0 ]; then
+            sleep 3
+            echo -e "${GREEN}✅ VictoriaLogs container created and started${NC}"
+            echo -e "${GREEN}   URL: http://localhost:$port${NC}"
+            echo -e "${GREEN}   Data: $PROJECT_DIR/victoria-logs-data${NC}"
+            return 0
+        else
+            echo -e "${RED}❌ Failed to start VictoriaLogs container${NC}"
+            return 1
+        fi
+    fi
+}
+
 # Function to start a service
 start_service() {
     local name=$1
@@ -112,15 +185,25 @@ echo -e "${GREEN}  Starting Services${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
+# Check Docker and start VictoriaLogs
+if check_docker; then
+    start_victorialogs
+else
+    echo -e "${YELLOW}⚠️  Skipping VictoriaLogs (Docker not available)${NC}"
+fi
+
+echo ""
+
 # Start Node.js MCP Server (Port 3001)
 start_service "Node.js MCP Server" "node server.js" 3001
 
 # Start Python FastAPI Backend (Port 8000)
-start_service "Python Backend" "source venv/bin/activate && uvicorn server:app --host 0.0.0.0 --port 8000" 8000
-
-# Start React Frontend (Port 3000)
-start_service "React Frontend" "cd frontend && npm start" 3000
-
+echo ""
+echo -e "${BLUE}📊 Service URLs:${NC}"
+echo -e "   🔹 React Frontend:     ${GREEN}http://localhost:3000${NC}"
+echo -e "   🔹 Python Backend:     ${GREEN}http://localhost:8000${NC}"
+echo -e "   🔹 Node.js MCP Server: ${GREEN}http://localhost:3001${NC}"
+echo -e "   🔹 VictoriaLogs:       ${GREEN}http://localhost:9428${NC}"
 echo ""
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${GREEN}  All Services Started!${NC}"

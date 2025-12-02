@@ -37,6 +37,21 @@ stop_port 3000 "React Frontend"
 stop_port 8000 "Python Backend"
 stop_port 3001 "Node.js MCP Server"
 
+# Stop VictoriaLogs Docker container
+echo ""
+if command -v docker &> /dev/null && docker info &> /dev/null; then
+    if docker ps --format '{{.Names}}' | grep -q "^victorialogs$"; then
+        echo -e "${YELLOW}🛑 Stopping VictoriaLogs Docker container...${NC}"
+        docker stop victorialogs >/dev/null 2>&1
+        echo -e "${GREEN}✅ VictoriaLogs container stopped${NC}"
+        echo -e "${BLUE}   Note: Container will auto-restart on next ./start.sh or system reboot${NC}"
+    else
+        echo -e "${GREEN}✅ VictoriaLogs container already stopped${NC}"
+    fi
+else
+    echo -e "${YELLOW}⚠️  Docker not available, skipping VictoriaLogs${NC}"
+fi
+
 # Also kill any remaining processes by name
 echo ""
 echo -e "${YELLOW}🧹 Cleaning up remaining processes...${NC}"
