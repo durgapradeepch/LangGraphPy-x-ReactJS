@@ -1,3 +1,78 @@
 INFO:     llm_client.py:47    - ✅ LLM clients initialized. Main: gpt-4o, Router: gpt-4o-mini
 INFO:     cust_logger.py:68    - Set message color for graph.py to MAGENTA
 INFO:     cust_logger.py:68    - Set message color for server.py to PURPLE
+INFO:     server.py:53    - {"timestamp": "2025-12-03T02:50:36.634625", "uuid": null, "received": {"uuid": "test-1764748236623", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-03T02:50:36.635070", "uuid": "test-1764748236623", "op": "Initializing ws with client."}
+ERROR:     server.py:73    - {"timestamp": "2025-12-03T02:51:28.358399", "uuid": "test-1764748236623", "op": "Error: (1001, '')"}
+INFO:     server.py:77    - {"timestamp": "2025-12-03T02:51:28.358609", "uuid": "test-1764748236623", "op": "Closing connection."}
+ERROR:     server.py:82    - {"timestamp": "2025-12-03T02:51:28.358751", "uuid": "test-1764748236623", "op": "WebSocket close error: Unexpected ASGI message 'websocket.close', after sending 'websocket.close' or response already completed."}
+INFO:     server.py:53    - {"timestamp": "2025-12-03T02:51:29.336066", "uuid": null, "received": {"uuid": "exist-complex-pair-rush", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-03T02:51:29.336320", "uuid": "exist-complex-pair-rush", "op": "Initializing ws with client."}
+INFO:     server.py:53    - {"timestamp": "2025-12-03T02:52:24.884147", "uuid": null, "received": {"uuid": "tomorrow-shade-grabbed-indicate", "init": true}}
+INFO:     server.py:64    - {"timestamp": "2025-12-03T02:52:24.884284", "uuid": "tomorrow-shade-grabbed-indicate", "op": "Initializing ws with client."}
+INFO:     server.py:53    - {"timestamp": "2025-12-03T02:52:33.325664", "uuid": "exist-complex-pair-rush", "received": {"uuid": "exist-complex-pair-rush", "message": "hi", "init": false}}
+INFO:     graph.py:115   - 🚦 Routing query through semantic LLM router...
+INFO:     llm_client.py:118   - 🚦 Router (gpt-4o-mini) decision for 'hi...': Simple Mode
+INFO:     graph.py:187   - {"timestamp": "2025-12-03T02:52:35.412602", "uuid": "exist-complex-pair-rush", "llm_method": "on_chat_model_end", "sent": "Hello! How can I assist you today?"}
+INFO:     server.py:53    - {"timestamp": "2025-12-03T02:52:45.403177", "uuid": "exist-complex-pair-rush", "received": {"uuid": "exist-complex-pair-rush", "message": "Show me incident 1507 and all its affected resources with their complete details", "init": false}}
+INFO:     graph.py:115   - 🚦 Routing query through semantic LLM router...
+INFO:     llm_client.py:118   - 🚦 Router (gpt-4o-mini) decision for 'Show me incident 1507 and all its affected resourc...': Enhanced Mode
+INFO:     graph.py:121   - 🚀 Using enhanced workflow for: Show me incident 1507 and all its affected resourc...
+INFO:     workflow.py:254   - 🚀 Processing: 'Show me incident 1507 and all its affected resources with their complete details'
+INFO:     workflow.py:79    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:290   - ✅ Created MCP client for session default
+INFO:     mcp_client.py:229   - 📋 Fetching available MCP tools
+INFO:     mcp_client.py:57    - ✅ Fetched 47 MCP tools from server
+INFO:     workflow.py:86    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session exist-complex-pair-rush
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:105   - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'Show me incident 1507 and all its affected resourc...'
+INFO:     llm_client.py:210   - 🔍 Query analyzed: multi_entity_summary
+INFO:     llm_client.py:211   - 🎯 IDs extracted: 1507 | Service Name: None
+INFO:     llm_client.py:420   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
+  {
+    "name": "get_incident_by_id",
+    "parameters": {
+      "incident_id": "1507"
+    }
+  }
+]
+INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=multi_entity_summary, confidence=0.9
+INFO:     workflow.py:110   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_incident_by_id (attempt 1/2)
+INFO:     mcp_client.py:290   - ✅ Created MCP client for session exist-complex-pair-rush
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_incident_by_id
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"incident_id": 1507}
+INFO:     mcp_client.py:127   - ✅ Tool get_incident_by_id executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:129   - 🔍 Comprehensive Check: Analyzing if follow-up needed
+INFO:     comprehensive_query_agent.py:76    - ⏭️  No IDs found in search results, skipping expansion
+INFO:     workflow.py:131   - 🔍 Comprehensive Check Result: needs_followup=False, extracted_ids={}
+INFO:     workflow.py:140   - 🔍 Followup Node Check: needs_followup=False, extracted_ids={}
+INFO:     workflow.py:141   - 🔍 Full state keys: ['user_query', 'session_id', 'request_id', 'timestamp', 'query_type', 'intent', 'entities', 'confidence_score', 'specificity_level', 'query_analysis', 'available_tools', 'tool_plan', 'execution_plan', 'execution_strategy', 'executed_tools', 'current_tool_index', 'multi_query_results', 'aggregated_context', 'sub_query_id', 'mcp_results', 'context_data', 'conversation_history', 'incident_analysis', 'root_cause_analysis', 'timeline_data', 'enrichment_data', 'forward_links', 'annotations', 'final_response', 'workflow_status', 'current_agent', 'error_count', 'retry_attempts', 'data_quality_score', 'response_completeness', 'investigation_depth', 'needs_comprehensive_followup', 'extracted_ids', 'followup_tool_plan', 'completion_timestamp', 'multi_query_summary']
+INFO:     workflow.py:144   - ⏭️  Comprehensive follow-up not needed, skipping
+INFO:     workflow.py:188   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
+INFO:     llm_client.py:722   - 🔍 Empty check: empty_results=1, total_tools=1, empty_list=['get_incident_by_id']
+INFO:     llm_client.py:724   - 💡 No results found for exact query. Attempting broader search for suggestions...
+INFO:     llm_client.py:745   - 🔍 Empty tools: ['get_incident_by_id'], Search terms: ['1507', 'affected', 'resources', 'with', 'their', 'complete', 'details']
+INFO:     llm_client.py:945   - 🔍 _find_similar_entities called with search_terms: ['1507', 'affected', 'resources', 'with', 'their', 'complete', 'details'], empty_tools: ['get_incident_by_id']
+INFO:     llm_client.py:949   - 🔍 MCP client from state: True
+INFO:     llm_client.py:989   - 🔍 Extracted keywords for suggestion search: ['1507', 'affected', 'resources', 'with', 'their']
+INFO:     llm_client.py:991   - 🔍 Searching for similar entities with keywords: ['1507', 'affected', 'resources', 'with', 'their', 'complete', 'details']
+WARNING:     llm_client.py:1024  - ⚠️ No search mapping found for tool: get_incident_by_id
+INFO:     llm_client.py:1086  - ℹ️ No similar entities found with broader search
+INFO:     llm_client.py:747   - 🔍 Suggestions returned: False
+WARNING:     llm_client.py:753   - ⚠️ No suggestions found or suggestion search failed
+INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': "I attempted to retrieve information regarding incident 1507, but unfortunately, there were no results found for this specific incident. This means that the data available does not 
+INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 850 chars
+INFO:     response_enrichment_agent.py:92    - ✅ Response enrichment completed with 3 forward links
+INFO:     workflow.py:213   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:295   - ✅ Processing completed successfully
+INFO:     graph.py:145   - {"timestamp": "2025-12-03T02:52:57.597608", "uuid": "exist-complex-pair-rush", "llm_method": "enhanced_workflow", "sent": "I attempted to retrieve information regarding incident 1507, but unfortunately, there were no result"}

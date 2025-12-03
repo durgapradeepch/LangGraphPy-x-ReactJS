@@ -282,7 +282,28 @@ INTELLIGENT TOOL SELECTION:
 - `search_terms` present → ALWAYS use `search_*(query=terms)`
 - No search terms but need list → Use search_*(query="") with empty string to get relevant subset (NEVER use get_all)
 
-**Step 4: Handle comprehensive requests intelligently**
+**Step 4: CRITICAL - Handle relationship keywords properly**
+⚠️ NEVER use relationship words as search queries! These indicate cross-entity linking, not search terms:
+- "affected", "related", "associated", "linked", "connected" → These are RELATIONSHIPS, not search terms
+- "recent", "latest", "new" → These are TIME filters, not search terms
+- "open", "closed", "active" → These are STATUS filters, not search terms
+
+Examples of WRONG vs RIGHT:
+❌ WRONG: "incident 1507 and affected resources" → search_resources(query="affected")
+✅ RIGHT: "incident 1507 and affected resources" → get_incident_by_id(incident_id=1507) [System will auto-fetch linked resources]
+
+❌ WRONG: "tickets related to runtime" → search_tickets(query="related")
+✅ RIGHT: "tickets related to runtime" → search_tickets(query="runtime")
+
+❌ WRONG: "recent notifications" → get_notifications(query="recent")
+✅ RIGHT: "recent notifications" → get_notifications() [System will filter by time]
+
+Rule: If query asks for Entity A "and its/their/affected/related" Entity B:
+1. Get Entity A by ID or search
+2. Let the comprehensive query agent handle cross-entity linking automatically
+3. DO NOT create separate search for Entity B with relationship words
+
+**Step 5: Handle comprehensive requests intelligently**
 - If `comprehensive: true` and have specific_id:
   * Include ALL related tools for that entity type
   * Example: resource_id → get_resource_by_id + get_resource_version + get_resource_metadata + get_resource_tickets + get_changelog_by_resource + get_notifications_by_resource
@@ -291,12 +312,12 @@ INTELLIGENT TOOL SELECTION:
   * Use search_* to find it first
   * System will automatically fetch comprehensive data after extracting ID
 
-**Step 5: Apply filters and sorting naturally**
+**Step 6: Apply filters and sorting naturally**
 - If `filters` present in query_analysis, add as parameters if tool supports them
 - If `sorting` present, note it (LLM will handle sorting in response)
 - If `limit` present, LLM will apply it to results
 
-**Step 6: Read tool descriptions for edge cases**
+**Step 7: Read tool descriptions for edge cases**
 - Tool descriptions explain WHEN to use each tool
 - Trust tool descriptions over assumptions
 - Related tools are mentioned in descriptions - use them together when appropriate
@@ -315,19 +336,26 @@ Analysis: {{"strict_service_name": "vector-0", "scope": "single", "comprehensive
 Thought Process: Have name + want comprehensive → Search first to get ID, system follows up automatically
 Plan: [{{"name": "search_resources", "parameters": {{"query": "vector-0"}}}}]
 
-Pattern C - List with sorting/filtering:
+Pattern C - Cross-entity with ID:
+Query: "Show me incident 1507 and all its affected resources"
+Analysis: {{"specific_id": "1507", "entities": [{{"type": "incident", ...}}, {{"type": "resource", ...}}]}}
+Thought Process: Have incident ID + wants related resources → Get incident, system will extract resource IDs and fetch them automatically
+Plan: [{{"name": "get_incident_by_id", "parameters": {{"incident_id": "1507"}}}}]
+⚠️ DO NOT add search_resources(query="affected") - the word "affected" is a relationship, not a search term!
+
+Pattern D - List with sorting/filtering:
 Query: "Top 5 incidents by severity"
 Analysis: {{"scope": "multiple", "sorting": {{"field": "severity", "order": "desc", "limit": 5}}}}
 Thought Process: Want multiple + sorting → Use search with empty string to get relevant subset, LLM will sort
 Plan: [{{"name": "search_incidents", "parameters": {{"query": ""}}}}]
 
-Pattern D - Keyword search:
+Pattern E - Keyword search:
 Query: "Find incidents about payment failure"
 Analysis: {{"search_terms": ["payment", "failure"], "scope": "multiple"}}
 Thought Process: Have keywords + want multiple → Use search tool
 Plan: [{{"name": "search_incidents", "parameters": {{"query": "payment failure"}}}}]
 
-Pattern E - Quick status check:
+Pattern F - Quick status check:
 Query: "Status of acme-cart"
 Analysis: {{"strict_service_name": "acme-cart", "scope": "single", "comprehensive": false}}
 Thought Process: Have name + want basic info → Search is sufficient
