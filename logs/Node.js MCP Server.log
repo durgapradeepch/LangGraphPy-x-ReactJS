@@ -20,3 +20,59 @@ Please ensure Neo4j is running and credentials are correct
 🔍 searchIncidents - Received params: {"query":"Mit-runtime-api-services"}
 🔍 searchIncidents - Search title: "Mit-runtime-api-services"
 🔍 searchIncidents - Manifest API returned 0 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"runtime","limit":5}
+🔍 searchIncidents - Received params: {"query":"runtime","limit":5}
+🔍 searchIncidents - Search title: "runtime"
+🔍 searchIncidents - Manifest API returned 2 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"services","limit":5}
+🔍 searchIncidents - Received params: {"query":"services","limit":5}
+🔍 searchIncidents - Search title: "services"
+🔍 searchIncidents - Manifest API returned 6 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"Mit-runtime-api-services"}
+🔍 searchIncidents - Received params: {"query":"Mit-runtime-api-services"}
+🔍 searchIncidents - Search title: "Mit-runtime-api-services"
+🔍 searchIncidents - Manifest API returned 0 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"runtime","limit":5}
+🔍 searchIncidents - Received params: {"query":"runtime","limit":5}
+🔍 searchIncidents - Search title: "runtime"
+🔍 searchIncidents - Manifest API returned 2 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"services","limit":5}
+🔍 searchIncidents - Received params: {"query":"services","limit":5}
+🔍 searchIncidents - Search title: "services"
+🔍 searchIncidents - Manifest API returned 6 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"Mit-runtime-api-services"}
+🔍 searchIncidents - Received params: {"query":"Mit-runtime-api-services"}
+🔍 searchIncidents - Search title: "Mit-runtime-api-services"
+🔍 searchIncidents - Manifest API returned 0 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"runtime","limit":5}
+🔍 searchIncidents - Received params: {"query":"runtime","limit":5}
+🔍 searchIncidents - Search title: "runtime"
+🔍 searchIncidents - Manifest API returned 2 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"services","limit":5}
+🔍 searchIncidents - Received params: {"query":"services","limit":5}
+🔍 searchIncidents - Search title: "services"
+🔍 searchIncidents - Manifest API returned 6 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"Mit-runtime-api-services"}
+🔍 searchIncidents - Received params: {"query":"Mit-runtime-api-services"}
+🔍 searchIncidents - Search title: "Mit-runtime-api-services"
+🔍 searchIncidents - Manifest API returned 0 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"runtime","limit":5}
+🔍 searchIncidents - Received params: {"query":"runtime","limit":5}
+🔍 searchIncidents - Search title: "runtime"
+🔍 searchIncidents - Manifest API returned 2 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"services","limit":5}
+🔍 searchIncidents - Received params: {"query":"services","limit":5}
+🔍 searchIncidents - Search title: "services"
+🔍 searchIncidents - Manifest API returned 6 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"Mit-runtime-api-services"}
+🔍 searchIncidents - Received params: {"query":"Mit-runtime-api-services"}
+🔍 searchIncidents - Search title: "Mit-runtime-api-services"
+🔍 searchIncidents - Manifest API returned 0 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"runtime","limit":5}
+🔍 searchIncidents - Received params: {"query":"runtime","limit":5}
+🔍 searchIncidents - Search title: "runtime"
+🔍 searchIncidents - Manifest API returned 2 incidents
+🔧 MCP Execute - Tool: search_incidents, Params: {"query":"services","limit":5}
+🔍 searchIncidents - Received params: {"query":"services","limit":5}
+🔍 searchIncidents - Search title: "services"
+🔍 searchIncidents - Manifest API returned 6 incidents

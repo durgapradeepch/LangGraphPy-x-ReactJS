@@ -691,12 +691,38 @@ Now apply these principles to create the optimal tool plan. Respond ONLY with va
                         logger.info(f"🔍 Preprocessed {tool_name}: {data_count} items")
             
             # 🔍 SMART NO-RESULTS HANDLING: If all searches are empty, try broader search
+            logger.info(f"🔍 Empty check: empty_results={len(empty_results)}, total_tools={len(tool_data)}, empty_list={empty_results}")
             if empty_results and len(empty_results) == len(tool_data):
                 logger.info(f"💡 No results found for exact query. Attempting broader search for suggestions...")
+                
+                # Fallback: If search_terms is empty, extract from query parameters or user query
+                if not search_terms:
+                    # Try to get from tool parameters first
+                    for result in mcp_results:
+                        if result.get("success"):
+                            params = result.get("parameters", {})
+                            query_param = params.get("query", "")
+                            if query_param:
+                                search_terms = [query_param]
+                                break
+                    
+                    # If still empty, extract from user query
+                    if not search_terms:
+                        user_query = state.get("user_query", "")
+                        # Extract meaningful words (remove common words)
+                        words = user_query.replace("'", "").replace('"', "").split()
+                        common_words = {"describe", "me", "about", "the", "incident", "happened", "on", "show", "get", "find"}
+                        search_terms = [w for w in words if w.lower() not in common_words and len(w) > 3]
+                
+                logger.info(f"🔍 Empty tools: {empty_results}, Search terms: {search_terms}")
                 suggestions = await self._find_similar_entities(state, search_terms, empty_results)
+                logger.info(f"🔍 Suggestions returned: {suggestions is not None}")
                 if suggestions:
                     # Add suggestions to tool_data for LLM to use
+                    logger.info(f"✅ Adding {len(suggestions.get('similar_items', []))} suggestions to tool_data")
                     tool_data.append({"tool": "suggestions", "data": suggestions})
+                else:
+                    logger.warning("⚠️ No suggestions found or suggestion search failed")
             
             # Include conversation history for context awareness
             conversation_history = state.get("conversation_history", [])
@@ -888,10 +914,14 @@ Format: Flowing narrative analysis → Integrated data points → Contextual gap
         NOTE: This requires mcp_client to be passed in state or accessible globally
         """
         try:
+            logger.info(f"🔍 _find_similar_entities called with search_terms: {search_terms}, empty_tools: {empty_tools}")
+            
             # Get mcp_client from state if available
             mcp_client = state.get("_mcp_client")
+            logger.info(f"🔍 MCP client from state: {mcp_client is not None}")
+            
             if not mcp_client:
-                logger.warning("MCP client not available in state, cannot find similar entities")
+                logger.warning("⚠️ MCP client not available in state, cannot find similar entities")
                 return None
             
             suggestions = {
@@ -899,68 +929,201 @@ Format: Flowing narrative analysis → Integrated data points → Contextual gap
                 "similar_items": []
             }
             
-            # Extract keywords from search terms
+            # PRODUCTION-LEVEL KEYWORD EXTRACTION
+            # Priority 1: Use search_terms from LLM analysis if available
             keywords = []
-            for term in search_terms:
-                # Split on hyphens and extract meaningful words
-                words = term.lower().replace('-', ' ').split()
-                keywords.extend([w for w in words if len(w) > 3])  # Only words > 3 chars
+            if search_terms and len(search_terms) > 0:
+                for term in search_terms:
+                    words = term.lower().replace('-', ' ').replace('_', ' ').split()
+                    keywords.extend([w for w in words if len(w) > 3])
+            
+            # Priority 2: Fallback to extracting from original user query
+            if not keywords:
+                user_query = state.get("user_query", "")
+                logger.info(f"🔍 No search_terms from LLM, extracting from user query: {user_query}")
+                
+                # Remove common stop words and extract meaningful terms
+                stop_words = {'the', 'about', 'describe', 'show', 'tell', 'what', 'when', 'where', 
+                             'who', 'why', 'how', 'give', 'get', 'find', 'list', 'all', 'some',
+                             'this', 'that', 'these', 'those', 'incident', 'happened', 'with'}
+                
+                # Extract words from query
+                words = user_query.lower().replace('-', ' ').replace('_', ' ').replace("'", '').split()
+                keywords = [w for w in words if len(w) > 3 and w not in stop_words]
+            
+            # Remove duplicates while preserving order
+            keywords = list(dict.fromkeys(keywords))
             
             if not keywords:
+                logger.warning("⚠️ No keywords extracted from query, cannot suggest alternatives")
                 return None
+            
+            logger.info(f"🔍 Extracted keywords for suggestion search: {keywords[:5]}")  # Log first 5
             
             logger.info(f"🔍 Searching for similar entities with keywords: {keywords}")
             
+            # PRODUCTION-LEVEL MULTI-TOOL SEARCH STRATEGY
+            # Map empty tool types to their search counterparts
+            tool_search_map = {
+                "search_incidents": ("search_incidents", "incidents"),
+                "get_incidents": ("search_incidents", "incidents"),
+                "search_resources": ("search_resources", "resources"),
+                "get_resources": ("search_resources", "resources"),
+                "search_tickets": ("search_tickets", "tickets"),
+                "get_tickets": ("search_tickets", "tickets"),
+                "search_changelogs": ("search_changelogs", "changelogs"),
+                "get_changelogs": ("search_changelogs", "changelogs"),
+                "search_logs": ("search_logs", "logs"),
+                "query_logs": ("search_logs", "logs"),
+                "get_notifications": ("get_notifications", "notifications"),  # No search version
+            }
+            
             # Try broader searches with individual keywords
+            seen_suggestions = set()  # Prevent duplicates
+            
             for tool_name in empty_tools:
-                if "search_incidents" in tool_name:
-                    # Try searching for each keyword
-                    for keyword in keywords[:2]:  # Limit to first 2 keywords
-                        try:
-                            result = await mcp_client.execute_tool("search_incidents", {"query": keyword, "limit": 3})
-                            
-                            if result.get("success") and result.get("result", {}).get("incidents"):
-                                incidents = result["result"]["incidents"]
-                                for inc in incidents:
-                                    suggestions["similar_items"].append({
-                                        "type": "incident",
-                                        "id": inc.get("id"),
-                                        "title": inc.get("title"),
-                                        "severity": inc.get("severity"),
-                                        "suggestion": f"Incident {inc.get('id')}: {inc.get('title')}"
-                                    })
-                        except Exception as e:
-                            logger.warning(f"Failed to search for similar incidents: {e}")
+                # Determine which search tool to use
+                search_tool = None
+                result_key = None
                 
-                elif "search_resources" in tool_name:
-                    # Try searching for resources with keywords
-                    for keyword in keywords[:2]:
-                        try:
-                            result = await mcp_client.execute_tool("search_resources", {"query": keyword, "limit": 3})
+                for tool_pattern, (search_method, key) in tool_search_map.items():
+                    if tool_pattern in tool_name.lower():
+                        search_tool = search_method
+                        result_key = key
+                        break
+                
+                if not search_tool:
+                    logger.warning(f"⚠️ No search mapping found for tool: {tool_name}")
+                    continue
+                
+                logger.info(f"🔍 Searching with tool: {search_tool} for result_key: {result_key}")
+                
+                # Search with top keywords (limit to 3 keywords for efficiency)
+                for keyword in keywords[:3]:
+                    try:
+                        # Execute search with current keyword
+                        result = await mcp_client.execute_tool(search_tool, {"query": keyword, "limit": 5})
+                        
+                        if not result.get("success"):
+                            logger.warning(f"⚠️ Search failed for keyword '{keyword}'")
+                            continue
+                        
+                        # Extract results based on entity type
+                        # Note: MCP results have data at top level, not nested under "result"
+                        entities = result.get(result_key, [])
+                        logger.info(f"🔍 Extracted {len(entities)} entities with key '{result_key}'")
+                        
+                        if not entities:
+                            logger.warning(f"⚠️ No entities found for keyword '{keyword}' with key '{result_key}'")
+                            continue
+                        
+                        # Process entities based on type
+                        logger.info(f"🔍 Processing {len(entities[:3])} entities for keyword '{keyword}'")
+                        for entity in entities[:3]:  # Limit to 3 per keyword
+                            entity_id = entity.get("id")
+                            logger.info(f"🔍 Entity ID: {entity_id}, Type: {type(entity_id)}")
                             
-                            if result.get("success") and result.get("result", {}).get("resources"):
-                                resources = result["result"]["resources"]
-                                for res in resources:
-                                    suggestions["similar_items"].append({
-                                        "type": "resource",
-                                        "id": res.get("id"),
-                                        "name": res.get("resourceName"),
-                                        "type": res.get("resourceType"),
-                                        "suggestion": f"Resource: {res.get('resourceName')} ({res.get('resourceType')})"
-                                    })
-                        except Exception as e:
-                            logger.warning(f"Failed to search for similar resources: {e}")
+                            # Skip if already suggested
+                            if entity_id and entity_id in seen_suggestions:
+                                logger.info(f"⏭️ Skipping duplicate entity ID: {entity_id}")
+                                continue
+                            
+                            # Build suggestion based on entity type
+                            suggestion_text = self._build_suggestion_text(result_key, entity)
+                            logger.info(f"🔍 Suggestion text: {suggestion_text}")
+                            
+                            if suggestion_text and entity_id:
+                                suggestions["similar_items"].append({
+                                    "type": result_key.rstrip('s'),  # singular form
+                                    "id": entity_id,
+                                    "title": entity.get("title") or entity.get("resourceName") or entity.get("message", ""),
+                                    "severity": entity.get("severity"),
+                                    "status": entity.get("status") or entity.get("resourceStatus"),
+                                    "suggestion": suggestion_text
+                                })
+                                seen_suggestions.add(entity_id)
+                                logger.info(f"✅ Added suggestion for entity {entity_id}")
+                                
+                    except Exception as e:
+                        logger.warning(f"Failed to search {search_tool} with keyword '{keyword}': {e}")
+                        continue
             
             # Return suggestions if we found any
             if suggestions["similar_items"]:
+                # Limit total suggestions to 5 most relevant
+                suggestions["similar_items"] = suggestions["similar_items"][:5]
                 logger.info(f"✅ Found {len(suggestions['similar_items'])} similar items")
                 return suggestions
             
+            logger.info("ℹ️ No similar entities found with broader search")
             return None
             
         except Exception as e:
             logger.error(f"Error finding similar entities: {e}")
             return None
+    
+    def _build_suggestion_text(self, entity_type: str, entity: Dict[str, Any]) -> str:
+        """
+        Build human-readable suggestion text for different entity types.
+        
+        Args:
+            entity_type: Type of entity (incidents, resources, tickets, etc.)
+            entity: The entity data dictionary
+            
+        Returns:
+            Formatted suggestion string
+        """
+        try:
+            entity_id = entity.get("id", "Unknown")
+            
+            if entity_type == "incidents":
+                title = entity.get("title", "Untitled")
+                severity = entity.get("severity", "Unknown")
+                return f"Incident {entity_id}: '{title}' ({severity} severity)"
+            
+            elif entity_type == "resources":
+                name = entity.get("resourceName", "Unknown")
+                res_type = entity.get("resourceType", "")
+                subtype = entity.get("resourceSubType", "")
+                type_str = f"{res_type}/{subtype}" if subtype else res_type
+                return f"Resource: {name} ({type_str})"
+            
+            elif entity_type == "tickets":
+                title = entity.get("title", "Untitled")
+                status = entity.get("status", "Unknown")
+                priority = entity.get("priority", "")
+                priority_str = f" - {priority} priority" if priority else ""
+                return f"Ticket {entity_id}: '{title}' ({status}{priority_str})"
+            
+            elif entity_type == "changelogs":
+                action = entity.get("action", "Change")
+                resource = entity.get("resourceName", "Unknown resource")
+                timestamp = entity.get("timestamp", "")
+                time_str = f" at {timestamp[:10]}" if timestamp else ""
+                return f"Changelog: {action} on {resource}{time_str}"
+            
+            elif entity_type == "logs":
+                message = entity.get("message", entity.get("_msg", "Log entry"))
+                level = entity.get("level", "INFO")
+                # Truncate long messages
+                if len(message) > 80:
+                    message = message[:77] + "..."
+                return f"Log [{level}]: {message}"
+            
+            elif entity_type == "notifications":
+                message = entity.get("message", "Notification")
+                notif_type = entity.get("type", "")
+                type_str = f" [{notif_type}]" if notif_type else ""
+                return f"Notification{type_str}: {message}"
+            
+            else:
+                # Generic fallback
+                name = entity.get("name") or entity.get("title") or entity.get("message", "Item")
+                return f"{entity_type.title()}: {name}"
+                
+        except Exception as e:
+            logger.warning(f"Error building suggestion text: {e}")
+            return f"{entity_type}: ID {entity.get('id', 'Unknown')}"
 
 
 # Global instance
