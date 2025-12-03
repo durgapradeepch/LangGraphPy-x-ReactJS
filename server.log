@@ -76,3 +76,610 @@ INFO:     response_enrichment_agent.py:92    - ✅ Response enrichment completed
 INFO:     workflow.py:213   - 🎯 Orchestrator: Finalizing workflow
 INFO:     workflow.py:295   - ✅ Processing completed successfully
 INFO:     graph.py:145   - {"timestamp": "2025-12-03T02:52:57.597608", "uuid": "exist-complex-pair-rush", "llm_method": "enhanced_workflow", "sent": "I attempted to retrieve information regarding incident 1507, but unfortunately, there were no result"}
+INFO:     server.py:53    - {"timestamp": "2025-12-03T02:55:33.831694", "uuid": "exist-complex-pair-rush", "received": {"uuid": "exist-complex-pair-rush", "message": "Give me all GCP incidents, their related resources, open tickets, and recent notifications", "init": false}}
+INFO:     graph.py:115   - 🚦 Routing query through semantic LLM router...
+INFO:     llm_client.py:118   - 🚦 Router (gpt-4o-mini) decision for 'Give me all GCP incidents, their related resources...': Enhanced Mode
+INFO:     graph.py:121   - 🚀 Using enhanced workflow for: Give me all GCP incidents, their related resources...
+INFO:     workflow.py:254   - 🚀 Processing: 'Give me all GCP incidents, their related resources, open tickets, and recent notifications'
+INFO:     workflow.py:268   - 📚 Found existing conversation state for thread: exist-complex-pair-rush
+INFO:     workflow.py:272   - 💬 Loaded 2 previous messages from conversation history
+INFO:     workflow.py:284   - ✅ Preserved 2 messages from previous conversation
+INFO:     workflow.py:79    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:229   - 📋 Fetching available MCP tools
+INFO:     workflow.py:86    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session exist-complex-pair-rush
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:105   - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'Give me all GCP incidents, their related resources...'
+INFO:     llm_client.py:210   - 🔍 Query analyzed: multi_entity_summary
+INFO:     llm_client.py:211   - 🎯 IDs extracted: None | Service Name: None
+INFO:     llm_client.py:420   - 📋 Tool plan created: 4 tools planned
+INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
+  {
+    "name": "search_incidents",
+    "parameters": {
+      "query": "GCP"
+    }
+  },
+  {
+    "name": "search_resources",
+    "parameters": {
+      "query": "GCP"
+    }
+  },
+  {
+    "name": "search_tickets",
+    "parameters": {
+      "query": "GCP"
+    }
+  },
+  {
+    "name": "get_notifications",
+    "parameters": {}
+  }
+]
+INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=multi_entity_summary, confidence=0.8
+INFO:     workflow.py:110   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 4 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "GCP"}
+INFO:     mcp_client.py:165   - 🔍 MCP DEBUG - Tool search_incidents returned 2 incidents
+INFO:     mcp_client.py:127   - ✅ Tool search_incidents executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_resources (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_resources
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "GCP"}
+INFO:     mcp_client.py:127   - ✅ Tool search_resources executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_tickets (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_tickets
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "GCP"}
+INFO:     mcp_client.py:127   - ✅ Tool search_tickets executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_notifications (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_notifications
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {}
+INFO:     mcp_client.py:127   - ✅ Tool get_notifications executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:129   - 🔍 Comprehensive Check: Analyzing if follow-up needed
+INFO:     comprehensive_query_agent.py:153   - ✅ Extracted incident_id: 1500 (GCP Rule Update impact )
+INFO:     comprehensive_query_agent.py:142   - ✅ Extracted resource_id: 51653170 (runtime-gcp-607-worker-sync-55bff56bc4-62ljw)
+INFO:     comprehensive_query_agent.py:170   - ✅ Extracted ticket_id: 4985705
+INFO:     comprehensive_query_agent.py:84    - 📋 Single-entity comprehensive query detected.
+INFO:     comprehensive_query_agent.py:100   - 🔄 Comprehensive query detected (comprehensive=False, scope=all) with IDs: {'incident_id': 1500, 'incident_title': 'GCP Rule Update impact ', 'resource_id': 51653170, 'resource_name': 'runtime-gcp-607-worker-sync-55bff56bc4-62ljw', 'ticket_id': 4985705}
+INFO:     workflow.py:131   - 🔍 Comprehensive Check Result: needs_followup=True, extracted_ids={'incident_id': 1500, 'incident_title': 'GCP Rule Update impact ', 'resource_id': 51653170, 'resource_name': 'runtime-gcp-607-worker-sync-55bff56bc4-62ljw', 'ticket_id': 4985705}
+INFO:     workflow.py:140   - 🔍 Followup Node Check: needs_followup=True, extracted_ids={'incident_id': 1500, 'incident_title': 'GCP Rule Update impact ', 'resource_id': 51653170, 'resource_name': 'runtime-gcp-607-worker-sync-55bff56bc4-62ljw', 'ticket_id': 4985705}
+INFO:     workflow.py:141   - 🔍 Full state keys: ['user_query', 'session_id', 'request_id', 'timestamp', 'query_type', 'intent', 'entities', 'confidence_score', 'specificity_level', 'query_analysis', 'available_tools', 'tool_plan', 'execution_plan', 'execution_strategy', 'executed_tools', 'current_tool_index', 'multi_query_results', 'aggregated_context', 'sub_query_id', 'mcp_results', 'context_data', 'conversation_history', 'incident_analysis', 'root_cause_analysis', 'timeline_data', 'enrichment_data', 'forward_links', 'annotations', 'final_response', 'workflow_status', 'current_agent', 'error_count', 'retry_attempts', 'data_quality_score', 'response_completeness', 'investigation_depth', 'needs_comprehensive_followup', 'extracted_ids', 'followup_tool_plan', 'completion_timestamp', 'multi_query_summary']
+INFO:     workflow.py:147   - 🔄 Comprehensive Follow-up: Creating and executing follow-up plan
+INFO:     comprehensive_query_agent.py:222   - 📋 Created comprehensive resource plan for ID: 51653170
+INFO:     comprehensive_query_agent.py:231   - 📋 Created comprehensive incident plan for ID: 1500
+INFO:     comprehensive_query_agent.py:258   - ✅ Follow-up plan created with 8 tools
+INFO:     workflow.py:172   - 🔄 Executing 8 comprehensive follow-up tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 8 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_resource_by_id (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_resource_by_id
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 51653170}
+INFO:     mcp_client.py:127   - ✅ Tool get_resource_by_id executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_resource_version (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_resource_version
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 51653170}
+INFO:     mcp_client.py:127   - ✅ Tool get_resource_version executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_resource_metadata (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_resource_metadata
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 51653170}
+INFO:     mcp_client.py:127   - ✅ Tool get_resource_metadata executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_resource_tickets (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_resource_tickets
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 51653170}
+INFO:     mcp_client.py:127   - ✅ Tool get_resource_tickets executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_changelog_by_resource (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_changelog_by_resource
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 51653170}
+INFO:     mcp_client.py:127   - ✅ Tool get_changelog_by_resource executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_notifications_by_resource (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_notifications_by_resource
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 51653170}
+INFO:     mcp_client.py:127   - ✅ Tool get_notifications_by_resource executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_incident_by_id (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_incident_by_id
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"incident_id": 1500}
+INFO:     mcp_client.py:127   - ✅ Tool get_incident_by_id executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_incident_changelogs (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_incident_changelogs
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"incident_id": 1500}
+INFO:     mcp_client.py:127   - ✅ Tool get_incident_changelogs executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:182   - ✅ Comprehensive follow-up execution completed
+INFO:     workflow.py:188   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
+INFO:     llm_client.py:719   - 🔍 Preprocessed get_notifications: 3 items
+INFO:     llm_client.py:515   - 🔍 DEBUG get_changelog_by_resource - result keys: ['resource_id', 'changelogs', 'count', 'timestamp', 'tool', 'parameters', 'success']
+INFO:     llm_client.py:520   - 🔍 DEBUG get_changelog_by_resource - found 'changelogs' array with 1 items
+INFO:     llm_client.py:546   - 📋 Preprocessed 1 changelogs for get_changelog_by_resource
+INFO:     llm_client.py:719   - 🔍 Preprocessed get_changelog_by_resource: 1 items
+INFO:     llm_client.py:719   - 🔍 Preprocessed get_notifications_by_resource: 0 items
+INFO:     llm_client.py:719   - 🔍 Preprocessed get_incident_changelogs: 0 items
+INFO:     llm_client.py:722   - 🔍 Empty check: empty_results=6, total_tools=12, empty_list=['get_resource_version', 'get_resource_metadata', 'get_resource_tickets', 'get_notifications_by_resource', 'get_incident_by_id', 'get_incident_changelogs']
+INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'The data reveals two significant incidents related to Google Cloud Platform (GCP). The first incident, identified as **Incident 1500**, is titled "GCP Rule Update impact" and is cl
+INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 2040 chars
+INFO:     response_enrichment_agent.py:92    - ✅ Response enrichment completed with 3 forward links
+INFO:     workflow.py:213   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:295   - ✅ Processing completed successfully
+INFO:     graph.py:145   - {"timestamp": "2025-12-03T02:56:27.236414", "uuid": "exist-complex-pair-rush", "llm_method": "enhanced_workflow", "sent": "The data reveals two significant incidents related to Google Cloud Platform (GCP). The first inciden"}
+INFO:     server.py:53    - {"timestamp": "2025-12-03T02:58:14.298757", "uuid": "exist-complex-pair-rush", "received": {"uuid": "exist-complex-pair-rush", "message": "Tell me everything about vector-0 resource including incidents, tickets, and changelogs", "init": false}}
+INFO:     graph.py:115   - 🚦 Routing query through semantic LLM router...
+INFO:     llm_client.py:118   - 🚦 Router (gpt-4o-mini) decision for 'Tell me everything about vector-0 resource includi...': Enhanced Mode
+INFO:     graph.py:121   - 🚀 Using enhanced workflow for: Tell me everything about vector-0 resource includi...
+INFO:     workflow.py:254   - 🚀 Processing: 'Tell me everything about vector-0 resource including incidents, tickets, and changelogs'
+INFO:     workflow.py:268   - 📚 Found existing conversation state for thread: exist-complex-pair-rush
+INFO:     workflow.py:272   - 💬 Loaded 4 previous messages from conversation history
+INFO:     workflow.py:284   - ✅ Preserved 4 messages from previous conversation
+INFO:     workflow.py:79    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:229   - 📋 Fetching available MCP tools
+INFO:     mcp_client.py:57    - ✅ Fetched 47 MCP tools from server
+INFO:     workflow.py:86    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session exist-complex-pair-rush
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:105   - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'Tell me everything about vector-0 resource includi...'
+INFO:     llm_client.py:210   - 🔍 Query analyzed: multi_entity_summary
+INFO:     llm_client.py:211   - 🎯 IDs extracted: None | Service Name: vector-0
+INFO:     llm_client.py:420   - 📋 Tool plan created: 4 tools planned
+INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
+  {
+    "name": "search_resources",
+    "parameters": {
+      "query": "vector-0"
+    }
+  },
+  {
+    "name": "search_incidents",
+    "parameters": {
+      "query": "vector-0"
+    }
+  },
+  {
+    "name": "search_tickets",
+    "parameters": {
+      "query": "vector-0"
+    }
+  },
+  {
+    "name": "search_changelogs",
+    "parameters": {
+      "query": "vector-0"
+    }
+  }
+]
+INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=multi_entity_summary, confidence=0.9
+INFO:     workflow.py:110   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 4 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_resources (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_resources
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "vector-0"}
+INFO:     mcp_client.py:127   - ✅ Tool search_resources executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "vector-0"}
+INFO:     mcp_client.py:165   - 🔍 MCP DEBUG - Tool search_incidents returned 0 incidents
+INFO:     mcp_client.py:127   - ✅ Tool search_incidents executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_tickets (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_tickets
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "vector-0"}
+INFO:     mcp_client.py:127   - ✅ Tool search_tickets executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_changelogs (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_changelogs
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "vector-0"}
+INFO:     mcp_client.py:127   - ✅ Tool search_changelogs executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:129   - 🔍 Comprehensive Check: Analyzing if follow-up needed
+INFO:     comprehensive_query_agent.py:142   - ✅ Extracted resource_id: 50944068 (vector-0)
+INFO:     comprehensive_query_agent.py:170   - ✅ Extracted ticket_id: 4985705
+INFO:     comprehensive_query_agent.py:84    - 📋 Single-entity comprehensive query detected.
+INFO:     comprehensive_query_agent.py:100   - 🔄 Comprehensive query detected (comprehensive=True, scope=single) with IDs: {'resource_id': 50944068, 'resource_name': 'vector-0', 'ticket_id': 4985705}
+INFO:     workflow.py:131   - 🔍 Comprehensive Check Result: needs_followup=True, extracted_ids={'resource_id': 50944068, 'resource_name': 'vector-0', 'ticket_id': 4985705}
+INFO:     workflow.py:140   - 🔍 Followup Node Check: needs_followup=True, extracted_ids={'resource_id': 50944068, 'resource_name': 'vector-0', 'ticket_id': 4985705}
+INFO:     workflow.py:141   - 🔍 Full state keys: ['user_query', 'session_id', 'request_id', 'timestamp', 'query_type', 'intent', 'entities', 'confidence_score', 'specificity_level', 'query_analysis', 'available_tools', 'tool_plan', 'execution_plan', 'execution_strategy', 'executed_tools', 'current_tool_index', 'multi_query_results', 'aggregated_context', 'sub_query_id', 'mcp_results', 'context_data', 'conversation_history', 'incident_analysis', 'root_cause_analysis', 'timeline_data', 'enrichment_data', 'forward_links', 'annotations', 'final_response', 'workflow_status', 'current_agent', 'error_count', 'retry_attempts', 'data_quality_score', 'response_completeness', 'investigation_depth', 'needs_comprehensive_followup', 'extracted_ids', 'followup_tool_plan', 'completion_timestamp', 'multi_query_summary']
+INFO:     workflow.py:147   - 🔄 Comprehensive Follow-up: Creating and executing follow-up plan
+INFO:     comprehensive_query_agent.py:222   - 📋 Created comprehensive resource plan for ID: 50944068
+INFO:     comprehensive_query_agent.py:258   - ✅ Follow-up plan created with 6 tools
+INFO:     workflow.py:172   - 🔄 Executing 6 comprehensive follow-up tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 6 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_resource_by_id (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_resource_by_id
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
+INFO:     mcp_client.py:127   - ✅ Tool get_resource_by_id executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_resource_version (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_resource_version
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
+INFO:     mcp_client.py:127   - ✅ Tool get_resource_version executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_resource_metadata (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_resource_metadata
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
+INFO:     mcp_client.py:127   - ✅ Tool get_resource_metadata executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_resource_tickets (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_resource_tickets
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
+INFO:     mcp_client.py:127   - ✅ Tool get_resource_tickets executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_changelog_by_resource (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_changelog_by_resource
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
+INFO:     mcp_client.py:127   - ✅ Tool get_changelog_by_resource executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_notifications_by_resource (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_notifications_by_resource
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"resource_id": 50944068}
+INFO:     mcp_client.py:127   - ✅ Tool get_notifications_by_resource executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:182   - ✅ Comprehensive follow-up execution completed
+INFO:     workflow.py:188   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
+INFO:     llm_client.py:515   - 🔍 DEBUG search_changelogs - result keys: ['changelogs', 'count', 'count_is_exact', 'is_limited', 'page', 'page_size', 'timestamp', 'tool', 'parameters', 'success']
+INFO:     llm_client.py:520   - 🔍 DEBUG search_changelogs - found 'changelogs' array with 20 items
+INFO:     llm_client.py:546   - 📋 Preprocessed 20 changelogs for search_changelogs
+INFO:     llm_client.py:719   - 🔍 Preprocessed search_changelogs: 3 items
+INFO:     llm_client.py:515   - 🔍 DEBUG get_changelog_by_resource - result keys: ['resource_id', 'changelogs', 'count', 'timestamp', 'tool', 'parameters', 'success']
+INFO:     llm_client.py:520   - 🔍 DEBUG get_changelog_by_resource - found 'changelogs' array with 5 items
+INFO:     llm_client.py:546   - 📋 Preprocessed 5 changelogs for get_changelog_by_resource
+INFO:     llm_client.py:719   - 🔍 Preprocessed get_changelog_by_resource: 3 items
+INFO:     llm_client.py:719   - 🔍 Preprocessed get_notifications_by_resource: 0 items
+INFO:     llm_client.py:722   - 🔍 Empty check: empty_results=5, total_tools=10, empty_list=['search_incidents', 'get_resource_version', 'get_resource_metadata', 'get_resource_tickets', 'get_notifications_by_resource']
+INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'The resource known as **vector-0** is a Kubernetes Pod workload, identified by the ID 50944068. It is currently in an Active status and was created on November 26, 2025. This resou
+INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 1773 chars
+INFO:     response_enrichment_agent.py:92    - ✅ Response enrichment completed with 3 forward links
+INFO:     workflow.py:213   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:295   - ✅ Processing completed successfully
+INFO:     graph.py:145   - {"timestamp": "2025-12-03T02:58:49.581402", "uuid": "exist-complex-pair-rush", "llm_method": "enhanced_workflow", "sent": "The resource known as **vector-0** is a Kubernetes Pod workload, identified by the ID 50944068. It i"}
+INFO:     server.py:53    - {"timestamp": "2025-12-03T02:58:59.543706", "uuid": "exist-complex-pair-rush", "received": {"uuid": "exist-complex-pair-rush", "message": "hat incidents happened on 'Mit-runtime-api-services'?", "init": false}}
+INFO:     graph.py:115   - 🚦 Routing query through semantic LLM router...
+INFO:     llm_client.py:118   - 🚦 Router (gpt-4o-mini) decision for 'hat incidents happened on 'Mit-runtime-api-service...': Enhanced Mode
+INFO:     graph.py:121   - 🚀 Using enhanced workflow for: hat incidents happened on 'Mit-runtime-api-service...
+INFO:     workflow.py:254   - 🚀 Processing: 'hat incidents happened on 'Mit-runtime-api-services'?'
+INFO:     workflow.py:268   - 📚 Found existing conversation state for thread: exist-complex-pair-rush
+INFO:     workflow.py:272   - 💬 Loaded 6 previous messages from conversation history
+INFO:     workflow.py:284   - ✅ Preserved 6 messages from previous conversation
+INFO:     workflow.py:79    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:229   - 📋 Fetching available MCP tools
+INFO:     workflow.py:86    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session exist-complex-pair-rush
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:105   - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'hat incidents happened on 'Mit-runtime-api-service...'
+INFO:     llm_client.py:210   - 🔍 Query analyzed: incident_analysis
+INFO:     llm_client.py:211   - 🎯 IDs extracted: None | Service Name: Mit-runtime-api-services
+INFO:     llm_client.py:420   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
+  {
+    "name": "search_incidents",
+    "parameters": {
+      "query": "Mit-runtime-api-services"
+    }
+  }
+]
+INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=incident_analysis, confidence=0.8
+INFO:     workflow.py:110   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "Mit-runtime-api-services"}
+INFO:     mcp_client.py:165   - 🔍 MCP DEBUG - Tool search_incidents returned 0 incidents
+INFO:     mcp_client.py:127   - ✅ Tool search_incidents executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:129   - 🔍 Comprehensive Check: Analyzing if follow-up needed
+INFO:     comprehensive_query_agent.py:68    - ⏭️  Not a comprehensive query (comprehensive=False, scope=multiple, intent=search for, multi_entity=False)
+INFO:     workflow.py:131   - 🔍 Comprehensive Check Result: needs_followup=False, extracted_ids={}
+INFO:     workflow.py:140   - 🔍 Followup Node Check: needs_followup=False, extracted_ids={}
+INFO:     workflow.py:141   - 🔍 Full state keys: ['user_query', 'session_id', 'request_id', 'timestamp', 'query_type', 'intent', 'entities', 'confidence_score', 'specificity_level', 'query_analysis', 'available_tools', 'tool_plan', 'execution_plan', 'execution_strategy', 'executed_tools', 'current_tool_index', 'multi_query_results', 'aggregated_context', 'sub_query_id', 'mcp_results', 'context_data', 'conversation_history', 'incident_analysis', 'root_cause_analysis', 'timeline_data', 'enrichment_data', 'forward_links', 'annotations', 'final_response', 'workflow_status', 'current_agent', 'error_count', 'retry_attempts', 'data_quality_score', 'response_completeness', 'investigation_depth', 'needs_comprehensive_followup', 'extracted_ids', 'followup_tool_plan', 'completion_timestamp', 'multi_query_summary']
+INFO:     workflow.py:144   - ⏭️  Comprehensive follow-up not needed, skipping
+INFO:     workflow.py:188   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
+INFO:     llm_client.py:722   - 🔍 Empty check: empty_results=1, total_tools=1, empty_list=['search_incidents']
+INFO:     llm_client.py:724   - 💡 No results found for exact query. Attempting broader search for suggestions...
+INFO:     llm_client.py:745   - 🔍 Empty tools: ['search_incidents'], Search terms: ['Mit-runtime-api-services']
+INFO:     llm_client.py:945   - 🔍 _find_similar_entities called with search_terms: ['Mit-runtime-api-services'], empty_tools: ['search_incidents']
+INFO:     llm_client.py:949   - 🔍 MCP client from state: True
+INFO:     llm_client.py:989   - 🔍 Extracted keywords for suggestion search: ['runtime', 'services']
+INFO:     llm_client.py:991   - 🔍 Searching for similar entities with keywords: ['runtime', 'services']
+INFO:     llm_client.py:1027  - 🔍 Searching with tool: search_incidents for result_key: incidents
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "runtime", "limit": 5}
+INFO:     mcp_client.py:165   - 🔍 MCP DEBUG - Tool search_incidents returned 2 incidents
+INFO:     mcp_client.py:127   - ✅ Tool search_incidents executed successfully
+INFO:     llm_client.py:1042  - 🔍 Extracted 2 entities with key 'incidents'
+INFO:     llm_client.py:1049  - 🔍 Processing 2 entities for keyword 'runtime'
+INFO:     llm_client.py:1052  - 🔍 Entity ID: 1507, Type: <class 'int'>
+INFO:     llm_client.py:1061  - 🔍 Suggestion text: Incident 1507: 'Incident on runtime api' (High severity)
+INFO:     llm_client.py:1073  - ✅ Added suggestion for entity 1507
+INFO:     llm_client.py:1052  - 🔍 Entity ID: 1499, Type: <class 'int'>
+INFO:     llm_client.py:1061  - 🔍 Suggestion text: Incident 1499: 'Runtime-aws-api's are not working ' (High severity)
+INFO:     llm_client.py:1073  - ✅ Added suggestion for entity 1499
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "services", "limit": 5}
+INFO:     mcp_client.py:165   - 🔍 MCP DEBUG - Tool search_incidents returned 6 incidents
+INFO:     mcp_client.py:127   - ✅ Tool search_incidents executed successfully
+INFO:     llm_client.py:1042  - 🔍 Extracted 6 entities with key 'incidents'
+INFO:     llm_client.py:1049  - 🔍 Processing 3 entities for keyword 'services'
+INFO:     llm_client.py:1052  - 🔍 Entity ID: 1527, Type: <class 'int'>
+INFO:     llm_client.py:1061  - 🔍 Suggestion text: Incident 1527: 'Acme-cart-services are down' (High severity)
+INFO:     llm_client.py:1073  - ✅ Added suggestion for entity 1527
+INFO:     llm_client.py:1052  - 🔍 Entity ID: 1529, Type: <class 'int'>
+INFO:     llm_client.py:1061  - 🔍 Suggestion text: Incident 1529: 'acme-cart-services are down' (High severity)
+INFO:     llm_client.py:1073  - ✅ Added suggestion for entity 1529
+INFO:     llm_client.py:1052  - 🔍 Entity ID: 1502, Type: <class 'int'>
+INFO:     llm_client.py:1061  - 🔍 Suggestion text: Incident 1502: 'Services are down' (High severity)
+INFO:     llm_client.py:1073  - ✅ Added suggestion for entity 1502
+INFO:     llm_client.py:1083  - ✅ Found 5 similar items
+INFO:     llm_client.py:747   - 🔍 Suggestions returned: True
+INFO:     llm_client.py:750   - ✅ Adding 5 suggestions to tool_data
+INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'I couldn\'t find an exact match for \'Mit-runtime-api-services\'. However, I found these similar items:\nIncident 1507: "Incident on runtime api" with high severity, currently in a
+INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 694 chars
+INFO:     response_enrichment_agent.py:92    - ✅ Response enrichment completed with 3 forward links
+INFO:     workflow.py:213   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:295   - ✅ Processing completed successfully
+INFO:     graph.py:145   - {"timestamp": "2025-12-03T02:59:09.029652", "uuid": "exist-complex-pair-rush", "llm_method": "enhanced_workflow", "sent": "I couldn't find an exact match for 'Mit-runtime-api-services'. However, I found these similar items:"}
+INFO:     server.py:53    - {"timestamp": "2025-12-03T02:59:56.760008", "uuid": "exist-complex-pair-rush", "received": {"uuid": "exist-complex-pair-rush", "message": "List all CrashLoopBackOff resources and show me incidents that affected them", "init": false}}
+INFO:     graph.py:115   - 🚦 Routing query through semantic LLM router...
+INFO:     llm_client.py:118   - 🚦 Router (gpt-4o-mini) decision for 'List all CrashLoopBackOff resources and show me in...': Enhanced Mode
+INFO:     graph.py:121   - 🚀 Using enhanced workflow for: List all CrashLoopBackOff resources and show me in...
+INFO:     workflow.py:254   - 🚀 Processing: 'List all CrashLoopBackOff resources and show me incidents that affected them'
+INFO:     workflow.py:268   - 📚 Found existing conversation state for thread: exist-complex-pair-rush
+INFO:     workflow.py:272   - 💬 Loaded 8 previous messages from conversation history
+INFO:     workflow.py:284   - ✅ Preserved 8 messages from previous conversation
+INFO:     workflow.py:79    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:229   - 📋 Fetching available MCP tools
+INFO:     workflow.py:86    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session exist-complex-pair-rush
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:105   - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'List all CrashLoopBackOff resources and show me in...'
+INFO:     llm_client.py:210   - 🔍 Query analyzed: multi_entity_summary
+INFO:     llm_client.py:211   - 🎯 IDs extracted: None | Service Name: None
+INFO:     llm_client.py:420   - 📋 Tool plan created: 2 tools planned
+INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
+  {
+    "name": "search_resources",
+    "parameters": {
+      "query": "CrashLoopBackOff"
+    }
+  },
+  {
+    "name": "search_incidents",
+    "parameters": {
+      "query": "CrashLoopBackOff"
+    }
+  }
+]
+INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=multi_entity_summary, confidence=0.8
+INFO:     workflow.py:110   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 2 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_resources (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_resources
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "CrashLoopBackOff"}
+INFO:     mcp_client.py:127   - ✅ Tool search_resources executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "CrashLoopBackOff"}
+INFO:     mcp_client.py:165   - 🔍 MCP DEBUG - Tool search_incidents returned 0 incidents
+INFO:     mcp_client.py:127   - ✅ Tool search_incidents executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:129   - 🔍 Comprehensive Check: Analyzing if follow-up needed
+INFO:     comprehensive_query_agent.py:76    - ⏭️  No IDs found in search results, skipping expansion
+INFO:     workflow.py:131   - 🔍 Comprehensive Check Result: needs_followup=False, extracted_ids={}
+INFO:     workflow.py:140   - 🔍 Followup Node Check: needs_followup=False, extracted_ids={}
+INFO:     workflow.py:141   - 🔍 Full state keys: ['user_query', 'session_id', 'request_id', 'timestamp', 'query_type', 'intent', 'entities', 'confidence_score', 'specificity_level', 'query_analysis', 'available_tools', 'tool_plan', 'execution_plan', 'execution_strategy', 'executed_tools', 'current_tool_index', 'multi_query_results', 'aggregated_context', 'sub_query_id', 'mcp_results', 'context_data', 'conversation_history', 'incident_analysis', 'root_cause_analysis', 'timeline_data', 'enrichment_data', 'forward_links', 'annotations', 'final_response', 'workflow_status', 'current_agent', 'error_count', 'retry_attempts', 'data_quality_score', 'response_completeness', 'investigation_depth', 'needs_comprehensive_followup', 'extracted_ids', 'followup_tool_plan', 'completion_timestamp', 'multi_query_summary']
+INFO:     workflow.py:144   - ⏭️  Comprehensive follow-up not needed, skipping
+INFO:     workflow.py:188   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
+INFO:     llm_client.py:722   - 🔍 Empty check: empty_results=2, total_tools=2, empty_list=['search_resources', 'search_incidents']
+INFO:     llm_client.py:724   - 💡 No results found for exact query. Attempting broader search for suggestions...
+INFO:     llm_client.py:745   - 🔍 Empty tools: ['search_resources', 'search_incidents'], Search terms: ['CrashLoopBackOff']
+INFO:     llm_client.py:945   - 🔍 _find_similar_entities called with search_terms: ['CrashLoopBackOff'], empty_tools: ['search_resources', 'search_incidents']
+INFO:     llm_client.py:949   - 🔍 MCP client from state: True
+INFO:     llm_client.py:989   - 🔍 Extracted keywords for suggestion search: ['crashloopbackoff']
+INFO:     llm_client.py:991   - 🔍 Searching for similar entities with keywords: ['crashloopbackoff']
+INFO:     llm_client.py:1027  - 🔍 Searching with tool: search_resources for result_key: resources
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_resources
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "crashloopbackoff", "limit": 5}
+INFO:     mcp_client.py:127   - ✅ Tool search_resources executed successfully
+INFO:     llm_client.py:1042  - 🔍 Extracted 0 entities with key 'resources'
+WARNING:     llm_client.py:1045  - ⚠️ No entities found for keyword 'crashloopbackoff' with key 'resources'
+INFO:     llm_client.py:1027  - 🔍 Searching with tool: search_incidents for result_key: incidents
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "crashloopbackoff", "limit": 5}
+INFO:     mcp_client.py:165   - 🔍 MCP DEBUG - Tool search_incidents returned 0 incidents
+INFO:     mcp_client.py:127   - ✅ Tool search_incidents executed successfully
+INFO:     llm_client.py:1042  - 🔍 Extracted 0 entities with key 'incidents'
+WARNING:     llm_client.py:1045  - ⚠️ No entities found for keyword 'crashloopbackoff' with key 'incidents'
+INFO:     llm_client.py:1086  - ℹ️ No similar entities found with broader search
+INFO:     llm_client.py:747   - 🔍 Suggestions returned: False
+WARNING:     llm_client.py:753   - ⚠️ No suggestions found or suggestion search failed
+INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'The available data does not provide any information about resources experiencing a "CrashLoopBackOff" status. The search for such resources returned no results, indicating that the
+INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 612 chars
+INFO:     response_enrichment_agent.py:92    - ✅ Response enrichment completed with 3 forward links
+INFO:     workflow.py:213   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:295   - ✅ Processing completed successfully
+INFO:     graph.py:145   - {"timestamp": "2025-12-03T03:00:34.021386", "uuid": "exist-complex-pair-rush", "llm_method": "enhanced_workflow", "sent": "The available data does not provide any information about resources experiencing a \"CrashLoopBackOff"}
+INFO:     server.py:53    - {"timestamp": "2025-12-03T03:00:51.982489", "uuid": "exist-complex-pair-rush", "received": {"uuid": "exist-complex-pair-rush", "message": "Compare incidents, tickets, and notifications for acme-cart-services vs runtime-api", "init": false}}
+INFO:     graph.py:115   - 🚦 Routing query through semantic LLM router...
+INFO:     llm_client.py:118   - 🚦 Router (gpt-4o-mini) decision for 'Compare incidents, tickets, and notifications for ...': Enhanced Mode
+INFO:     graph.py:121   - 🚀 Using enhanced workflow for: Compare incidents, tickets, and notifications for ...
+INFO:     workflow.py:254   - 🚀 Processing: 'Compare incidents, tickets, and notifications for acme-cart-services vs runtime-api'
+INFO:     workflow.py:268   - 📚 Found existing conversation state for thread: exist-complex-pair-rush
+INFO:     workflow.py:272   - 💬 Loaded 10 previous messages from conversation history
+INFO:     workflow.py:284   - ✅ Preserved 10 messages from previous conversation
+INFO:     workflow.py:79    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:229   - 📋 Fetching available MCP tools
+INFO:     workflow.py:86    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session exist-complex-pair-rush
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:105   - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'Compare incidents, tickets, and notifications for ...'
+INFO:     llm_client.py:210   - 🔍 Query analyzed: multi_entity_summary
+INFO:     llm_client.py:211   - 🎯 IDs extracted: None | Service Name: None
+INFO:     llm_client.py:420   - 📋 Tool plan created: 6 tools planned
+INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
+  {
+    "name": "search_incidents",
+    "parameters": {
+      "query": "acme-cart-services"
+    }
+  },
+  {
+    "name": "search_tickets",
+    "parameters": {
+      "query": "acme-cart-services"
+    }
+  },
+  {
+    "name": "get_notifications",
+    "parameters": {}
+  },
+  {
+    "name": "search_incidents",
+    "parameters": {
+      "query": "runtime-api"
+    }
+  },
+  {
+    "name": "search_tickets",
+    "parameters": {
+      "query": "runtime-api"
+    }
+  },
+  {
+    "name": "get_notifications",
+    "parameters": {}
+  }
+]
+INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=multi_entity_summary, confidence=0.8
+INFO:     workflow.py:110   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 6 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "acme-cart-services"}
+INFO:     mcp_client.py:165   - 🔍 MCP DEBUG - Tool search_incidents returned 2 incidents
+INFO:     mcp_client.py:127   - ✅ Tool search_incidents executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_tickets (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_tickets
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "acme-cart-services"}
+INFO:     mcp_client.py:127   - ✅ Tool search_tickets executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_notifications (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_notifications
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {}
+INFO:     mcp_client.py:127   - ✅ Tool get_notifications executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "runtime-api"}
+INFO:     mcp_client.py:165   - 🔍 MCP DEBUG - Tool search_incidents returned 0 incidents
+INFO:     mcp_client.py:127   - ✅ Tool search_incidents executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_tickets (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_tickets
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "runtime-api"}
+INFO:     mcp_client.py:127   - ✅ Tool search_tickets executed successfully
+INFO:     tool_execution_agent.py:92    - 🔧 Executing get_notifications (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: get_notifications
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {}
+INFO:     mcp_client.py:127   - ✅ Tool get_notifications executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:129   - 🔍 Comprehensive Check: Analyzing if follow-up needed
+INFO:     comprehensive_query_agent.py:68    - ⏭️  Not a comprehensive query (comprehensive=False, scope=multiple, intent=compare, multi_entity=True)
+INFO:     workflow.py:131   - 🔍 Comprehensive Check Result: needs_followup=False, extracted_ids={}
+INFO:     workflow.py:140   - 🔍 Followup Node Check: needs_followup=False, extracted_ids={}
+INFO:     workflow.py:141   - 🔍 Full state keys: ['user_query', 'session_id', 'request_id', 'timestamp', 'query_type', 'intent', 'entities', 'confidence_score', 'specificity_level', 'query_analysis', 'available_tools', 'tool_plan', 'execution_plan', 'execution_strategy', 'executed_tools', 'current_tool_index', 'multi_query_results', 'aggregated_context', 'sub_query_id', 'mcp_results', 'context_data', 'conversation_history', 'incident_analysis', 'root_cause_analysis', 'timeline_data', 'enrichment_data', 'forward_links', 'annotations', 'final_response', 'workflow_status', 'current_agent', 'error_count', 'retry_attempts', 'data_quality_score', 'response_completeness', 'investigation_depth', 'needs_comprehensive_followup', 'extracted_ids', 'followup_tool_plan', 'completion_timestamp', 'multi_query_summary']
+INFO:     workflow.py:144   - ⏭️  Comprehensive follow-up not needed, skipping
+INFO:     workflow.py:188   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
+INFO:     llm_client.py:719   - 🔍 Preprocessed get_notifications: 3 items
+INFO:     llm_client.py:719   - 🔍 Preprocessed get_notifications: 3 items
+INFO:     llm_client.py:722   - 🔍 Empty check: empty_results=1, total_tools=6, empty_list=['search_incidents']
+INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'In comparing the incidents, tickets, and notifications for **acme-cart-services** and **runtime-api**, we observe distinct differences in the available data.\nFor **acme-cart-servi
+INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 1792 chars
+INFO:     response_enrichment_agent.py:92    - ✅ Response enrichment completed with 3 forward links
+INFO:     workflow.py:213   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:295   - ✅ Processing completed successfully
+INFO:     graph.py:145   - {"timestamp": "2025-12-03T03:01:07.721583", "uuid": "exist-complex-pair-rush", "llm_method": "enhanced_workflow", "sent": "In comparing the incidents, tickets, and notifications for **acme-cart-services** and **runtime-api*"}
+INFO:     server.py:53    - {"timestamp": "2025-12-03T03:02:19.149533", "uuid": "exist-complex-pair-rush", "received": {"uuid": "exist-complex-pair-rush", "message": "what is the reason for the failure in ai-acme cart?\n", "init": false}}
+INFO:     graph.py:115   - 🚦 Routing query through semantic LLM router...
+INFO:     llm_client.py:118   - 🚦 Router (gpt-4o-mini) decision for 'what is the reason for the failure in ai-acme cart...': Enhanced Mode
+INFO:     graph.py:121   - 🚀 Using enhanced workflow for: what is the reason for the failure in ai-acme cart...
+INFO:     workflow.py:254   - 🚀 Processing: 'what is the reason for the failure in ai-acme cart?
+'
+INFO:     workflow.py:268   - 📚 Found existing conversation state for thread: exist-complex-pair-rush
+INFO:     workflow.py:272   - 💬 Loaded 10 previous messages from conversation history
+INFO:     workflow.py:284   - ✅ Preserved 10 messages from previous conversation
+INFO:     workflow.py:79    - 🎯 Orchestrator: Starting workflow
+INFO:     mcp_client.py:229   - 📋 Fetching available MCP tools
+INFO:     workflow.py:86    - 📋 Loaded 47 available MCP tools
+INFO:     orchestrator.py:36    - 🎯 Orchestrator validating workflow for session exist-complex-pair-rush
+INFO:     orchestrator.py:41    - 🔍 State validation: ✅ PASSED
+INFO:     orchestrator.py:55    - ✅ Orchestrator validation passed
+INFO:     workflow.py:105   - 🔍 Query Analysis: Analyzing user query
+INFO:     query_analysis_agent.py:26    - 🔍 Analyzing query: 'what is the reason for the failure in ai-acme cart...'
+INFO:     llm_client.py:210   - 🔍 Query analyzed: root_cause
+INFO:     llm_client.py:211   - 🎯 IDs extracted: None | Service Name: ai-acme cart
+INFO:     llm_client.py:420   - 📋 Tool plan created: 1 tools planned
+INFO:     query_analysis_agent.py:44    - 📋 Tool plan: [
+  {
+    "name": "search_incidents",
+    "parameters": {
+      "query": "ai-acme cart failure"
+    }
+  }
+]
+INFO:     query_analysis_agent.py:64    - ✅ Query analyzed: type=root_cause, confidence=0.8
+INFO:     workflow.py:110   - 🛠️ Tool Execution: Executing MCP tools
+INFO:     tool_execution_agent.py:37    - 🛠️ Executing 1 tools
+INFO:     tool_execution_agent.py:92    - 🔧 Executing search_incidents (attempt 1/2)
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "ai-acme cart failure"}
+INFO:     mcp_client.py:165   - 🔍 MCP DEBUG - Tool search_incidents returned 0 incidents
+INFO:     mcp_client.py:127   - ✅ Tool search_incidents executed successfully
+INFO:     tool_execution_agent.py:60    - ✅ Tool execution completed: 100.00% success rate
+INFO:     workflow.py:129   - 🔍 Comprehensive Check: Analyzing if follow-up needed
+INFO:     comprehensive_query_agent.py:76    - ⏭️  No IDs found in search results, skipping expansion
+INFO:     workflow.py:131   - 🔍 Comprehensive Check Result: needs_followup=False, extracted_ids={}
+INFO:     workflow.py:140   - 🔍 Followup Node Check: needs_followup=False, extracted_ids={}
+INFO:     workflow.py:141   - 🔍 Full state keys: ['user_query', 'session_id', 'request_id', 'timestamp', 'query_type', 'intent', 'entities', 'confidence_score', 'specificity_level', 'query_analysis', 'available_tools', 'tool_plan', 'execution_plan', 'execution_strategy', 'executed_tools', 'current_tool_index', 'multi_query_results', 'aggregated_context', 'sub_query_id', 'mcp_results', 'context_data', 'conversation_history', 'incident_analysis', 'root_cause_analysis', 'timeline_data', 'enrichment_data', 'forward_links', 'annotations', 'final_response', 'workflow_status', 'current_agent', 'error_count', 'retry_attempts', 'data_quality_score', 'response_completeness', 'investigation_depth', 'needs_comprehensive_followup', 'extracted_ids', 'followup_tool_plan', 'completion_timestamp', 'multi_query_summary']
+INFO:     workflow.py:144   - ⏭️  Comprehensive follow-up not needed, skipping
+INFO:     workflow.py:188   - ✨ Response Enrichment: Enriching response
+INFO:     response_enrichment_agent.py:26    - ✨ Enriching response
+INFO:     response_enrichment_agent.py:30    - 🤖 Calling LLM to generate enriched response...
+INFO:     response_enrichment_agent.py:35    - 🌊 Using streaming mode for response generation
+INFO:     llm_client.py:722   - 🔍 Empty check: empty_results=1, total_tools=1, empty_list=['search_incidents']
+INFO:     llm_client.py:724   - 💡 No results found for exact query. Attempting broader search for suggestions...
+INFO:     llm_client.py:745   - 🔍 Empty tools: ['search_incidents'], Search terms: ['failure']
+INFO:     llm_client.py:945   - 🔍 _find_similar_entities called with search_terms: ['failure'], empty_tools: ['search_incidents']
+INFO:     llm_client.py:949   - 🔍 MCP client from state: True
+INFO:     llm_client.py:989   - 🔍 Extracted keywords for suggestion search: ['failure']
+INFO:     llm_client.py:991   - 🔍 Searching for similar entities with keywords: ['failure']
+INFO:     llm_client.py:1027  - 🔍 Searching with tool: search_incidents for result_key: incidents
+INFO:     mcp_client.py:120   - 🔧 Executing MCP tool: search_incidents
+INFO:     mcp_client.py:121   - 🔧 Tool parameters: {"query": "failure", "limit": 5}
+INFO:     mcp_client.py:165   - 🔍 MCP DEBUG - Tool search_incidents returned 1 incidents
+INFO:     mcp_client.py:127   - ✅ Tool search_incidents executed successfully
+INFO:     llm_client.py:1042  - 🔍 Extracted 1 entities with key 'incidents'
+INFO:     llm_client.py:1049  - 🔍 Processing 1 entities for keyword 'failure'
+INFO:     llm_client.py:1052  - 🔍 Entity ID: 1487, Type: <class 'int'>
+INFO:     llm_client.py:1061  - 🔍 Suggestion text: Incident 1487: 'Pod Failure' (High severity)
+INFO:     llm_client.py:1073  - ✅ Added suggestion for entity 1487
+INFO:     llm_client.py:1083  - ✅ Found 1 similar items
+INFO:     llm_client.py:747   - 🔍 Suggestions returned: True
+INFO:     llm_client.py:750   - ✅ Adding 1 suggestions to tool_data
+INFO:     response_enrichment_agent.py:41    - 🔍 LLM response type: <class 'dict'>, value: {'final_response': 'The root cause of the failure in the ai-acme cart is not clear from the available data. The search for incidents specifically related to "ai-acme cart" did not yield any results, i
+INFO:     response_enrichment_agent.py:54    - 📝 LLM generated response: 650 chars
+INFO:     response_enrichment_agent.py:92    - ✅ Response enrichment completed with 3 forward links
+INFO:     workflow.py:213   - 🎯 Orchestrator: Finalizing workflow
+INFO:     workflow.py:295   - ✅ Processing completed successfully
+INFO:     graph.py:145   - {"timestamp": "2025-12-03T03:02:30.348803", "uuid": "exist-complex-pair-rush", "llm_method": "enhanced_workflow", "sent": "The root cause of the failure in the ai-acme cart is not clear from the available data. The search f"}
