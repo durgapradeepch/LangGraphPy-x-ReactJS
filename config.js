@@ -7,11 +7,10 @@ module.exports = {
 
     // Neo4j Configuration
     NEO4J_CONFIG: {
-        host: process.env.NEO4J_HOST || '127.0.0.1',
-        port: parseInt(process.env.NEO4J_BOLT_PORT) || 7687,
-        username: process.env.NEO4J_USER || 'neo4j',
-        password: process.env.NEO4J_PASSWORD || 'testing@neo4j',
-        database: process.env.NEO4J_DATABASE || 'neo4j'
+        uri: process.env.NEO_HOST_URL || 'neo4j://neo4j.neo4j.svc.cluster.local:7687',
+        username: process.env.NEO_USERNAME || 'neo4j',
+        password: process.env.NEO_PASSWORD || 'asdfghjqwerty',
+        database: process.env.NEO_DB_NAME || 'neo4j'
     },
 
     // OpenAI Configuration

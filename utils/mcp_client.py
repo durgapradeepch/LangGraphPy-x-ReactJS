@@ -66,10 +66,6 @@ class MCPClient:
     def _get_fallback_tools(self) -> List[Dict[str, Any]]:
         """Fallback tool list if server is unavailable"""
         return [
-            {"name": "get_node_labels", "description": "Get Neo4j node labels"},
-            {"name": "query_nodes", "description": "Query Neo4j nodes"},
-            {"name": "search_nodes", "description": "Search Neo4j nodes"},
-            {"name": "get_relationships", "description": "Get Neo4j relationships"},
             {"name": "query_logs", "description": "Query VictoriaLogs"},
             {"name": "search_logs", "description": "Search VictoriaLogs"},
             {"name": "query_metrics", "description": "Query VictoriaMetrics"},

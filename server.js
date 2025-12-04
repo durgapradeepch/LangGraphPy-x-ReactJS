@@ -1,5 +1,6 @@
 const express = require('express');
 const axios = require('axios');
+const neo4j = require('neo4j-driver');
 const config = require('./config');
 
 const app = express();
@@ -7,10 +8,29 @@ const PORT = config.SERVER_PORT;
 
 // Neo4j configuration
 const NEO4J_CONFIG = config.NEO4J_CONFIG;
-const NEO4J_URL = `http://${NEO4J_CONFIG.host}:7474`; // HTTP interface for Cypher queries
+const NEO4J_URI = NEO4J_CONFIG.uri;
 const NEO4J_USER = NEO4J_CONFIG.username;
 const NEO4J_PASS = NEO4J_CONFIG.password;
 const NEO4J_DATABASE = NEO4J_CONFIG.database;
+
+// Initialize Neo4j driver
+let neo4jDriver = null;
+try {
+    neo4jDriver = neo4j.driver(
+        NEO4J_URI,
+        neo4j.auth.basic(NEO4J_USER, NEO4J_PASS),
+        {
+            maxConnectionLifetime: 3 * 60 * 60 * 1000, // 3 hours
+            maxConnectionPoolSize: 50,
+            connectionAcquisitionTimeout: 2 * 60 * 1000 // 2 minutes
+        }
+    );
+    console.log('🔧 Neo4j driver initialized');
+    console.log('   URI:', NEO4J_URI);
+    console.log('   Database:', NEO4J_DATABASE);
+} catch (error) {
+    console.error('❌ Failed to initialize Neo4j driver:', error.message);
+}
 
 // Initialize LLM configuration
 let llmAvailable = false;
@@ -197,144 +217,6 @@ async function* callLlamaAPIStreaming(messages, temperature = 0.05, max_tokens =
 
 // MCP Tool Definitions
 const MCP_TOOLS = {
-    // Neo4j Tools
-    get_node_labels: {
-        name: "get_node_labels",
-        description: "Retrieve all available node labels (types) in the Neo4j graph database. Use this to discover what kinds of nodes exist in the database.",
-        inputSchema: {
-            type: "object",
-            properties: {}
-        }
-    },
-
-    get_relationship_types: {
-        name: "get_relationship_types",
-        description: "Retrieve all relationship types that exist in the Neo4j graph database. Use this to discover what kinds of connections exist between nodes.",
-        inputSchema: {
-            type: "object",
-            properties: {}
-        }
-    },
-
-    get_schema: {
-        name: "get_schema",
-        description: "Get complete Neo4j database schema overview including all node labels, relationship types, and property keys. Use this for comprehensive schema understanding.",
-        inputSchema: {
-            type: "object",
-            properties: {}
-        }
-    },
-
-    query_nodes: {
-        name: "query_nodes",
-        description: "Query Neo4j graph nodes by label with EXACT property matching. REQUIRES label parameter. Optional properties for exact value match (e.g., {name: 'John'} - must match exactly). Use for: precise node lookup with known property values, structured queries. Returns nodes of specific type with exact attribute matches. Best for: 'find Person with name John', 'get all Services with status active'. For PARTIAL/fuzzy matching (e.g., name contains 'Joh'), use search_nodes instead. For counting, use get_node_count. For browsing all node types, use get_node_labels.",
-        inputSchema: {
-            type: "object",
-            properties: {
-                label: {
-                    type: "string",
-                    description: "Node label to query (e.g., 'Person', 'Company')",
-                    required: true
-                },
-                properties: {
-                    type: "object",
-                    description: "Property filters for exact matching (e.g., {name: 'John', age: 30})"
-                }
-            },
-            required: ["label"]
-        }
-    },
-
-    search_nodes: {
-        name: "search_nodes",
-        description: "Search Neo4j nodes using PARTIAL/fuzzy text matching on property values. REQUIRES property and value parameters. Optional label filter. Supports substring/contains matching (e.g., 'Joh' matches 'John', 'Johnny'). Use for: fuzzy searches, partial name matching, text contains queries. Example: find nodes where name contains 'api'. Best for: 'find nodes with name like X', text searches. For EXACT matching, use query_nodes instead. For discovering available properties, use get_schema. More flexible than query_nodes for text searches.",
-        inputSchema: {
-            type: "object",
-            properties: {
-                label: {
-                    type: "string",
-                    description: "Node label to search in (optional)"
-                },
-                property: {
-                    type: "string",
-                    description: "Property name to search in (e.g., 'name', 'description')",
-                    required: true
-                },
-                value: {
-                    type: "string",
-                    description: "Text value to search for (supports partial/substring matching)",
-                    required: true
-                }
-            },
-            required: ["property", "value"]
-        }
-    },
-
-    get_relationships: {
-        name: "get_relationships",
-        description: "Query Neo4j graph RELATIONSHIPS (edges/connections between nodes). Optional filters: from_label (source node type), to_label (target node type), relationship_type (e.g., 'WORKS_AT', 'DEPENDS_ON'). Use for: exploring graph connections, 'how are nodes connected', finding relationships between entity types. Returns edges with source, target, and relationship properties. Best for: 'show relationships between X and Y', dependency analysis, connection discovery. For relationship types list, use get_relationship_types. For complete graph, use get_graph_nodes.",
-        inputSchema: {
-            type: "object",
-            properties: {
-                from_label: {
-                    type: "string",
-                    description: "Source node label to filter by"
-                },
-                to_label: {
-                    type: "string",
-                    description: "Target node label to filter by"
-                },
-                relationship_type: {
-                    type: "string",
-                    description: "Relationship type to filter by (e.g., 'WORKS_AT', 'KNOWS')"
-                }
-            }
-        }
-    },
-
-    execute_cypher: {
-        name: "execute_cypher",
-        description: "Execute a custom Cypher query directly on Neo4j database. Use ONLY for advanced queries that cannot be accomplished with other tools. Read-only queries preferred.",
-        inputSchema: {
-            type: "object",
-            properties: {
-                query: {
-                    type: "string",
-                    description: "Cypher query to execute (destructive operations blocked)",
-                    required: true
-                },
-                parameters: {
-                    type: "object",
-                    description: "Query parameters for parameterized queries"
-                }
-            },
-            required: ["query"]
-        }
-    },
-
-    get_node_count: {
-        name: "get_node_count",
-        description: "Get total count of nodes in Neo4j database, optionally filtered by a specific label. Use this for statistics and overview.",
-        inputSchema: {
-            type: "object",
-            properties: {
-                label: {
-                    type: "string",
-                    description: "Node label to count (if not provided, counts all nodes)"
-                }
-            }
-        }
-    },
-
-    get_database_stats: {
-        name: "get_database_stats",
-        description: "Get comprehensive Neo4j database statistics including total nodes, relationships, labels, relationship types, and property keys. Use for database overview.",
-        inputSchema: {
-            type: "object",
-            properties: {}
-        }
-    },
-
     // VictoriaLogs Tools
     query_logs: {
         name: "query_logs",
@@ -1088,17 +970,6 @@ class MCPToolRegistry {
     }
 
     registerTools() {
-        // Register Neo4j tools
-        this.tools.set('get_node_labels', this.getNodeLabels.bind(this));
-        this.tools.set('get_relationship_types', this.getRelationshipTypes.bind(this));
-        this.tools.set('get_schema', this.getSchema.bind(this));
-        this.tools.set('query_nodes', this.queryNodes.bind(this));
-        this.tools.set('search_nodes', this.searchNodes.bind(this));
-        this.tools.set('get_relationships', this.getRelationships.bind(this));
-        this.tools.set('execute_cypher', this.executeCypherTool.bind(this));
-        this.tools.set('get_node_count', this.getNodeCount.bind(this));
-        this.tools.set('get_database_stats', this.getDatabaseStats.bind(this));
-
         // Register VictoriaLogs tools
         this.tools.set('query_logs', this.queryLogs.bind(this));
         this.tools.set('search_logs', this.searchLogs.bind(this));
@@ -1169,281 +1040,6 @@ class MCPToolRegistry {
 
         const tool = this.tools.get(toolName);
         return await tool(parameters);
-    }
-
-    // Neo4j tool implementations
-    async getNodeLabels() {
-        try {
-            const result = await executeCypher('CALL db.labels()');
-            const labels = result.data.map(record => record.row[0]);
-            return {
-                labels: labels,
-                count: labels.length,
-                timestamp: new Date().toISOString()
-            };
-        } catch (error) {
-            throw new Error(`Failed to get node labels: ${error.message}`);
-        }
-    }
-
-    async getRelationshipTypes() {
-        try {
-            const result = await executeCypher('CALL db.relationshipTypes()');
-            const types = result.data.map(record => record.row[0]);
-            return {
-                relationship_types: types,
-                count: types.length,
-                timestamp: new Date().toISOString()
-            };
-        } catch (error) {
-            throw new Error(`Failed to get relationship types: ${error.message}`);
-        }
-    }
-
-    async getSchema() {
-        try {
-            // Get node labels
-            const labelsResult = await executeCypher('CALL db.labels()');
-            const labels = labelsResult.data.map(record => record.row[0]);
-
-            // Get relationship types
-            const relsResult = await executeCypher('CALL db.relationshipTypes()');
-            const relationshipTypes = relsResult.data.map(record => record.row[0]);
-
-            // Get property keys
-            const propsResult = await executeCypher('CALL db.propertyKeys()');
-            const propertyKeys = propsResult.data.map(record => record.row[0]);
-
-            // Get schema information
-            const schemaResult = await executeCypher('CALL db.schema.visualization()');
-
-            return {
-                node_labels: labels,
-                relationship_types: relationshipTypes,
-                property_keys: propertyKeys,
-                labels_count: labels.length,
-                relationships_count: relationshipTypes.length,
-                properties_count: propertyKeys.length,
-                schema_details: schemaResult.data,
-                timestamp: new Date().toISOString()
-            };
-        } catch (error) {
-            throw new Error(`Failed to get schema: ${error.message}`);
-        }
-    }
-
-    async queryNodes(params) {
-        const { label, properties = {} } = params;
-
-        try {
-            let query = `MATCH (n:${label})`;
-            let queryParams = {};
-
-            // Add property filters if provided
-            if (Object.keys(properties).length > 0) {
-                const conditions = Object.keys(properties).map((key, index) => {
-                    queryParams[`prop${index}`] = properties[key];
-                    return `n.${key} = $prop${index}`;
-                });
-                query += ` WHERE ${conditions.join(' AND ')}`;
-            }
-
-            query += ' RETURN n';
-
-            const result = await executeCypher(query, queryParams);
-            const nodes = result.data.map(record => record.row[0]);
-
-            return {
-                label: label,
-                nodes: nodes,
-                count: nodes.length,
-                filters: properties,
-                timestamp: new Date().toISOString()
-            };
-        } catch (error) {
-            throw new Error(`Failed to query nodes: ${error.message}`);
-        }
-    }
-
-    async searchNodes(params) {
-        const { label, property, value } = params;
-
-        try {
-            let query;
-            let queryParams = { value };
-
-            if (label) {
-                query = `MATCH (n:${label}) WHERE n.${property} CONTAINS $value RETURN n`;
-            } else {
-                query = `MATCH (n) WHERE n.${property} CONTAINS $value RETURN n, labels(n) as node_labels`;
-            }
-
-            const result = await executeCypher(query, queryParams);
-            const nodes = result.data.map(record => ({
-                node: record.row[0],
-                labels: record.row[1] || [label]
-            }));
-
-            return {
-                search_property: property,
-                search_value: value,
-                target_label: label,
-                nodes: nodes,
-                count: nodes.length,
-                timestamp: new Date().toISOString()
-            };
-        } catch (error) {
-            throw new Error(`Failed to search nodes: ${error.message}`);
-        }
-    }
-
-    async getRelationships(params = {}) {
-        const { from_label, to_label, relationship_type } = params;
-
-        try {
-            let query = 'MATCH (a)-[r]->(b)';
-            let conditions = [];
-            let queryParams = {};
-
-            if (from_label) {
-                conditions.push(`a:${from_label}`);
-            }
-            if (to_label) {
-                conditions.push(`b:${to_label}`);
-            }
-            if (relationship_type) {
-                query = query.replace('[r]', `[r:${relationship_type}]`);
-            }
-
-            if (conditions.length > 0) {
-                query += ` WHERE ${conditions.join(' AND ')}`;
-            }
-
-            query += ' RETURN a, type(r) as relationship_type, r, b, labels(a) as from_labels, labels(b) as to_labels';
-
-            const result = await executeCypher(query, queryParams);
-            const relationships = result.data.map(record => ({
-                from_node: record.row[0],
-                from_labels: record.row[4],
-                relationship_type: record.row[1],
-                relationship_properties: record.row[2],
-                to_node: record.row[3],
-                to_labels: record.row[5]
-            }));
-
-            return {
-                relationships: relationships,
-                count: relationships.length,
-                filters: { from_label, to_label, relationship_type },
-                timestamp: new Date().toISOString()
-            };
-        } catch (error) {
-            throw new Error(`Failed to get relationships: ${error.message}`);
-        }
-    }
-
-    async executeCypherTool(params) {
-        const { query, parameters = {} } = params;
-
-        try {
-            // ⚠️  SECURITY WARNING: Regex blacklists are bypassable!
-            // Attackers can use:
-            // - String concatenation: "DE" + "LETE"
-            // - Comment injection: /**/DELETE
-            // - Unicode tricks
-            //
-            // PROPER FIX: Configure NEO4J_USER in config.js to use a READ-ONLY role
-            // enforced by Neo4j database itself (e.g., 'reader' role).
-            //
-            // This regex is defense-in-depth but NOT primary security.
-            const destructivePatterns = [
-                /\b(DETACH\s+)?DELETE\b/i,
-                /\bREMOVE\b/i,
-                /\bDROP\b/i,
-                /\bCREATE\s+(CONSTRAINT|INDEX)\b/i,
-                /\bSET\b.*=/i,
-                /\bMERGE\b/i,  // MERGE can create nodes
-                /\bCALL\s+apoc/i  // Block APOC for extra safety
-            ];
-
-            const isDestructive = destructivePatterns.some(pattern => pattern.test(query));
-            if (isDestructive) {
-                console.error('🚨 Blocked potentially destructive Cypher query:', query);
-                throw new Error('Destructive operations (DELETE, REMOVE, DROP, SET, MERGE, APOC) are not allowed. Use read-only Neo4j credentials.');
-            }
-
-            const result = await executeCypher(query, parameters);
-
-            return {
-                query: query,
-                parameters: parameters,
-                columns: result.columns || [],
-                data: result.data || [],
-                row_count: result.data ? result.data.length : 0,
-                timestamp: new Date().toISOString()
-            };
-        } catch (error) {
-            throw new Error(`Failed to execute Cypher query: ${error.message}`);
-        }
-    }
-
-    async getNodeCount(params = {}) {
-        const { label } = params;
-
-        try {
-            let query;
-            if (label) {
-                query = `MATCH (n:${label}) RETURN count(n) as count`;
-            } else {
-                query = 'MATCH (n) RETURN count(n) as count';
-            }
-
-            const result = await executeCypher(query);
-            const count = result.data[0].row[0];
-
-            return {
-                label: label || 'all_nodes',
-                count: count,
-                timestamp: new Date().toISOString()
-            };
-        } catch (error) {
-            throw new Error(`Failed to get node count: ${error.message}`);
-        }
-    }
-
-    async getDatabaseStats() {
-        try {
-            // Get total node count
-            const nodeCountResult = await executeCypher('MATCH (n) RETURN count(n) as count');
-            const totalNodes = nodeCountResult.data[0].row[0];
-
-            // Get total relationship count
-            const relCountResult = await executeCypher('MATCH ()-[r]->() RETURN count(r) as count');
-            const totalRelationships = relCountResult.data[0].row[0];
-
-            // Get node labels count
-            const labelsResult = await executeCypher('CALL db.labels()');
-            const labelCount = labelsResult.data.length;
-
-            // Get relationship types count
-            const relTypesResult = await executeCypher('CALL db.relationshipTypes()');
-            const relTypeCount = relTypesResult.data.length;
-
-            // Get property keys count
-            const propsResult = await executeCypher('CALL db.propertyKeys()');
-            const propCount = propsResult.data.length;
-
-            return {
-                total_nodes: totalNodes,
-                total_relationships: totalRelationships,
-                node_labels_count: labelCount,
-                relationship_types_count: relTypeCount,
-                property_keys_count: propCount,
-                timestamp: new Date().toISOString()
-            };
-        } catch (error) {
-            throw new Error(`Failed to get database stats: ${error.message}`);
-        }
     }
 
     // VictoriaLogs tool implementations
@@ -2845,33 +2441,25 @@ console.log('🔧 Manifest API Configuration:');
 console.log('   URL:', MANIFEST_API_URL);
 console.log('   API Key:', MANIFEST_API_KEY ? `${MANIFEST_API_KEY.substring(0, 20)}...` : 'NOT LOADED');
 
-// Function to execute Cypher queries via HTTP API
+// Neo4j helper function to execute Cypher queries
 async function executeCypher(query, params = {}) {
+    if (!neo4jDriver) {
+        throw new Error('Neo4j driver not initialized');
+    }
+
+    const session = neo4jDriver.session({
+        database: NEO4J_DATABASE,
+        defaultAccessMode: neo4j.session.READ
+    });
+
     try {
-        const response = await axios.post(`${NEO4J_URL}/db/${NEO4J_DATABASE}/tx/commit`, {
-            statements: [{
-                statement: query,
-                parameters: params
-            }]
-        }, {
-            auth: {
-                username: NEO4J_USER,
-                password: NEO4J_PASS
-            },
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        });
-
-        if (response.data.errors && response.data.errors.length > 0) {
-            throw new Error(response.data.errors[0].message);
-        }
-
-        return response.data.results[0];
+        const result = await session.run(query, params);
+        return result;
     } catch (error) {
         console.error('Neo4j query error:', error.message);
         throw error;
+    } finally {
+        await session.close();
     }
 }
 
@@ -2880,7 +2468,8 @@ async function testNeo4jConnection() {
     try {
         console.log('Testing Neo4j connection...');
         const result = await executeCypher('RETURN "Neo4j connection successful" as message');
-        console.log('✅ Neo4j connection successful');
+        const message = result.records[0].get('message');
+        console.log('✅ Neo4j connection successful:', message);
         return true;
     } catch (error) {
         console.error('❌ Neo4j connection failed:', error.message);
@@ -3168,7 +2757,7 @@ Focus on what's useful and actionable. Help users understand what's happening in
 // Start Express server
 app.listen(PORT, () => {
     console.log(`🚀 VictoriaLogs MCP Server running on port ${PORT}`);
-    console.log(`🔗 Neo4j Bolt connection at: bolt://${NEO4J_CONFIG.host}:${NEO4J_CONFIG.port}`);
+    console.log(`🔗 Neo4j connection at: ${NEO4J_URI}`);
     console.log(`📊 Access VictoriaLogs at: ${VICTORIA_METRICS_URL}`);
     console.log(`🎨 Frontend should connect to: http://localhost:3001`);
     console.log(`🤖 MCP Tools available at /api/mcp/tools`);
@@ -3182,4 +2771,23 @@ app.listen(PORT, () => {
     setTimeout(() => {
         testNeo4jConnection();
     }, 2000); // Wait 2 seconds for Neo4j to be ready
+});
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+    console.log('\n🛑 Shutting down gracefully...');
+    if (neo4jDriver) {
+        await neo4jDriver.close();
+        console.log('✅ Neo4j driver closed');
+    }
+    process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+    console.log('\n🛑 Shutting down gracefully...');
+    if (neo4jDriver) {
+        await neo4jDriver.close();
+        console.log('✅ Neo4j driver closed');
+    }
+    process.exit(0);
 });
