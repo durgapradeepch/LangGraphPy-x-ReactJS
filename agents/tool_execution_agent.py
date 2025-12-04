@@ -4,7 +4,8 @@ Tool Execution Agent - Executes MCP tools based on the plan
 
 import logging
 from typing import Dict, Any
-from state import ChatState, add_mcp_result
+
+from core.state import ChatState, add_mcp_result
 from utils.mcp_client import MCPClientManager
 
 logger = logging.getLogger(__name__)

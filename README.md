@@ -36,8 +36,61 @@ as possible for anyone to clone, start, and get going on this project, including
 for your LangGraph runnable in `graph.py`, and only needing the `useWebSocket.ts` implementation for any frontend.
 
 ## 🔍 Project Overview
+
+### 📁 Project Structure (v2.0.0 - Reorganized)
+
+**Clean backend organization - all files moved to `backend/` directory:**
+
 ```
-Project Tree
+LangGraphPy-x-ReactJS/
+├── backend/                      # 🆕 Organized backend structure
+│   ├── workflows/               # LangGraph workflow orchestration
+│   │   ├── workflow.py         # Enhanced multi-agent workflow
+│   │   └── graph.py            # Semantic routing & entry point
+│   ├── api/                    # REST API wrappers
+│   │   └── api_wrapper.py     # Production FastAPI wrapper
+│   └── mcp_server/             # Model Context Protocol server
+│       ├── server.js           # Express MCP server
+│       └── config.js           # Server configuration
+│
+├── core/                        # Core utilities (state, config, logger)
+├── agents/                      # Specialized agent implementations
+├── utils/                       # Utility modules (MCP client, LLM client)
+│
+├── frontend/                    # React TypeScript frontend
+│   ├── src/
+│   │   ├── components/
+│   │   └── services/
+│   └── package.json
+│
+├── server.py                    # FastAPI WebSocket server
+├── start.sh                     # Unified start script
+├── stop.sh                      # Unified stop script
+└── requirements.txt             # Python dependencies
+```
+
+### 🎯 Key Architecture Components
+
+**Backend Organization:**
+- `backend/workflows/` - LangGraph orchestration (workflow + routing)
+- `backend/api/` - REST API interfaces
+- `backend/mcp_server/` - Node.js MCP tool server
+
+**Core Modules:**
+- `core/` - State management, configuration, logging
+- `agents/` - Specialized AI agents (orchestrator, query analysis, tool execution, etc.)
+- `utils/` - MCP client, LLM client utilities
+
+**Import Usage:**
+```python
+# Import from new structure
+from backend.workflows.workflow import EnhancedLangGraphWorkflow
+from backend.workflows.graph import invoke_our_graph
+```
+
+See [backend/README.md](backend/README.md) for detailed backend documentation.
+
+## 🔍 Original Project Tree
 .
 ├── Dockerfile             # Shipable blueprint Dockerfile
 ├── Procfile               # web command to run on servers (PaaS eg. Heroku)

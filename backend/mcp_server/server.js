@@ -1,3 +1,26 @@
+/**
+ * MCP Server - Model Context Protocol Server
+ * ==========================================
+ * Express-based MCP server providing:
+ * - VictoriaLogs integration (log querying and metrics)
+ * - VictoriaMetrics integration (metric querying)
+ * - Manifest API integration (resources, incidents, tickets, changelogs)
+ * - Neo4j graph database integration
+ * - LLM integration (OpenAI/Llama) for intelligent queries
+ * 
+ * Architecture:
+ * - MCPToolRegistry: Central tool registry and execution
+ * - LLM helpers: Unified API calling for OpenAI and Llama
+ * - Neo4j integration: Graph database queries and updates
+ * - HTTP endpoints: RESTful API for tool execution
+ * 
+ * Version: 2.0.0
+ */
+
+// ============================================================================
+// DEPENDENCIES
+// ============================================================================
+
 const express = require('express');
 const axios = require('axios');
 const neo4j = require('neo4j-driver');
@@ -6,7 +29,10 @@ const config = require('./config');
 const app = express();
 const PORT = config.SERVER_PORT;
 
-// Neo4j configuration
+// ============================================================================
+// NEO4J CONFIGURATION
+// ============================================================================
+
 const NEO4J_CONFIG = config.NEO4J_CONFIG;
 const NEO4J_URI = NEO4J_CONFIG.uri;
 const NEO4J_USER = NEO4J_CONFIG.username;
@@ -32,7 +58,10 @@ try {
     console.error('❌ Failed to initialize Neo4j driver:', error.message);
 }
 
-// Initialize LLM configuration
+// ============================================================================
+// LLM CONFIGURATION
+// ============================================================================
+
 let llmAvailable = false;
 let llmChoice = config.LLM_CHOICE || 'llama';
 
@@ -48,7 +77,17 @@ if (llmChoice === 'openai' && config.OPENAI_API_KEY) {
     console.warn('⚠️ No LLM configured - AI features will use fallback mode');
 }
 
-// Unified LLM API caller - supports both OpenAI and Llama
+// ============================================================================
+// LLM API HELPERS
+// ============================================================================
+
+/**
+ * Unified LLM API caller - supports both OpenAI and Llama
+ * @param {Array} messages - Chat messages array
+ * @param {Number} temperature - Sampling temperature
+ * @param {Number} max_tokens - Maximum tokens to generate
+ * @returns {Promise<String>} LLM response content
+ */
 async function callLLM(messages, temperature = 0.05, max_tokens = 500) {
     if (llmChoice === 'openai') {
         return await callOpenAI(messages, temperature, max_tokens);
@@ -57,7 +96,13 @@ async function callLLM(messages, temperature = 0.05, max_tokens = 500) {
     }
 }
 
-// OpenAI API caller
+/**
+ * OpenAI API caller
+ * @param {Array} messages - Chat messages array
+ * @param {Number} temperature - Sampling temperature
+ * @param {Number} max_tokens - Maximum tokens to generate
+ * @returns {Promise<String>} Response content
+ */
 async function callOpenAI(messages, temperature = 0.05, max_tokens = 500) {
     try {
         const payload = {
@@ -90,7 +135,13 @@ async function callOpenAI(messages, temperature = 0.05, max_tokens = 500) {
     }
 }
 
-// Helper function to call Llama API (matching Python format)
+/**
+ * Llama API caller
+ * @param {Array} messages - Chat messages array
+ * @param {Number} temperature - Sampling temperature
+ * @param {Number} max_tokens - Maximum tokens to generate
+ * @returns {Promise<String>} Response content
+ */
 async function callLlamaAPI(messages, temperature = 0.05, max_tokens = 500) {
     try {
         const payload = {
@@ -215,7 +266,24 @@ async function* callLlamaAPIStreaming(messages, temperature = 0.05, max_tokens =
     }
 }
 
-// MCP Tool Definitions
+// ============================================================================
+// MCP TOOL DEFINITIONS
+// ============================================================================
+
+/**
+ * MCP_TOOLS - Tool schema definitions for Model Context Protocol
+ * 
+ * Each tool defines:
+ * - name: Unique tool identifier
+ * - description: What the tool does and when to use it
+ * - inputSchema: JSON schema for tool parameters
+ * 
+ * Tool Categories:
+ * - VictoriaLogs: query_logs, search_logs, get_log_metrics, get_log_stats
+ * - VictoriaMetrics: query_metrics, instant_query_metrics, get_metric_labels, get_metric_series
+ * - Manifest API: get_resources, get_incidents, get_tickets, get_changelogs, get_notifications
+ * - Graph: get_graph, get_graph_nodes, get_graph_by_label, execute_graph_cypher
+ */
 const MCP_TOOLS = {
     // VictoriaLogs Tools
     query_logs: {
@@ -962,13 +1030,34 @@ const MCP_TOOLS = {
     }
 };
 
-// MCP Tool Registry
+// ============================================================================
+// MCP TOOL REGISTRY CLASS
+// ============================================================================
+
+/**
+ * MCPToolRegistry - Central registry and executor for MCP tools
+ * 
+ * Responsibilities:
+ * - Register all available MCP tools
+ * - Execute tools by name with parameter validation
+ * - Provide tool discovery (list available tools)
+ * 
+ * Tool Categories:
+ * - VictoriaLogs tools (log querying and metrics)
+ * - VictoriaMetrics tools (metric querying)
+ * - Manifest API tools (resources, incidents, tickets, changelogs)
+ * - Graph tools (Neo4j queries and operations)
+ */
 class MCPToolRegistry {
     constructor() {
         this.tools = new Map();
         this.registerTools();
     }
 
+    /**
+     * Register all available MCP tools
+     * Maps tool names to their implementation methods
+     */
     registerTools() {
         // Register VictoriaLogs tools
         this.tools.set('query_logs', this.queryLogs.bind(this));
@@ -1027,12 +1116,20 @@ class MCPToolRegistry {
         this.tools.set('execute_graph_cypher', this.executeGraphCypher.bind(this));
     }
 
-    // Get available tools
+    /**
+     * Get list of available tools
+     * @returns {Array} Array of tool definitions
+     */
     getAvailableTools() {
         return Object.values(MCP_TOOLS);
     }
 
-    // Execute a tool
+    /**
+     * Execute a tool by name
+     * @param {String} toolName - Name of the tool to execute
+     * @param {Object} parameters - Tool parameters
+     * @returns {Promise<Object>} Tool execution result
+     */
     async executeTool(toolName, parameters) {
         if (!this.tools.has(toolName)) {
             throw new Error(`Tool '${toolName}' not found`);
@@ -1042,7 +1139,14 @@ class MCPToolRegistry {
         return await tool(parameters);
     }
 
-    // VictoriaLogs tool implementations
+    // ========================================================================
+    // VICTORIALOGS TOOL IMPLEMENTATIONS
+    // ========================================================================
+
+    /**
+     * Query VictoriaLogs with LogSQL syntax
+     * Supports complex queries with multiple conditions, time ranges, and limits
+     */
     async queryLogs(params) {
         console.log('🔍 queryLogs called with params:', JSON.stringify(params));
         const { query, start_time, end_time, limit = 1000 } = params;
@@ -2403,14 +2507,19 @@ class MCPToolRegistry {
     }
 }
 
+// ============================================================================
+// EXPRESS APP SETUP
+// ============================================================================
+
 // Initialize MCP Tool Registry
 const mcpRegistry = new MCPToolRegistry();
+console.log('\u2705 MCP Tool Registry initialized');
 
 // Middleware
 app.use(express.json());
 app.use(express.static('public'));
 
-// CORS middleware
+// CORS middleware - Allow cross-origin requests
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -2422,7 +2531,9 @@ app.use((req, res, next) => {
     }
 });
 
-// Neo4j configuration moved to top
+// ============================================================================
+// HTTP ENDPOINTS
+// ============================================================================
 
 // VictoriaLogs configuration
 const VICTORIA_METRICS_URL = config.VICTORIA_METRICS_URL;

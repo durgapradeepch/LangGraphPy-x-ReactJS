@@ -5,7 +5,8 @@ Query Analysis Agent - Analyzes user queries to determine intent and plan execut
 import json
 import logging
 from typing import Dict, Any
-from state import ChatState, update_state_context
+
+from core.state import ChatState, update_state_context
 from utils.llm_client import llm_client
 
 logger = logging.getLogger(__name__)

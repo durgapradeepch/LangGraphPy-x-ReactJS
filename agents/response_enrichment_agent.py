@@ -5,7 +5,8 @@ Response Enrichment Agent - Enriches the final response with context and recomme
 import logging
 from datetime import datetime
 from typing import Dict, Any, List, Optional
-from state import ChatState
+
+from core.state import ChatState
 from utils.llm_client import llm_client
 
 logger = logging.getLogger(__name__)

@@ -4,9 +4,10 @@ from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from graph import invoke_our_graph
 from datetime import datetime
-from cust_logger import logger, set_files_message_color
+
+from backend.workflows.graph import invoke_our_graph
+from core.logger import logger, set_files_message_color
 
 app = FastAPI()
 

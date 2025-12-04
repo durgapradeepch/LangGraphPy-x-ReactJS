@@ -4,7 +4,8 @@ Extracts IDs from search results and creates follow-up queries for complete info
 """
 import json
 from typing import Dict, Any, List
-from cust_logger import logger
+
+from core.logger import logger
 
 
 class ComprehensiveQueryAgent:

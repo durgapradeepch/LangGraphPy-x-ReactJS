@@ -1,15 +1,27 @@
 """
 API Wrapper for LangGraph Server
 =================================
-Exposes a clean, documented interface for frontend integration.
+Production-ready RESTful API wrapper for LangGraph integration.
 
-This wrapper provides:
-- RESTful API endpoints
+Features:
+- RESTful API endpoints for chat interactions
 - WebSocket support for streaming responses
-- Type-safe request/response models
+- Type-safe request/response models (Pydantic)
 - Error handling and validation
 - CORS configuration for cross-origin requests
 - Authentication hooks (ready to integrate)
+- Session management
+- Health checks and monitoring
+
+Endpoints:
+- POST /api/chat - Non-streaming chat
+- WebSocket /ws - Streaming chat
+- GET /health - Health check
+- GET /api/capabilities - Available features
+- Session management endpoints
+
+Author: LangGraph Team
+Version: 1.0.0
 """
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Header, Depends
@@ -21,8 +33,8 @@ import json
 import logging
 from datetime import datetime
 
-# Import your existing server components
-from graph import create_workflow
+# Import graph and workflow components
+from backend.workflows.graph import create_workflow
 from utils.llm_client import LLMDecisionMaker
 
 logger = logging.getLogger(__name__)
@@ -86,13 +98,24 @@ class ErrorResponse(BaseModel):
 
 
 # ============================================================================
-# AUTHENTICATION (Ready to integrate)
+# AUTHENTICATION
 # ============================================================================
 
 async def verify_api_key(x_api_key: Optional[str] = Header(None)):
     """
     Verify API key from request header.
+    
     Replace with your company's authentication mechanism.
+    Examples: JWT tokens, OAuth, API keys with database lookup, etc.
+    
+    Args:
+        x_api_key: API key from X-API-Key header
+        
+    Returns:
+        API key if valid
+        
+    Raises:
+        HTTPException: If authentication fails
     """
     # TODO: Implement your authentication logic
     # For now, this is a passthrough

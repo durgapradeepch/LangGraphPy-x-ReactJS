@@ -5,11 +5,17 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+MAGENTA='\033[0;35m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}  Stopping LangGraphPy-x-ReactJS Services${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+# Banner
+echo ""
+echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║                                                            ║${NC}"
+echo -e "${CYAN}║         ${MAGENTA}LangGraphPy-x-ReactJS${CYAN} - Stop Script              ║${NC}"
+echo -e "${CYAN}║                                                            ║${NC}"
+echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
 # Function to stop service on port
@@ -18,50 +24,124 @@ stop_port() {
     local name=$2
     
     if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1 ; then
-        echo -e "${YELLOW}🛑 Stopping $name on port $port...${NC}"
+        local pid=$(lsof -ti:$port)
+        echo -e "${YELLOW}🛑 Stopping ${name} on port $port (PID: $pid)...${NC}"
         lsof -ti:$port | xargs kill -9 2>/dev/null
         sleep 1
         
         if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1 ; then
-            echo -e "${RED}❌ Failed to stop $name${NC}"
+            echo -e "${RED}❌ Failed to stop ${name}${NC}"
+            return 1
         else
-            echo -e "${GREEN}✅ $name stopped${NC}"
+            echo -e "${GREEN}✅ ${name} stopped${NC}"
+            return 0
         fi
     else
-        echo -e "${GREEN}✅ $name already stopped (port $port not in use)${NC}"
+        echo -e "${GREEN}✅ ${name} not running${NC}"
+        return 0
     fi
 }
 
-# Stop all services
+# Function to stop Docker container
+stop_docker_container() {
+    local container_name=$1
+    
+    if command -v docker &> /dev/null && docker info &> /dev/null 2>&1; then
+        if docker ps --format '{{.Names}}' | grep -q "^${container_name}$"; then
+            echo -e "${YELLOW}🛑 Stopping Docker container: ${container_name}...${NC}"
+            docker stop $container_name >/dev/null 2>&1
+            echo -e "${GREEN}✅ ${container_name} stopped${NC}"
+        else
+            echo -e "${GREEN}✅ ${container_name} not running${NC}"
+        fi
+    fi
+}
+
+# ============================================================================
+# STOP APPLICATION SERVICES
+# ============================================================================
+echo -e "${CYAN}═══════════════════════════════════════════════════════════${NC}"
+echo -e "${CYAN}  Stopping Application Services${NC}"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════${NC}"
+echo ""
+
+# Stop React Frontend (Port 3000)
 stop_port 3000 "React Frontend"
-stop_port 8000 "Python Backend"
+
+# Stop Python Backend (Port 8000)
+stop_port 8000 "Python FastAPI Backend"
+
+# Stop Node.js MCP Server (Port 3001)
 stop_port 3001 "Node.js MCP Server"
 
-# Stop VictoriaLogs Docker container
 echo ""
-if command -v docker &> /dev/null && docker info &> /dev/null; then
-    if docker ps --format '{{.Names}}' | grep -q "^victorialogs$"; then
-        echo -e "${YELLOW}🛑 Stopping VictoriaLogs Docker container...${NC}"
-        docker stop victorialogs >/dev/null 2>&1
-        echo -e "${GREEN}✅ VictoriaLogs container stopped${NC}"
-        echo -e "${BLUE}   Note: Container will auto-restart on next ./start.sh or system reboot${NC}"
-    else
-        echo -e "${GREEN}✅ VictoriaLogs container already stopped${NC}"
-    fi
+
+# ============================================================================
+# STOP DOCKER CONTAINERS
+# ============================================================================
+echo -e "${CYAN}═══════════════════════════════════════════════════════════${NC}"
+echo -e "${CYAN}  Stopping Docker Containers${NC}"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════${NC}"
+echo ""
+
+if command -v docker &> /dev/null && docker info &> /dev/null 2>&1; then
+    # Stop VictoriaLogs
+    stop_docker_container "victorialogs"
+    
+    # Stop VictoriaMetrics (if it was started)
+    stop_docker_container "victoriametrics"
+    
+    echo ""
+    echo -e "${BLUE}ℹ️  Note: Docker containers will auto-restart on system reboot${NC}"
+    echo -e "${BLUE}   To permanently remove: ${YELLOW}docker rm victorialogs${NC}"
 else
-    echo -e "${YELLOW}⚠️  Docker not available, skipping VictoriaLogs${NC}"
+    echo -e "${YELLOW}⚠️  Docker not available - skipping container cleanup${NC}"
 fi
 
-# Also kill any remaining processes by name
 echo ""
-echo -e "${YELLOW}🧹 Cleaning up remaining processes...${NC}"
 
-pkill -f "uvicorn server:app" 2>/dev/null && echo -e "${GREEN}   Killed uvicorn${NC}"
-pkill -f "node server.js" 2>/dev/null && echo -e "${GREEN}   Killed node server${NC}"
-pkill -f "react-scripts start" 2>/dev/null && echo -e "${GREEN}   Killed react-scripts${NC}"
+# ============================================================================
+# CLEANUP
+# ============================================================================
+echo -e "${CYAN}═══════════════════════════════════════════════════════════${NC}"
+echo -e "${CYAN}  Cleanup${NC}"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════${NC}"
+echo ""
+
+# Kill any remaining Python/Node processes
+echo -e "${BLUE}🧹 Cleaning up remaining processes...${NC}"
+
+# Kill Python server processes
+pkill -f "python.*server.py" 2>/dev/null && echo -e "${GREEN}✅ Python server processes cleaned${NC}"
+
+# Kill Node.js server processes
+pkill -f "node.*server.js" 2>/dev/null && echo -e "${GREEN}✅ Node.js server processes cleaned${NC}"
+
+# Kill React/npm processes
+pkill -f "react-scripts" 2>/dev/null && echo -e "${GREEN}✅ React processes cleaned${NC}"
+
+# Remove any .log files in the project directory
+echo -e "${BLUE}🗑️  Removing log files...${NC}"
+find . -maxdepth 2 -name "*.log" -type f -exec rm -f {} \; 2>/dev/null
+echo -e "${GREEN}✅ Log files removed${NC}"
 
 echo ""
-echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}  All services stopped!${NC}"
-echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+# ============================================================================
+# SUMMARY
+# ============================================================================
+echo ""
+echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║                                                            ║${NC}"
+echo -e "${CYAN}║               ${GREEN}✅ ALL SERVICES STOPPED${CYAN}                   ║${NC}"
+echo -e "${CYAN}║                                                            ║${NC}"
+echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
+echo ""
+echo -e "${BLUE}🔄 To start services again:${NC}"
+echo -e "   ${YELLOW}./start.sh${NC}"
+echo ""
+echo -e "${BLUE}🗑️  To remove Docker containers permanently:${NC}"
+echo -e "   ${YELLOW}docker rm victorialogs victoriametrics${NC}"
+echo ""
+echo -e "${CYAN}════════════════════════════════════════════════════════════${NC}"
 echo ""

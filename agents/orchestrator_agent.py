@@ -5,7 +5,8 @@ Orchestrator Agent - Validation and Initialization
 import logging
 from typing import Dict, Any
 from datetime import datetime
-from state import ChatState, update_state_context
+
+from core.state import ChatState, update_state_context
 
 logger = logging.getLogger(__name__)
 

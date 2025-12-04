@@ -38,3 +38,11 @@ env/
 *.vscode/
 .idea/
 
+# Log files
+*.log
+logs/
+server.log
+frontend.log
+mcp_server.log
+http_server.log
+
